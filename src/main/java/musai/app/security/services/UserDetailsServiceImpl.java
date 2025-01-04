@@ -1,4 +1,4 @@
-package musai.app.services.imp;
+package musai.app.security.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

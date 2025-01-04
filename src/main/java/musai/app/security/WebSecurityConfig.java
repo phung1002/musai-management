@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import musai.app.security.jwt.AuthEntryPointJwt;
 import musai.app.security.jwt.AuthTokenFilter;
-import musai.app.services.imp.UserDetailsServiceImpl;
+import musai.app.security.services.UserDetailsServiceImpl;
 
 
 @Configuration

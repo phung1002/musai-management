@@ -1,4 +1,4 @@
-package musai.app.services.imp;
+package musai.app.security.services;
 
 import java.util.Collection;
 import java.util.List;

@@ -7,7 +7,8 @@ import musai.app.DTO.LoginRequest;
 import musai.app.repositories.RoleRepository;
 import musai.app.repositories.UserRepository;
 import musai.app.security.jwt.JwtUtils;
-import musai.app.services.imp.UserDetailsImpl;
+import musai.app.security.services.UserDetailsImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
