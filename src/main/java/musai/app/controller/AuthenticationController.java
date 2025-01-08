@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import musai.app.DTO.JwtResponse;
 import musai.app.DTO.LoginRequest;
-import musai.app.repositories.RoleRepository;
-import musai.app.repositories.UserRepository;
 import musai.app.security.jwt.JwtUtils;
 import musai.app.security.services.UserDetailsImpl;
 
@@ -15,7 +13,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,15 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 	@Autowired
 	AuthenticationManager authenticationManager;
-
-	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	RoleRepository roleRepository;
-
-	@Autowired
-	PasswordEncoder encoder;
 
 	@Autowired
 	JwtUtils jwtUtils;
