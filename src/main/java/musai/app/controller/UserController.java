@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.UserDTO;
 import musai.app.services.UserService;
+import musai.app.validation.ValidationGroups;
 
 @RestController
 @RequestMapping("/api/user")
@@ -29,7 +30,7 @@ public class UserController {
 	 * @return MessageResponse add success/ fail
 	 */
 	@PostMapping("/add")
-	public ResponseEntity<?> addUser(@Validated @RequestBody UserDTO userDTO) {
+	public ResponseEntity<?> addUser(@Validated(ValidationGroups.CreateUser.class) @RequestBody UserDTO userDTO) {
 		 MessageResponse response = userService.addUser(userDTO);
 	        if (response.getMessage().startsWith("Error")) {
 	            return ResponseEntity.badRequest().body(response);
@@ -45,7 +46,6 @@ public class UserController {
 	 */
 	@PutMapping("/edit/{userId}")
 	public ResponseEntity<?> editUser(@PathVariable Long userId, @Validated @RequestBody UserDTO userDTO) {
-		System.out.println(userId+ "===========================");
 	    MessageResponse response = userService.editUser(userId, userDTO);
 	    if (response.getMessage().startsWith("Error")) {
 	        return ResponseEntity.badRequest().body(response);
