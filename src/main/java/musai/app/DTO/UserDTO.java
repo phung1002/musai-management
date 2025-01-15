@@ -16,7 +16,6 @@ public class UserDTO {
 	@Email(message = "Invalid email format")
 	private String email;
 	
-	
 	@NotBlank(groups = ValidationGroups.CreateUser.class, message = "Password cannot be blank")
 	@Size(min = 6, max = 40, message = "Username must be between 6 and 40 characters")
 	private String password;
@@ -29,4 +28,12 @@ public class UserDTO {
 	
 	private String position;
 	
+	public UserDTO(String username, String email, Set<String> roles, String fullname, String department, String position) {
+		this.username = username;
+		this.email = email;
+		this.roles = roles;
+		this.fullname = fullname;
+		this.department = department;
+		this.position = position;
+	}	
 }
