@@ -55,5 +55,19 @@ public class UserController {
 	    MessageResponse response = userService.editUser(userId, userDTO);
 	    return ResponseEntity.ok(response);
 	}
+
+	/**
+	 * API delete user
+	 * Only ADMIN can delete user and they can't delete themself
+	 * 
+	 * @paramater userDTO
+	 * @return MessageResponse update success/ fail
+	 */
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') and #id != principal.id") 
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    	MessageResponse response = userService.deleteUser(id);
+	    return ResponseEntity.ok(response);
+    }
 	
 }

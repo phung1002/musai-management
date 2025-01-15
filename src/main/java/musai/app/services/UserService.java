@@ -7,4 +7,6 @@ public interface UserService {
 	MessageResponse addUser(UserDTO userDTO);
 
 	MessageResponse editUser(Long userId, UserDTO userDTO);
+	
+	MessageResponse deleteUser(Long userId);
 }

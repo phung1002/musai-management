@@ -161,4 +161,17 @@ public class UserServiceImpl implements UserService{
 
 	    return new MessageResponse("User updated successfully!");
 	}
+
+	@Override
+	public MessageResponse deleteUser(Long userId) {
+	    User existingUser = userRepository.findById(userId)
+	            .orElseThrow(() -> new UserNotFoundException("Error: User not exist."));
+	    
+        if (existingUser.getDeletedAt() != null) {
+            throw new UserNotFoundException("Error: User already deleted.");
+        }
+        existingUser.setDeletedAt(LocalDateTime.now());
+        userRepository.save(existingUser); // Update deleted_at
+        return new MessageResponse("User just deleted.");
+	}
 }
