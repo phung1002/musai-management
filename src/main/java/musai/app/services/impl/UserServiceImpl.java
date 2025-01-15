@@ -1,5 +1,6 @@
 package musai.app.services.impl;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.UserDTO;
+import musai.app.exception.BadRequestException;
+import musai.app.exception.UserNotFoundException;
 import musai.app.models.ERole;
 import musai.app.models.Role;
 import musai.app.models.User;
@@ -35,11 +38,11 @@ public class UserServiceImpl implements UserService{
 	 */
 	public MessageResponse addUser(UserDTO userDTO) {
 		if (userRepository.existsByUsername(userDTO.getUsername())) {
-			return new MessageResponse("Error: Username is already taken!");
+			throw new BadRequestException("Error: Username is already taken!");
 		}
 
 		if (userRepository.existsByEmail(userDTO.getEmail())) {
-			return new MessageResponse("Error: Email is already in use!");
+			throw new BadRequestException("Error: Email is already in use!");
 		}
 
 		// Create new user's account
@@ -57,34 +60,32 @@ public class UserServiceImpl implements UserService{
 
 		if (strRoles == null) {
 			Role memberRole = roleRepository.findByName(ERole.ROLE_MEMBER)
-					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					.orElseThrow(() -> new BadRequestException("Error: Role is not found."));
 			roles.add(memberRole);
 		} else {
 			strRoles.forEach(role -> {
 				switch (role) {
 					case "admin":
 						Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+								.orElseThrow(() -> new BadRequestException("Error: Role is not found."));
 						roles.add(adminRole);
 						break;
 
 					case "manager":
 						Role managerRole = roleRepository.findByName(ERole.ROLE_MANAGER)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+								.orElseThrow(() -> new BadRequestException("Error: Role is not found."));
 						roles.add(managerRole);
 						break;
 
 					default:
 						Role userRole = roleRepository.findByName(ERole.ROLE_MEMBER)
-								.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+								.orElseThrow(() -> new BadRequestException("Error: Role is not found."));
 						roles.add(userRole);
 				}
 			});
 		}
-
 		user.setRoles(roles);
 		userRepository.save(user);
-
 		return new MessageResponse("User registered successfully!");
 	}
 
@@ -98,17 +99,21 @@ public class UserServiceImpl implements UserService{
 	public MessageResponse editUser(Long userId, UserDTO userDTO) {
 	    // Find User by ID
 	    User existingUser = userRepository.findById(userId)
-	            .orElseThrow(() -> new RuntimeException("Error: User not found."));
-
+	            .orElseThrow(() -> new UserNotFoundException("Error: User not exist."));
+	    //Check user deleted
+	    if (existingUser.getDeletedAt() != null) {
+            throw new UserNotFoundException("Error: User not exist.");
+        }
+	    
 	    // Check user name or email exist (unless belong to current user)
 	    if (!existingUser.getUsername().equals(userDTO.getUsername()) &&
 	        userRepository.existsByUsername(userDTO.getUsername())) {
-	        return new MessageResponse("Error: Username is already taken!");
+	        throw new BadRequestException("Error: Username is already taken!");
 	    }
 
 	    if (!existingUser.getEmail().equals(userDTO.getEmail()) &&
 	        userRepository.existsByEmail(userDTO.getEmail())) {
-	        return new MessageResponse("Error: Email is already in use!");
+	        throw new BadRequestException("Error: Email is already in use!");
 	    }
 
 	    // update information of user
@@ -132,19 +137,19 @@ public class UserServiceImpl implements UserService{
 	            switch (role) {
 	                case "admin":
 	                    Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-	                            .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+	                            .orElseThrow(() -> new BadRequestException("Error: Role not found."));
 	                    roles.add(adminRole);
 	                    break;
 
 	                case "manager":
 	                    Role managerRole = roleRepository.findByName(ERole.ROLE_MANAGER)
-	                            .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+	                            .orElseThrow(() -> new BadRequestException("Error: Role not found."));
 	                    roles.add(managerRole);
 	                    break;
 
 	                default:
 	                    Role userRole = roleRepository.findByName(ERole.ROLE_MEMBER)
-	                            .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+	                            .orElseThrow(() -> new BadRequestException("Error: Role not found."));
 	                    roles.add(userRole);
 	            }
 	        });
