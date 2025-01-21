@@ -1,5 +1,6 @@
 package musai.app.security.services;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -18,15 +19,16 @@ public class UserDetailsImpl implements UserDetails {
 	private String email;
 	@JsonIgnore
 	private String password;
-
+	private LocalDateTime deletedAt;
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(Long id, String username, String email, String password,
+	public UserDetailsImpl(Long id, String username, String email, String password, LocalDateTime deletedAt,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
 		this.password = password;
+		this.deletedAt = deletedAt;
 		this.authorities = authorities;
 	}
 
@@ -40,6 +42,7 @@ public class UserDetailsImpl implements UserDetails {
 				user.getUsername(), 
 				user.getEmail(),
 				user.getPassword(), 
+				user.getDeletedAt(),
 				authorities);
 	}
 
@@ -51,6 +54,11 @@ public class UserDetailsImpl implements UserDetails {
 	public Long getId() {
 		return id;
 	}
+	
+	@Override
+	public String getUsername() {
+		return username;
+	}
 
 	public String getEmail() {
 		return email;
@@ -61,9 +69,8 @@ public class UserDetailsImpl implements UserDetails {
 		return password;
 	}
 
-	@Override
-	public String getUsername() {
-		return username;
+	public LocalDateTime getDeletedAt() {
+		return deletedAt;
 	}
 
 	@Override
