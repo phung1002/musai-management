@@ -2,5 +2,18 @@
     "password": "パスワード",
     "username": "ユーザー名",
     "sign_in": "ログイン",
-    "email": "メール"
+    "email": "メール",
+    "attendees_input": "勤怠 入力",
+    "leave_applying": "休暇 申請",
+    "change_password": "パスワード 変更",
+    "logout": "ログアウト",
+    "profile":"プロファイル",
+    "user_management": "ユーザー 管理",
+    "user_requst_management" : "申請 管理",
+    "requst_confirm": "申請 確認",
+    "leave_management": "休暇 管理",
+    "admin": "管理者",
+    "management" : "担当者",
+    "member": "ユーザー"
+  
 }

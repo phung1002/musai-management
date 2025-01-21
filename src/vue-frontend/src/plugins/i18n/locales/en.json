@@ -2,5 +2,17 @@
   "password": "password",
   "username": "username",
   "sign_in": "sign in",
-  "email": "email"
+  "email": "email",
+  "attendees_input": "Attendees Input",
+  "leave_applying": "Leave Applying",
+  "change_password": "Change Password",
+  "logout": "Logout",
+  "profile":"Profile",
+  "user_management": "User Management",
+  "user_requst_management" : "User Requst Management",
+  "requst_confirm": "Rqust Confirm",
+  "leave_management": "Leave Management",
+  "admin": "Admin",
+  "management" : "Management",
+  "member": "Member"
 }
