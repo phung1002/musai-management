@@ -2,5 +2,19 @@
     "password": "パスワード",
     "username": "ユーザー名",
     "sign_in": "ログイン",
-    "email": "メール"
+    "email": "メール",
+    "invalid_login_input": "ユーザー名またはパスワードが正しくありません。",
+    "login_failed": "ログインに失敗しました。",
+    "user_management": "ユーザー管理",
+    "admin": "管理者",
+    "paid_leave_management": "休暇管理",
+    "paid_leave_request": "休暇申請",
+    "add": "追加",
+    "no": "番号",
+    "type_something": "検索キーワードを入力",
+    "full_name": "名前",
+    "role": "権限",
+    "department": "部署",
+    "work_place": "現場",
+    "action": "操作"
 }

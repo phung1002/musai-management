@@ -1,6 +1,20 @@
-{  
+{
   "password": "password",
   "username": "username",
   "sign_in": "sign in",
-  "email": "email"
+  "email": "email",
+  "invalid_login_input": "Invalid username or password.",
+  "login_failed": "Login failed!",
+  "user_management": "User Management",
+  "admin": "Admin",
+  "paid_leave_management": "Paid Leave Management",
+  "paid_leave_request": "Paid Leave Request",
+  "add": "Add",
+  "no": "No",
+  "type_something": "Type something",
+  "full_name": "Full name",
+  "role": "Role",
+  "department": "Department",
+  "work_place": "Work place",
+  "action": "Action"
 }
