@@ -11,8 +11,8 @@ import musai.app.DTO.MessageResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<MessageResponse> handleUserNotFoundException(UserNotFoundException ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<MessageResponse> handleUserNotFoundException(NotFoundException ex) {
         MessageResponse messageResponse = new MessageResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse);
     }
