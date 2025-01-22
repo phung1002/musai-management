@@ -9,7 +9,8 @@ export const useUserStore = defineStore('user', {
       { title: 'Admin', value: 'ROLE_ADMIN' },
       { title: 'Management', value: 'ROLE_MANAGER' },
       { title: 'Member', value: 'ROLE_MEMBER' }
-    ]
+    ],
+    authenticated: false
   }),
 
   // Getters
@@ -26,6 +27,9 @@ export const useUserStore = defineStore('user', {
     hasRole: (state) => (role) => {
       return state.roles.includes(role);
     },
+    getAuthenticated(state) {
+      return state.authenticated;
+    }
   },
   // Actions
   actions: {
@@ -38,6 +42,9 @@ export const useUserStore = defineStore('user', {
     setRoles(roles) {
       this.roles = roles;
     },
+    setAuthenticated(auth) {
+      this.authenticated = auth;
+    }
   },
   persist: {
     key: 'user-store',

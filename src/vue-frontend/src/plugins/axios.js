@@ -2,11 +2,12 @@ import axios from 'axios';
 
 // Create instance Axios
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api', // URL cơ sở
-  timeout: 10000, // Thời gian chờ
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api', // URL
+  timeout: 10000, // Waiting time
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Important: Automation sent cookie each request
 });
 
 // Interceptor request
