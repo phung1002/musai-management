@@ -1,5 +1,9 @@
 import js from '@eslint/js';
 import pluginVue from 'eslint-plugin-vue';
+import globals from "globals";
+import pluginJs from "@eslint/js";
+import tseslint from "typescript-eslint";
+import pluginReact from "eslint-plugin-react";
 
 export default [
   // file need to check
@@ -20,6 +24,9 @@ export default [
       },
     },
   },
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  pluginReact.configs.flat.recommended,
   // Ignores file/folder don't need to check lint
   {
     ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],

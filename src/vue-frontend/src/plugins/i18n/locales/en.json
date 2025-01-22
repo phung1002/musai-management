@@ -5,8 +5,6 @@
   "email": "email",
   "invalid_login_input": "Invalid username or password.",
   "login_failed": "Login failed!",
-  "user_management": "User Management",
-  "admin": "Admin",
   "paid_leave_management": "Paid Leave Management",
   "paid_leave_request": "Paid Leave Request",
   "add": "Add",
@@ -16,5 +14,17 @@
   "role": "Role",
   "department": "Department",
   "work_place": "Work place",
-  "action": "Action"
+  "action": "Action",
+  "attendees_input": "Attendees Input",
+  "leave_applying": "Leave Applying",
+  "change_password": "Change Password",
+  "logout": "Logout",
+  "profile":"Profile",
+  "user_management": "User Management",
+  "user_requst_management" : "User Requst Management",
+  "requst_confirm": "Rqust Confirm",
+  "leave_management": "Leave Management",
+  "admin": "Admin",
+  "management" : "Management",
+  "member": "Member"
 }
