@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.UserDTO;
 import musai.app.exception.BadRequestException;
-import musai.app.exception.UserNotFoundException;
+import musai.app.exception.NotFoundException;
 import musai.app.models.ERole;
 import musai.app.models.Role;
 import musai.app.models.User;
@@ -125,10 +125,10 @@ public class UserServiceImpl implements UserService{
 	public MessageResponse editUser(Long userId, UserDTO userDTO) {
 		// Find User by ID
 		User existingUser = userRepository.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("Error: User not exist."));
+				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
 		//Check user deleted
 		if (existingUser.getDeletedAt() != null) {
-			throw new UserNotFoundException("Error: User not exist.");
+			throw new NotFoundException("Error: User not exist.");
 		}
 		
 		// Check user name or email exist (unless belong to current user)
@@ -199,10 +199,10 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public MessageResponse deleteUser(Long userId) {
 		User existingUser = userRepository.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("Error: User not exist."));
+				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
 		
 		if (existingUser.getDeletedAt() != null) {
-			throw new UserNotFoundException("Error: User already deleted.");
+			throw new NotFoundException("Error: User already deleted.");
 		}
 		existingUser.setDeletedAt(LocalDateTime.now());
 		userRepository.save(existingUser); // Update deleted_at

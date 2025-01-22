@@ -1,12 +1,14 @@
 package musai.app.services.impl;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.NoResultException;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.PaidLeaveDTO;
+import musai.app.exception.BadRequestException;
+import musai.app.exception.NotFoundException;
 import musai.app.models.PaidLeave;
 import musai.app.repositories.PaidLeaveResposity;
 import musai.app.services.PaidLeaveService;
@@ -36,18 +38,15 @@ public class PaidLeaveServiceImpl implements PaidLeaveService {
 		return new MessageResponse("Add paidleave successfully!");
 	}
 
-	/*
-	 * 
-	 */
 	@Override
 	public MessageResponse updatePaidLeave(Long id, PaidLeaveDTO paidLeaveDTO) {
 
 		// Fetch the existing PaidLeave
 		PaidLeave existingPaidLeave = paidLeaveRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Error: PaidLeave not found"));
+				.orElseThrow(() -> new NotFoundException("Error: PaidLeave not found"));
 
 		if (paidLeaveRepository.existsByName(paidLeaveDTO.getName())) {
-			return new MessageResponse("Error: Name is already taken!");
+			throw new BadRequestException("Error: Name is already taken!");
 		}
 		// Update fields of the PaidLeave
 		existingPaidLeave.setName(paidLeaveDTO.getName());
@@ -74,5 +73,16 @@ public class PaidLeaveServiceImpl implements PaidLeaveService {
 
 		return new MessageResponse("Paid leave with ID " + id + " was soft deleted");
 	}
-
+	
+	@Override
+	public List<PaidLeaveDTO> getAllPaidLeaves (){
+		
+		 // Fetch all PaidLeave entities from the repository
+		List<PaidLeave> paidLeaves = paidLeaveRepository.findAll();
+		
+		// Map each PaidLeave entity to PaidLeaveDTO
+		return paidLeaves.stream()
+						.map(leave -> new PaidLeaveDTO(leave.getId(), leave.getName()))
+						.toList();
+	}
 }

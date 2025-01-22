@@ -7,6 +7,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class PaidLeaveDTO {
 
+	private Long id;
+	
 	private String name;
 
 }
