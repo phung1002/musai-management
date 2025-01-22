@@ -26,14 +26,14 @@ public class UserDTO {
 
 	private String department;
 	
-	private String position;
+	private String workPlace;
 	
-	public UserDTO(String username, String email, Set<String> roles, String fullname, String department, String position) {
+	public UserDTO(String username, String email, Set<String> roles, String fullname, String department, String workPlace) {
 		this.username = username;
 		this.email = email;
 		this.roles = roles;
 		this.fullname = fullname;
 		this.department = department;
-		this.position = position;
+		this.workPlace = workPlace;
 	}	
 }

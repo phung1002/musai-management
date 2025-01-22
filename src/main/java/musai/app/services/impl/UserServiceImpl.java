@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.UserDTO;
 import musai.app.exception.BadRequestException;
-import musai.app.exception.UserNotFoundException;
+import musai.app.exception.NotFoundException;
 import musai.app.models.ERole;
 import musai.app.models.Role;
 import musai.app.models.User;
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService{
 				.collect(Collectors.toSet()),
 				userDTO.getFullname(),
 				userDTO.getDepartment(),
-				userDTO.getPosition()
+				userDTO.getWorkPlace()
 		)).collect(Collectors.toList());
 		return lstUser;
 	}
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService{
 				encoder.encode(userDTO.getPassword()),
 				userDTO.getFullname(),
 				userDTO.getDepartment(),
-				userDTO.getPosition()
+				userDTO.getWorkPlace()
 		);
 
 		System.out.println(userDTO);
@@ -125,10 +125,10 @@ public class UserServiceImpl implements UserService{
 	public MessageResponse editUser(Long userId, UserDTO userDTO) {
 		// Find User by ID
 		User existingUser = userRepository.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("Error: User not exist."));
+				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
 		//Check user deleted
 		if (existingUser.getDeletedAt() != null) {
-			throw new UserNotFoundException("Error: User not exist.");
+			throw new NotFoundException("Error: User not exist.");
 		}
 		
 		// Check user name or email exist (unless belong to current user)
@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService{
 		existingUser.setEmail(userDTO.getEmail());
 		existingUser.setFullname(userDTO.getFullname());
 		existingUser.setDepartment(userDTO.getDepartment());
-		existingUser.setPosition(userDTO.getPosition());
+		existingUser.getWorkPlace(userDTO.getWorkPlace());
 
 		// update pass if request
 		if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
@@ -199,16 +199,19 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public MessageResponse deleteUser(Long userId) {
 		User existingUser = userRepository.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException("Error: User not exist."));
+				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
 		
 		if (existingUser.getDeletedAt() != null) {
-			throw new UserNotFoundException("Error: User already deleted.");
+			throw new NotFoundException("Error: User already deleted.");
 		}
 		existingUser.setDeletedAt(LocalDateTime.now());
 		userRepository.save(existingUser); // Update deleted_at
 		return new MessageResponse("User just deleted.");
 	}
 	
+	/**
+	 * get infor of role by name
+	*/
 	private Role getRoleByName(ERole roleName) {
 		return roleRepository.findByName(roleName)
 				.orElseThrow(() -> new BadRequestException("Error: Role " + roleName + " is not found."));
