@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import musai.app.security.services.UserDetailsImpl;
 
 @Component
@@ -37,28 +39,39 @@ public class JwtUtils {
 	}
 	
 	private Key key() {
-	return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+		return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
 	}
 
 	public String getUserNameFromJwtToken(String token) {
-	return Jwts.parserBuilder().setSigningKey(key()).build()
-				 .parseClaimsJws(token).getBody().getSubject();
+		return Jwts.parserBuilder().setSigningKey(key()).build()
+				.parseClaimsJws(token).getBody().getSubject();
+	}
+	
+	public String getJwtFromCookies(HttpServletRequest request) {
+		if (request.getCookies() != null) {
+			for (Cookie cookie : request.getCookies()) {
+				if ("access_token".equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
 	}
 
 	public boolean validateJwtToken(String authToken) {
-	try {
-		Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
-		return true;
-	} catch (MalformedJwtException e) {
-		logger.error("Invalid JWT token: {}", e.getMessage());
-	} catch (ExpiredJwtException e) {
-		logger.error("JWT token is expired: {}", e.getMessage());
-	} catch (UnsupportedJwtException e) {
-		logger.error("JWT token is unsupported: {}", e.getMessage());
-	} catch (IllegalArgumentException e) {
-		logger.error("JWT claims string is empty: {}", e.getMessage());
-	}
+		try {
+			Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
+			return true;
+		} catch (MalformedJwtException e) {
+			logger.error("Invalid JWT token: {}", e.getMessage());
+		} catch (ExpiredJwtException e) {
+			logger.error("JWT token is expired: {}", e.getMessage());
+		} catch (UnsupportedJwtException e) {
+			logger.error("JWT token is unsupported: {}", e.getMessage());
+		} catch (IllegalArgumentException e) {
+			logger.error("JWT claims string is empty: {}", e.getMessage());
+		}
 
-	return false;
+		return false;
 	}
 }
