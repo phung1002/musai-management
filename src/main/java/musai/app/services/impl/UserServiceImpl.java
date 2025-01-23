@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService{
 		existingUser.setEmail(userDTO.getEmail());
 		existingUser.setFullname(userDTO.getFullname());
 		existingUser.setDepartment(userDTO.getDepartment());
-		existingUser.getWorkPlace(userDTO.getWorkPlace());
+		existingUser.setWorkPlace(userDTO.getWorkPlace());
 
 		// update pass if request
 		if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {

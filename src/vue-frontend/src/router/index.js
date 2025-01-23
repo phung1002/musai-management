@@ -34,9 +34,13 @@ const routes = [
   },
    // ユーザー 管理
   {
-    path: '/userManagement',
-    name: 'userManagement',
-    component: UserManagementView,
+    path: '/admin/user',
+    name: 'admin-user-list',
+    component: ListUser,
+    meta: {
+      requiresAuth: true,
+      requiredRoles: ['ROLE_ADMIN']
+    },
   },
   // 休暇 管理
   {
@@ -83,15 +87,6 @@ const routes = [
       requiredRoles: ['ROLE_ADMIN']
     },
   },
-  {
-    path: '/admin/user',
-    name: 'admin-user',
-    component: ListUser,
-    meta: {
-      requiresAuth: true,
-      requiredRoles: ['ROLE_ADMIN']
-    },
-  }
 ];
 
 const router = createRouter({

@@ -51,7 +51,6 @@ public class AuthenticationController {
 	@GetMapping("/validate")
     public ResponseEntity<?> validateUser(HttpServletRequest request) {
 		JwtResponse jwtResponse = authenticationService.validateUser(request);
-		System.out.println(jwtResponse);
         return ResponseEntity.ok(jwtResponse);
     }
 }

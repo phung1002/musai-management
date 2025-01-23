@@ -26,5 +26,7 @@
   "leave_management": "Leave Management",
   "admin": "Admin",
   "management" : "Management",
-  "member": "Member"
+  "member": "Member",
+  "items_per_page": "Items per page",
+  "register": "Register"
 }

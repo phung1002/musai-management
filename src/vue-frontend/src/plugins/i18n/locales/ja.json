@@ -26,5 +26,7 @@
     "leave_management": "休暇 管理",
     "admin": "管理者",
     "management" : "担当者",
-    "member": "ユーザー"
+    "member": "ユーザー",
+    "items_per_page": "表示行数",
+    "register": "登録"
 }

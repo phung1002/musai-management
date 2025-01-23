@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { getAllUsers } from '@/api/user';
 import { useUserStore } from '@/store/userStore';
 import { computed } from 'vue';
+import AppSidebar from '@/components/layout/AppSidebar.vue';
+import AppToolbar from '@/components/layout/AppToolbar.vue';
 
 interface User {
   id: number;
@@ -62,16 +64,12 @@ const fetchUsers = async () => {
 const getRoleColor = (role: string) => {
   switch (role) {
     case 'Admin':
-      console.log("red");
       return 'red';
     case 'Manager':
-      console.log("yellow");
       return 'yellow';
     case 'Member':
-      console.log("green");
       return 'green';
     default:
-    console.log("grey");
       return 'grey';
   }
 };
@@ -84,10 +82,19 @@ onMounted(() => {
 
 <template>
   <VApp class="app">
+    <!------Sidebar-------->
+    <AppSidebar />
+    <!------Header-------->
+    <AppToolbar />
+    <!------Page-------->
     <VMain class="app-main">
       <VContainer class="app-container">
         <div class="page-wrapper">
-          <h3 class="page-title">{{ t('user_management') }}</h3>
+            <!-- Add user button -->
+            <VCardActions>
+              <VSpacer />
+              <VBtn color="primary" variant="outlined">{{ t('register') }}</VBtn>
+            </VCardActions>
           <VCard>
             <!-- Thanh tìm kiếm -->
             <VCardItem class="py-0">
@@ -106,17 +113,13 @@ onMounted(() => {
               </VToolbar>
             </VCardItem>
 
-            <!-- Add user button -->
-            <VCardActions>
-              <VSpacer />
-              <VBtn color="primary" variant="outlined">{{ t('add') }}</VBtn>
-            </VCardActions>
-
+            <VDivider/>
             <!--Table list user -->
             <VCardItem>
               <VDataTable
                 :headers="headers"
                 :items="users"
+                :items-per-page-text="t('items_per_page')"
                 v-if="!isLoading && !isError"
               >
               <!-- Slot for 'no'  -->

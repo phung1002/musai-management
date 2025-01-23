@@ -36,10 +36,8 @@ const items = [
     props: {
       prependIcon: 'mdi-account-box-plus-outline',
       link: true,
-      to: '/userManagement',
       exact: false
     },
-    value: '/userManagement',
     roles: ['ROLE_ADMIN']
   },
   {
