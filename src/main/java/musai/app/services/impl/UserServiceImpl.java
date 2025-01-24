@@ -210,7 +210,7 @@ public class UserServiceImpl implements UserService{
 	}
 	
 	/**
-	 * get infor of role by name
+	 * Get infor of role by name
 	*/
 	private Role getRoleByName(ERole roleName) {
 		return roleRepository.findByName(roleName)

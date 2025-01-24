@@ -13,11 +13,12 @@ export async function login(params: LoginParams): Promise<IAccessToken> {
     // Send request to API login
     const response = await axiosIns.post<IAccessToken>('/auth/login', params);
     const userStore = useUserStore();
+    const { data } = response;
 
     // update userStore
     userStore.setAuthenticated(true);
-    userStore.setRoles(response.data.roles);
-    userStore.setUsername(response.data.username);
+    userStore.setRoles(data.roles);
+    userStore.setUsername(data.username);
 
     // return data
     return response.data;
@@ -39,3 +40,12 @@ export async function logout() {
   }
 }
 
+//api validate authentication
+export async function validate() {
+  try {
+    const response = await axiosIns.get('/auth/validate', { timeout: 5000 });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
