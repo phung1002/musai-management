@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService{
 		existingUser.setEmail(userDTO.getEmail());
 		existingUser.setFullname(userDTO.getFullname());
 		existingUser.setDepartment(userDTO.getDepartment());
-		existingUser.getWorkPlace(userDTO.getWorkPlace());
+		existingUser.setWorkPlace(userDTO.getWorkPlace());
 
 		// update pass if request
 		if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
@@ -210,7 +210,7 @@ public class UserServiceImpl implements UserService{
 	}
 	
 	/**
-	 * get infor of role by name
+	 * Get infor of role by name
 	*/
 	private Role getRoleByName(ERole roleName) {
 		return roleRepository.findByName(roleName)

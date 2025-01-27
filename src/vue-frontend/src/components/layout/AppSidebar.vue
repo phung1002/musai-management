@@ -18,7 +18,7 @@ const { t } = useI18n();
 const items = [
   { type: 'divider' },
   { type: 'subheader', title: t('admin'), roles:['ROLE_ADMIN']},
-  { type: 'divider' }, 
+  { type: 'divider' },
   // {
   //   title: t('attendees_input'),
   //   props: {
@@ -36,10 +36,10 @@ const items = [
     props: {
       prependIcon: 'mdi-account-box-plus-outline',
       link: true,
-      to: '/userManagement',
+      to: '/admin/user',
       exact: false
     },
-    value: '/userManagement',
+    value: '/admin-user-list',
     roles: ['ROLE_ADMIN']
   },
   {
@@ -56,7 +56,7 @@ const items = [
   // 担当者メニュー
   { type: 'divider' },
   { type: 'subheader', title: t('management'), roles:['ROLE_MANAGER']},
-  { type: 'divider' }, 
+  { type: 'divider' },
   {
     title: t('user_requst_management'),
     props: {
@@ -82,7 +82,7 @@ const items = [
   // ユーザーメニュー
   { type: 'divider' },
   { type: 'subheader', title: t('member'), roles:['ROLE_MEMBER']},
-  { type: 'divider' }, 
+  { type: 'divider' },
   {
     title: t('leave_applying'),
     props: {
@@ -137,7 +137,7 @@ const handleDrawerWidth = () => {
 
 const menus = computed(() => {
   console.log(userStore.roles);
-  
+
   if (drawerProps.railWidth === 256) {
     return items;
   } else {

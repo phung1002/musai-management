@@ -3,16 +3,15 @@ import DefaultLayout from '../views/DefaultLayout.vue';
 import LoginView from '../views/LoginView.vue';
 import UnauthorizedView from '../views/UnauthorizedView.vue';
 import ListUser from '@/views/user/ListUser.vue';
-import axiosIns from '@/plugins/axios';
 
 import { useUserStore } from '@/store/userStore';
 import PasChangeView from '@/views/PasChangeView.vue';
-import UserManagementView from '@/views/UserManagementView.vue';
 import LeaveApplyView from '@/views/LeaveApplyView.vue';
 import LeaveManagementView from '@/views/LeaveManagementView.vue';
 import UserLeaveManagementView from '@/views/UserLeaveManagementView.vue';
 import RequstConfirmView from '@/views/RequstConfirmView.vue';
 import ProfleView from '@/views/ProfleView.vue';
+import { validate } from '@/api/auth';
 const routes = [
   {
     path: '/unauthorized',
@@ -34,9 +33,13 @@ const routes = [
   },
    // ユーザー 管理
   {
-    path: '/userManagement',
-    name: 'userManagement',
-    component: UserManagementView,
+    path: '/admin/user',
+    name: 'admin-user-list',
+    component: ListUser,
+    meta: {
+      requiresAuth: true,
+      requiredRoles: ['ROLE_ADMIN']
+    },
   },
   // 休暇 管理
   {
@@ -83,15 +86,6 @@ const routes = [
       requiredRoles: ['ROLE_ADMIN']
     },
   },
-  {
-    path: '/admin/user',
-    name: 'admin-user',
-    component: ListUser,
-    meta: {
-      requiresAuth: true,
-      requiredRoles: ['ROLE_ADMIN']
-    },
-  }
 ];
 
 const router = createRouter({
@@ -99,49 +93,41 @@ const router = createRouter({
   routes,
 });
 
+// Helper function: Check user roles
+const hasRequiredRoles = (userRoles, requiredRoles) => {
+  return requiredRoles ? userRoles.some(role => requiredRoles.includes(role)) : true;
+};
+
 // Navigation guard
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
-  // If need to check auth
-  if (to.meta.requiresAuth) {
-    if (userStore.authenticated) {
-      // If user don't have role
-      if (to.meta.requiredRoles && !userStore.roles.some(role => to.meta.requiredRoles.includes(role))) {
-        next({ name: 'unauthorized' });
-      }
-      next();
-    } else {
-      // Case not authenticated yet
-      try {
-        // Call API validate token with timeout
-        const response = await axiosIns.get('/auth/validate', { timeout: 5000 }); // Timeout 5s
-        // Check status == 200 is success
-        if (response.status === 200) {
-          if (response.data.authenticated) {
-            // Check auth and role
-            if (to.meta.requiredRoles && !response.data.roles.some(role => to.meta.requiredRoles.includes(role))) {
-              next({ name: 'unauthorized' });
-            } else {
-              next();
-            }
-          } else {
-            // If not authenticated, direct to login
-            next({ name: 'login', query: { to: to.fullPath } });
-          }
-        } else {
-          // If status != 200 is error, direct to login
-          next({ name: 'login', query: { to: to.fullPath } });
-        }
-      } catch (error) {
-        // If error when call API (timeout/connect), direct to login
-        console.error('Error during token validation:', error);
-        next({ name: 'login', query: { to: to.fullPath } });
-      }
-    }
-  } else {
-    // If don't need to authenticated
-    next();
+  // If don't need to check auth
+  if (!to.meta.requiresAuth) {
+    return next();
   }
+  // If authenticated
+  if (userStore.authenticated) {
+    if (!hasRequiredRoles(userStore.roles, to.meta.requiredRoles)) {
+      return next({ name: 'unauthorized' });
+    }
+    return next();
+  }
+  // If not authenticated yet -> Call API validate token with timeout
+  try {
+    const response = await validate();
+    const { status, data } = response;
+
+    if (status === 200 && data.authenticated) {
+      if (!hasRequiredRoles(data.roles, to.meta.requiredRoles)) {
+        return next({ name: 'unauthorized' });
+      }
+      return next();
+    }
+  } catch (error) {
+    console.error('Error during token validation:', error);
+  }
+  // If error when call API (timeout/connect), direct to login
+  next({ name: 'login', query: { to: to.fullPath } });
 });
 
 export default router;

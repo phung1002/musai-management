@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {
@@ -51,7 +51,6 @@ public class AuthenticationController {
 	@GetMapping("/validate")
     public ResponseEntity<?> validateUser(HttpServletRequest request) {
 		JwtResponse jwtResponse = authenticationService.validateUser(request);
-		System.out.println(jwtResponse);
         return ResponseEntity.ok(jwtResponse);
     }
 }
