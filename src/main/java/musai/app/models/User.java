@@ -52,8 +52,8 @@ public class User {
 	@Column(name = "department")
 	private String department;
 
-	@Column(name = "position")
-	private String position;
+	@Column(name = "work_place")
+	private String workPlace;
 
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)
@@ -67,12 +67,12 @@ public class User {
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
 
-	public User(String username, String email, String encode, String fullname, String department, String position) {
+	public User(String username, String email, String encode, String fullname, String department, String workPlace) {
 		this.username = username;
 		this.email = email;
 		this.password = encode;
 		this.fullname = fullname;
 		this.department = department;
-		this.position = position;
+		this.workPlace = workPlace;
 	}
 }

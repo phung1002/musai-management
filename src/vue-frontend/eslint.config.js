@@ -1,17 +1,34 @@
-import js from '@eslint/js'
-import pluginVue from 'eslint-plugin-vue'
+import js from '@eslint/js';
+import pluginVue from 'eslint-plugin-vue';
+import globals from "globals";
+import pluginJs from "@eslint/js";
+import tseslint from "typescript-eslint";
+import pluginReact from "eslint-plugin-react";
 
 export default [
+  // file need to check
   {
-    name: 'app/files-to-lint',
-    files: ['**/*.{js,mjs,jsx,vue}'],
+    files: ['**/*.{js,mjs,jsx,ts,tsx,vue}'], // Add TypeScript
+    rules: {
+      ...js.configs.recommended.rules, // Use recommended JavaScript's rules
+      ...pluginVue.configs['flat/essential'].rules, // Use basic Vue's rules
+      ...typescript.configs.recommended.rules,
+    },
+    languageOptions: {
+      parserOptions: {
+        ecmaVersion: 'latest', // Use new ECMAScript version
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
   },
-
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  pluginReact.configs.flat.recommended,
+  // Ignores file/folder don't need to check lint
   {
-    name: 'app/files-to-ignore',
     ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
   },
-
-  js.configs.recommended,
-  ...pluginVue.configs['flat/essential'],
-]
+];

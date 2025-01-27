@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService{
 				.collect(Collectors.toSet()),
 				userDTO.getFullname(),
 				userDTO.getDepartment(),
-				userDTO.getPosition()
+				userDTO.getWorkPlace()
 		)).collect(Collectors.toList());
 		return lstUser;
 	}
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService{
 				encoder.encode(userDTO.getPassword()),
 				userDTO.getFullname(),
 				userDTO.getDepartment(),
-				userDTO.getPosition()
+				userDTO.getWorkPlace()
 		);
 
 		System.out.println(userDTO);
@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService{
 		existingUser.setEmail(userDTO.getEmail());
 		existingUser.setFullname(userDTO.getFullname());
 		existingUser.setDepartment(userDTO.getDepartment());
-		existingUser.setPosition(userDTO.getPosition());
+		existingUser.setWorkPlace(userDTO.getWorkPlace());
 
 		// update pass if request
 		if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
@@ -209,6 +209,9 @@ public class UserServiceImpl implements UserService{
 		return new MessageResponse("User just deleted.");
 	}
 	
+	/**
+	 * Get infor of role by name
+	*/
 	private Role getRoleByName(ERole roleName) {
 		return roleRepository.findByName(roleName)
 				.orElseThrow(() -> new BadRequestException("Error: Role " + roleName + " is not found."));
