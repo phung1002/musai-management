@@ -1,6 +1,8 @@
 package musai.app.services.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -63,8 +65,8 @@ public class PaidLeaveServiceImpl implements PaidLeaveService {
 		// Fetch the existing PaidLeave
 		PaidLeave existingPaidLeave = paidLeaveRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Error: PaidLeave not found"));
-		
-		if (existingPaidLeave.getDeletedAt()!= null) {
+
+		if (existingPaidLeave.getDeletedAt() != null) {
 			return new MessageResponse("Error: Not found!!");
 		}
 
@@ -73,16 +75,42 @@ public class PaidLeaveServiceImpl implements PaidLeaveService {
 
 		return new MessageResponse("Paid leave with ID " + id + " was soft deleted");
 	}
-	
+
 	@Override
-	public List<PaidLeaveDTO> getAllPaidLeaves (){
-		
-		 // Fetch all PaidLeave entities from the repository
+	public List<PaidLeaveDTO> getAllPaidLeaves() {
+
+		// Fetch all PaidLeave entities from the repository
 		List<PaidLeave> paidLeaves = paidLeaveRepository.findAll();
-		
+
 		// Map each PaidLeave entity to PaidLeaveDTO
-		return paidLeaves.stream()
-						.map(leave -> new PaidLeaveDTO(leave.getId(), leave.getName()))
-						.toList();
+		return paidLeaves.stream().map(leave -> new PaidLeaveDTO(leave.getId(), leave.getName())).toList();
 	}
-}
+
+	@Override
+	public PaidLeaveDTO getPaidLeaveDetail(Long id) {
+
+		PaidLeave paidLeave = paidLeaveRepository.findByIdAndDeletedAtIsNull(id)
+				.orElseThrow(() -> new NotFoundException("Error: PaidLeave not found"));
+
+		return new PaidLeaveDTO(paidLeave.getId(), paidLeave.getName());
+	}
+
+	@Override
+	
+	public List<PaidLeaveDTO> searchPaidLeave(String keyword) {
+
+		List<PaidLeaveDTO> filteredLeaves = paidLeaveRepository.findAll().stream()
+				.filter(leave -> leave.getName().toLowerCase().contains(keyword.toLowerCase()))
+				.map(leave -> new PaidLeaveDTO(leave.getId(), leave.getName()))
+				.collect(Collectors.toList());
+		
+	//	if(filteredLeaves.isEmpty()) {
+	//		throw new NotFoundException("Error: The keyword not found");
+	//	}
+		
+		return filteredLeaves;
+	}
+
+
+	}
+

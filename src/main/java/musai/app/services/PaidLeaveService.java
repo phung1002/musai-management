@@ -15,4 +15,8 @@ public interface PaidLeaveService {
 	
 	List<PaidLeaveDTO> getAllPaidLeaves();
 
+	PaidLeaveDTO getPaidLeaveDetail(Long id);
+	
+	List<PaidLeaveDTO> searchPaidLeave(String keyword);
+	
 }

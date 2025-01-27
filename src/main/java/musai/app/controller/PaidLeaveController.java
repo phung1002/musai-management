@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -72,5 +73,23 @@ public class PaidLeaveController {
 
 		// Return the list with HTTP status
 		return new ResponseEntity<>(paidLeaves, HttpStatus.OK);
+	}
+
+	// Get Detail
+	@GetMapping("/detail/{id}")
+	public ResponseEntity<?> getPaidLeaveDetail(@PathVariable Long id) {
+
+		// Call the service layer
+		PaidLeaveDTO getPaidLeaveDetail = paidLeaveService.getPaidLeaveDetail(id);
+
+		// Return the list with HTTP status
+		return new ResponseEntity<>(getPaidLeaveDetail, HttpStatus.OK);
+	}
+
+	// @GetMapping("/search")
+	@GetMapping("/search")
+	public List<PaidLeaveDTO> searchPaidLeaves(@RequestParam String keyword) {
+		// Call the searchPaidLeave method from the service layer and return the result
+		return paidLeaveService.searchPaidLeave(keyword);
 	}
 }
