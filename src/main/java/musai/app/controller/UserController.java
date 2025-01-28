@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import musai.app.DTO.MessageResponse;
-import musai.app.DTO.UserDTO;
+import musai.app.DTO.request.UserRequestDTO;
+import musai.app.DTO.response.UserResponseDTO;
 import musai.app.services.UserService;
 import musai.app.validation.ValidationGroups;
 
@@ -37,40 +38,42 @@ public class UserController {
 	@GetMapping("/list")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getAllUser() {
-		List<UserDTO> response = userService.getAllUsers();
+		List<UserResponseDTO> response = userService.getAllUsers();
 		return ResponseEntity.ok(response);
 	}
 
 	/**
 	 * API add user Only ADMIN can add user
 	 * 
-	 * @paramater userDTO
+	 * @paramater UserRequestDTO
 	 * @return ResponseEntity
 	 */
 	@PostMapping("/add")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> addUser(@Validated(ValidationGroups.CreateUser.class) @RequestBody UserDTO userDTO) {
-		MessageResponse response = userService.addUser(userDTO);
+	public ResponseEntity<?> addUser(
+			@Validated(ValidationGroups.CreateUser.class) @RequestBody UserRequestDTO userRequestDTO) {
+		MessageResponse response = userService.addUser(userRequestDTO);
 		return ResponseEntity.ok(response);
 	}
 
 	/**
 	 * API update user Only ADMIN can update user
 	 * 
-	 * @paramater userDTO
+	 * @paramater UserRequestDTO
 	 * @return ResponseEntity
 	 */
 	@PutMapping("/edit/{userId}")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> editUser(@PathVariable Long userId, @Validated @RequestBody UserDTO userDTO) {
-		MessageResponse response = userService.editUser(userId, userDTO);
+	public ResponseEntity<?> editUser(@PathVariable Long userId,
+			@Validated @RequestBody UserRequestDTO userRequestDTO) {
+		MessageResponse response = userService.editUser(userId, userRequestDTO);
 		return ResponseEntity.ok(response);
 	}
 
 	/**
 	 * API delete user Only ADMIN can delete user and they can't delete themself
 	 * 
-	 * @paramater userDTO
+	 * @paramater UserRequestDTO
 	 * @return ResponseEntity
 	 */
 	@DeleteMapping("/delete/{id}")
