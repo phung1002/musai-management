@@ -40,12 +40,6 @@ public class User {
 	@Column(name = "password", length = 120)
 	private String password;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(	name = "user_roles", 
-		joinColumns = @JoinColumn(name = "user_id"), 
-		inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles = new HashSet<>();
-	
 	@Column(name = "fullname")
 	private String fullname;
 
@@ -54,6 +48,12 @@ public class User {
 
 	@Column(name = "work_place")
 	private String workPlace;
+	
+	@Column(name = "join_date")
+	private LocalDateTime joinDate;
+	
+	@Column(name = "gender")
+	private String gender;
 
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)
@@ -66,13 +66,21 @@ public class User {
 	@SoftDelete
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(	name = "user_roles", 
+		joinColumns = @JoinColumn(name = "user_id"), 
+		inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<Role> roles = new HashSet<>();
 
-	public User(String username, String email, String encode, String fullname, String department, String workPlace) {
+	public User(String username, String email, String encode, String fullname, String department, String workPlace, LocalDateTime joinDate, String gender) {
 		this.username = username;
 		this.email = email;
 		this.password = encode;
 		this.fullname = fullname;
 		this.department = department;
 		this.workPlace = workPlace;
+		this.joinDate = joinDate;
+		this.gender = gender;
 	}
 }

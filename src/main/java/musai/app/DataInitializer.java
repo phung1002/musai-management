@@ -36,7 +36,7 @@ public class DataInitializer implements CommandLineRunner {
 					"admin",
 					"admin@gmail.com",
 					"$2a$12$m3qeFYXkwyWhggLeiAAKd.l2yBfEkZhNkUuv/bCloaD/Pp5xyaDiS",
-					null, null, null);
+					null, null, null, null, null);
 
 			Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
   				  .orElseThrow(() -> new RuntimeException("Error: Role is not found."));

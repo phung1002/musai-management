@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import musai.app.DTO.MessageResponse;
-import musai.app.DTO.UserDTO;
+import musai.app.DTO.request.UserRequestDTO;
+import musai.app.DTO.response.UserResponseDTO;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.ERole;
@@ -39,16 +40,19 @@ public class UserServiceImpl implements UserService{
 	 * @return MessageResponse
 	 */
 	@Override
-	public List<UserDTO> getAllUsers() {
-		List<UserDTO> lstUser = userRepository.findAll().stream().map(userDTO -> new UserDTO(
-				userDTO.getUsername(),
-				userDTO.getEmail(),
-				userDTO.getRoles().stream() // change Set<Role> -> Set<String>
+	public List<UserResponseDTO> getAllUsers() {
+		List<UserResponseDTO> lstUser = userRepository.findAll().stream().map(userResponseDTO -> new UserResponseDTO(
+				userResponseDTO.getId(),
+				userResponseDTO.getUsername(),
+				userResponseDTO.getEmail(),
+				userResponseDTO.getRoles().stream() // change Set<Role> -> Set<String>
 				.map(role -> role.getName().name()) // get name of role (ERole)
 				.collect(Collectors.toSet()),
-				userDTO.getFullname(),
-				userDTO.getDepartment(),
-				userDTO.getWorkPlace()
+				userResponseDTO.getFullname(),
+				userResponseDTO.getDepartment(),
+				userResponseDTO.getWorkPlace(),
+				userResponseDTO.getJoinDate(),
+				userResponseDTO.getGender()
 		)).collect(Collectors.toList());
 		return lstUser;
 	}
@@ -56,30 +60,31 @@ public class UserServiceImpl implements UserService{
 	/**
 	 * Service add user
 	 * 
-	 * @paramater userDTO
+	 * @paramater UserRequestDTO
 	 * @return MessageResponse add success/fail
 	 */
-	public MessageResponse addUser(UserDTO userDTO) {
-		if (userRepository.existsByUsername(userDTO.getUsername())) {
+	public MessageResponse addUser(UserRequestDTO userRequestDTO) {
+		if (userRepository.existsByUsername(userRequestDTO.getUsername())) {
 			throw new BadRequestException("Error: Username is already taken!");
 		}
 
-		if (userRepository.existsByEmail(userDTO.getEmail())) {
+		if (userRepository.existsByEmail(userRequestDTO.getEmail())) {
 			throw new BadRequestException("Error: Email is already in use!");
 		}
 
 		// Create new user's account
 		User user = new User(
-				userDTO.getUsername(),
-				userDTO.getEmail(),
-				encoder.encode(userDTO.getPassword()),
-				userDTO.getFullname(),
-				userDTO.getDepartment(),
-				userDTO.getWorkPlace()
+				userRequestDTO.getUsername(),
+				userRequestDTO.getEmail(),
+				encoder.encode(userRequestDTO.getPassword()),
+				userRequestDTO.getFullname(),
+				userRequestDTO.getDepartment(),
+				userRequestDTO.getWorkPlace(),
+				userRequestDTO.getJoinDate(),
+				userRequestDTO.getGender()
 		);
 
-		System.out.println(userDTO);
-		Set<String> strRoles = userDTO.getRoles();
+		Set<String> strRoles = userRequestDTO.getRoles();
 		Set<Role> roles = new HashSet<>();
 
 		if (strRoles == null) {
@@ -118,11 +123,11 @@ public class UserServiceImpl implements UserService{
 	/**
 	 * Service update user
 	 * 
-	 * @paramater userId, userDTO
+	 * @paramater userId, UserRequestDTO
 	 * @return MessageResponse update success/ fail
 	 */
 	@Override
-	public MessageResponse editUser(Long userId, UserDTO userDTO) {
+	public MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO) {
 		// Find User by ID
 		User existingUser = userRepository.findById(userId)
 				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
@@ -132,30 +137,32 @@ public class UserServiceImpl implements UserService{
 		}
 		
 		// Check user name or email exist (unless belong to current user)
-		if (!existingUser.getUsername().equals(userDTO.getUsername()) &&
-			userRepository.existsByUsername(userDTO.getUsername())) {
+		if (!existingUser.getUsername().equals(userRequestDTO.getUsername()) &&
+			userRepository.existsByUsername(userRequestDTO.getUsername())) {
 			throw new BadRequestException("Error: Username is already taken!");
 		}
 
-		if (!existingUser.getEmail().equals(userDTO.getEmail()) &&
-			userRepository.existsByEmail(userDTO.getEmail())) {
+		if (!existingUser.getEmail().equals(userRequestDTO.getEmail()) &&
+			userRepository.existsByEmail(userRequestDTO.getEmail())) {
 			throw new BadRequestException("Error: Email is already in use!");
 		}
 
 		// update information of user
-		existingUser.setUsername(userDTO.getUsername());
-		existingUser.setEmail(userDTO.getEmail());
-		existingUser.setFullname(userDTO.getFullname());
-		existingUser.setDepartment(userDTO.getDepartment());
-		existingUser.setWorkPlace(userDTO.getWorkPlace());
+		existingUser.setUsername(userRequestDTO.getUsername());
+		existingUser.setEmail(userRequestDTO.getEmail());
+		existingUser.setFullname(userRequestDTO.getFullname());
+		existingUser.setDepartment(userRequestDTO.getDepartment());
+		existingUser.setWorkPlace(userRequestDTO.getWorkPlace());
+		existingUser.setJoinDate(userRequestDTO.getJoinDate());
+		existingUser.setGender(userRequestDTO.getGender());
 
 		// update pass if request
-		if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
-			existingUser.setPassword(encoder.encode(userDTO.getPassword()));
+		if (userRequestDTO.getPassword() != null && !userRequestDTO.getPassword().isEmpty()) {
+			existingUser.setPassword(encoder.encode(userRequestDTO.getPassword()));
 		}
 
 		// update roles
-		Set<String> strRoles = userDTO.getRoles();
+		Set<String> strRoles = userRequestDTO.getRoles();
 		Set<Role> roles = new HashSet<>();
 
 		if (strRoles != null) {
@@ -193,7 +200,7 @@ public class UserServiceImpl implements UserService{
 	/**
 	 * Service delete user
 	 * 
-	 * @paramater userId, userDTO
+	 * @paramater userId, UserRequestDTO
 	 * @return MessageResponse update success/ fail
 	 */
 	@Override
@@ -202,7 +209,7 @@ public class UserServiceImpl implements UserService{
 				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
 		
 		if (existingUser.getDeletedAt() != null) {
-			throw new NotFoundException("Error: User already deleted.");
+			throw new NotFoundException("Error: User not exist.");
 		}
 		existingUser.setDeletedAt(LocalDateTime.now());
 		userRepository.save(existingUser); // Update deleted_at

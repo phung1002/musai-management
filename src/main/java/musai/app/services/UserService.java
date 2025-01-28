@@ -2,14 +2,15 @@ package musai.app.services;
 
 import java.util.List;
 import musai.app.DTO.MessageResponse;
-import musai.app.DTO.UserDTO;
+import musai.app.DTO.request.UserRequestDTO;
+import musai.app.DTO.response.UserResponseDTO;
 
 public interface UserService {
-	List<UserDTO> getAllUsers();
+	List<UserResponseDTO> getAllUsers();
 	
-	MessageResponse addUser(UserDTO userDTO);
+	MessageResponse addUser(UserRequestDTO userRequestDTO);
 
-	MessageResponse editUser(Long userId, UserDTO userDTO);
+	MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO);
 	
 	MessageResponse deleteUser(Long userId);
 }
