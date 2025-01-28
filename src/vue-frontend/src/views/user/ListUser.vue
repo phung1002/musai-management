@@ -93,10 +93,10 @@ onMounted(() => {
             <!-- Add user button -->
             <VCardActions>
               <VSpacer />
-              <VBtn color="primary" variant="outlined">{{ t('register') }}</VBtn>
+              <VBtn color="primary" variant="elevated">{{ t('register') }}</VBtn>
             </VCardActions>
           <VCard>
-            <!-- Thanh tìm kiếm -->
+            <!-- Search -->
             <VCardItem class="py-0">
               <VToolbar tag="div" color="transparent" flat>
                 <VTextField
