@@ -4,7 +4,7 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     token: '',
     username: '',
-    permissions: [],
+    fullName: '',
     roles: [
       { title: 'Admin', value: 'ROLE_ADMIN' },
       { title: 'Management', value: 'ROLE_MANAGER' },
@@ -15,20 +15,14 @@ export const useUserStore = defineStore('user', {
 
   // Getters
   getters: {
-    getRoles(state) {
-      return state.roles;
+    isAdmin() {
+      return this.roles.some(role => role.value === 'ROLE_ADMIN');
     },
-    getUsername(state) {
-      return state.username;
+    isManager() {
+      return this.roles.some(role => role.value === 'ROLE_MAMAGER');
     },
-    getAccessToken(state) {
-      return state.token;
-    },
-    hasRole: (state) => (role) => {
-      return state.roles.includes(role);
-    },
-    getAuthenticated(state) {
-      return state.authenticated;
+    isMember() {
+      return this.roles.some(role => role.value === 'ROLE_MEMBER');
     }
   },
   // Actions
@@ -44,6 +38,9 @@ export const useUserStore = defineStore('user', {
     },
     setAuthenticated(auth) {
       this.authenticated = auth;
+    },
+    setFullName(fullName) {
+      this.fullName = fullName;
     }
   },
   persist: {

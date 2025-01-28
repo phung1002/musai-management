@@ -18,7 +18,7 @@ public class UserResponseDTO {
 
 	private Set<String> roles;
 
-	private String fullname;
+	private String fullName;
 
 	private String department;
 

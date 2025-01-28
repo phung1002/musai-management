@@ -19,6 +19,7 @@ export async function login(params: LoginParams): Promise<IAccessToken> {
     userStore.setAuthenticated(true);
     userStore.setRoles(data.roles);
     userStore.setUsername(data.username);
+    userStore.setFullName(data.fullName);
 
     // return data
     return response.data;

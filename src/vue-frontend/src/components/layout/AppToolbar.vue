@@ -1,17 +1,16 @@
 <script setup lang="ts">
-// import NotificationDropdown from './dropdown/NotificationDropdown.vue';
 import ProfileDropdown from '@/components/dropdown/ProfileDropdown.vue';
-// dropdown imports
-// const sDrawer = ref(true);
+import { useUserStore } from '@/store/userStore';
+
+const userStore = useUserStore();
+const fullName = userStore.fullName;
 </script>
 
 <template>
   <!------Header-------->
   <VAppBar :elevation="10">
-    <!-- <VAppBarNavIcon /> -->
     <VSpacer />
-    <!-- Notification -->
-    <NotificationDropdown />
+    <VCardTitle>{{ fullName }}</VCardTitle>
     <ProfileDropdown />
   </VAppBar>
 </template>
