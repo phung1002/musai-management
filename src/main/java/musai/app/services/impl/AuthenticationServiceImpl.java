@@ -167,6 +167,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.collect(Collectors.toList());
 
-		return new JwtResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles);
+		return new JwtResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles, userDetails.getFullName());
 	}
 }

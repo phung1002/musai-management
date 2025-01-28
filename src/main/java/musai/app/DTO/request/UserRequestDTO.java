@@ -26,7 +26,7 @@ public class UserRequestDTO {
 	@NotEmpty(message = "Roles cannot be empty")
 	private Set<String> roles;
 
-	private String fullname;
+	private String fullName;
 
 	private String department;
 
@@ -36,12 +36,12 @@ public class UserRequestDTO {
 
 	private String gender;
 
-	public UserRequestDTO(String username, String email, Set<String> roles, String fullname, String department,
+	public UserRequestDTO(String username, String email, Set<String> roles, String fullName, String department,
 			String workPlace, LocalDateTime joinDate, String gender) {
 		this.username = username;
 		this.email = email;
 		this.roles = roles;
-		this.fullname = fullname;
+		this.fullName = fullName;
 		this.department = department;
 		this.workPlace = workPlace;
 		this.joinDate = joinDate;

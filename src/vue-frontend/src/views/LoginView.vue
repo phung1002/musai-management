@@ -1,6 +1,5 @@
 <!-- ログイン　画面 -->
 <script>
-import { useUserStore } from '@/store/userStore';
 import { reactive } from 'vue';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -22,12 +21,11 @@ export default {
       username: '',
       password: '',
     });
-    const userStore = useUserStore();
     const handleSubmit = async () => {
       // if (formValid.value === true) {
       submiting.value = true;
       try {
-        const response = await login(formModel);
+        await login(formModel);
         errorMessage.value = ''; // Delete error message if login success
         const redirectPath = route.query.to ? String(route.query.to) : '/home';
         router.replace(redirectPath); // direct

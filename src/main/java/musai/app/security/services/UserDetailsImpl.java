@@ -19,31 +19,27 @@ public class UserDetailsImpl implements UserDetails {
 	private String email;
 	@JsonIgnore
 	private String password;
+	private String fullName;
 	private LocalDateTime deletedAt;
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(Long id, String username, String email, String password, LocalDateTime deletedAt,
-			Collection<? extends GrantedAuthority> authorities) {
+	public UserDetailsImpl(Long id, String username, String email, String password, String fullName,
+			LocalDateTime deletedAt, Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
 		this.password = password;
 		this.deletedAt = deletedAt;
 		this.authorities = authorities;
+		this.fullName = fullName;
 	}
 
 	public static UserDetailsImpl build(User user) {
 		List<GrantedAuthority> authorities = user.getRoles().stream()
-				.map(role -> new SimpleGrantedAuthority(role.getName().name()))
-				.collect(Collectors.toList());
+				.map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
 
-		return new UserDetailsImpl(
-				user.getId(), 
-				user.getUsername(), 
-				user.getEmail(),
-				user.getPassword(), 
-				user.getDeletedAt(),
-				authorities);
+		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getFullName(),
+				user.getDeletedAt(), authorities);
 	}
 
 	@Override
@@ -54,7 +50,7 @@ public class UserDetailsImpl implements UserDetails {
 	public Long getId() {
 		return id;
 	}
-	
+
 	@Override
 	public String getUsername() {
 		return username;
@@ -67,6 +63,10 @@ public class UserDetailsImpl implements UserDetails {
 	@Override
 	public String getPassword() {
 		return password;
+	}
+	
+	public String getFullName() {
+		return fullName;
 	}
 
 	public LocalDateTime getDeletedAt() {

@@ -40,8 +40,8 @@ public class User {
 	@Column(name = "password", length = 120)
 	private String password;
 	
-	@Column(name = "fullname")
-	private String fullname;
+	@Column(name = "full_name")
+	private String fullName;
 
 	@Column(name = "department")
 	private String department;
@@ -73,11 +73,11 @@ public class User {
 		inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 
-	public User(String username, String email, String encode, String fullname, String department, String workPlace, LocalDateTime joinDate, String gender) {
+	public User(String username, String email, String encode, String fullName, String department, String workPlace, LocalDateTime joinDate, String gender) {
 		this.username = username;
 		this.email = email;
 		this.password = encode;
-		this.fullname = fullname;
+		this.fullName = fullName;
 		this.department = department;
 		this.workPlace = workPlace;
 		this.joinDate = joinDate;

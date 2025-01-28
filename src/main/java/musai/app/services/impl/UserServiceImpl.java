@@ -22,7 +22,7 @@ import musai.app.repositories.UserRepository;
 import musai.app.services.UserService;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder encoder;
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService{
 		this.roleRepository = roleRepository;
 		this.encoder = encoder;
 	}
-	
+
 	/**
 	 * Service get all user
 	 * 
@@ -41,22 +41,18 @@ public class UserServiceImpl implements UserService{
 	 */
 	@Override
 	public List<UserResponseDTO> getAllUsers() {
-		List<UserResponseDTO> lstUser = userRepository.findAll().stream().map(userResponseDTO -> new UserResponseDTO(
-				userResponseDTO.getId(),
-				userResponseDTO.getUsername(),
-				userResponseDTO.getEmail(),
-				userResponseDTO.getRoles().stream() // change Set<Role> -> Set<String>
-				.map(role -> role.getName().name()) // get name of role (ERole)
-				.collect(Collectors.toSet()),
-				userResponseDTO.getFullname(),
-				userResponseDTO.getDepartment(),
-				userResponseDTO.getWorkPlace(),
-				userResponseDTO.getJoinDate(),
-				userResponseDTO.getGender()
-		)).collect(Collectors.toList());
+		List<UserResponseDTO> lstUser = userRepository.findAll().stream()
+				.map(userResponseDTO -> new UserResponseDTO(userResponseDTO.getId(), userResponseDTO.getUsername(),
+						userResponseDTO.getEmail(), userResponseDTO.getRoles().stream() // change Set<Role> ->
+																						// Set<String>
+								.map(role -> role.getName().name()) // get name of role (ERole)
+								.collect(Collectors.toSet()),
+						userResponseDTO.getFullName(), userResponseDTO.getDepartment(), userResponseDTO.getWorkPlace(),
+						userResponseDTO.getJoinDate(), userResponseDTO.getGender()))
+				.collect(Collectors.toList());
 		return lstUser;
 	}
-	
+
 	/**
 	 * Service add user
 	 * 
@@ -73,16 +69,10 @@ public class UserServiceImpl implements UserService{
 		}
 
 		// Create new user's account
-		User user = new User(
-				userRequestDTO.getUsername(),
-				userRequestDTO.getEmail(),
-				encoder.encode(userRequestDTO.getPassword()),
-				userRequestDTO.getFullname(),
-				userRequestDTO.getDepartment(),
-				userRequestDTO.getWorkPlace(),
-				userRequestDTO.getJoinDate(),
-				userRequestDTO.getGender()
-		);
+		User user = new User(userRequestDTO.getUsername(), userRequestDTO.getEmail(),
+				encoder.encode(userRequestDTO.getPassword()), userRequestDTO.getFullName(),
+				userRequestDTO.getDepartment(), userRequestDTO.getWorkPlace(), userRequestDTO.getJoinDate(),
+				userRequestDTO.getGender());
 
 		Set<String> strRoles = userRequestDTO.getRoles();
 		Set<Role> roles = new HashSet<>();
@@ -95,28 +85,28 @@ public class UserServiceImpl implements UserService{
 			strRoles.forEach(role -> {
 				ERole enumRole;
 				try {
-					enumRole = ERole.valueOf(role); //  String to ERole
+					enumRole = ERole.valueOf(role); // String to ERole
 				} catch (IllegalArgumentException e) {
 					throw new BadRequestException("Error: Invalid role specified.");
 				}
-				
+
 				switch (enumRole) {
-					case ROLE_ADMIN:
-						roles.add(getRoleByName(ERole.ROLE_ADMIN));
-						break;
+				case ROLE_ADMIN:
+					roles.add(getRoleByName(ERole.ROLE_ADMIN));
+					break;
 
-					case ROLE_MANAGER:
-						roles.add(getRoleByName(ERole.ROLE_MANAGER));
-						break;
+				case ROLE_MANAGER:
+					roles.add(getRoleByName(ERole.ROLE_MANAGER));
+					break;
 
-					default:
-						roles.add(getRoleByName(ERole.ROLE_MEMBER));
-						break;
+				default:
+					roles.add(getRoleByName(ERole.ROLE_MEMBER));
+					break;
 				}
 			});
 		}
 		user.setRoles(roles);
-		userRepository.save(user);//save to DB
+		userRepository.save(user);// save to DB
 		return new MessageResponse("User registered successfully!");
 	}
 
@@ -131,26 +121,26 @@ public class UserServiceImpl implements UserService{
 		// Find User by ID
 		User existingUser = userRepository.findById(userId)
 				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
-		//Check user deleted
+		// Check user deleted
 		if (existingUser.getDeletedAt() != null) {
 			throw new NotFoundException("Error: User not exist.");
 		}
-		
+
 		// Check user name or email exist (unless belong to current user)
-		if (!existingUser.getUsername().equals(userRequestDTO.getUsername()) &&
-			userRepository.existsByUsername(userRequestDTO.getUsername())) {
+		if (!existingUser.getUsername().equals(userRequestDTO.getUsername())
+				&& userRepository.existsByUsername(userRequestDTO.getUsername())) {
 			throw new BadRequestException("Error: Username is already taken!");
 		}
 
-		if (!existingUser.getEmail().equals(userRequestDTO.getEmail()) &&
-			userRepository.existsByEmail(userRequestDTO.getEmail())) {
+		if (!existingUser.getEmail().equals(userRequestDTO.getEmail())
+				&& userRepository.existsByEmail(userRequestDTO.getEmail())) {
 			throw new BadRequestException("Error: Email is already in use!");
 		}
 
 		// update information of user
 		existingUser.setUsername(userRequestDTO.getUsername());
 		existingUser.setEmail(userRequestDTO.getEmail());
-		existingUser.setFullname(userRequestDTO.getFullname());
+		existingUser.setFullName(userRequestDTO.getFullName());
 		existingUser.setDepartment(userRequestDTO.getDepartment());
 		existingUser.setWorkPlace(userRequestDTO.getWorkPlace());
 		existingUser.setJoinDate(userRequestDTO.getJoinDate());
@@ -164,33 +154,30 @@ public class UserServiceImpl implements UserService{
 		// update roles
 		Set<String> strRoles = userRequestDTO.getRoles();
 		Set<Role> roles = new HashSet<>();
-
 		if (strRoles != null) {
 			strRoles.forEach(role -> {
 				ERole enumRole;
 				try {
-					enumRole = ERole.valueOf(role); //  String to ERole
+					enumRole = ERole.valueOf(role); // String to ERole
 				} catch (IllegalArgumentException e) {
 					throw new BadRequestException("Error: Invalid role specified.");
 				}
-				
 				switch (enumRole) {
-					case ROLE_ADMIN:
-						roles.add(getRoleByName(ERole.ROLE_ADMIN));
-						break;
+				case ROLE_ADMIN:
+					roles.add(getRoleByName(ERole.ROLE_ADMIN));
+					break;
 
-					case ROLE_MANAGER:
-						roles.add(getRoleByName(ERole.ROLE_MANAGER));
-						break;
+				case ROLE_MANAGER:
+					roles.add(getRoleByName(ERole.ROLE_MANAGER));
+					break;
 
-					default:
-						roles.add(getRoleByName(ERole.ROLE_MEMBER));
-						break;
+				default:
+					roles.add(getRoleByName(ERole.ROLE_MEMBER));
+					break;
 				}
 			});
 			existingUser.setRoles(roles);
 		}
-
 		// Save change
 		userRepository.save(existingUser);
 
@@ -207,7 +194,7 @@ public class UserServiceImpl implements UserService{
 	public MessageResponse deleteUser(Long userId) {
 		User existingUser = userRepository.findById(userId)
 				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
-		
+
 		if (existingUser.getDeletedAt() != null) {
 			throw new NotFoundException("Error: User not exist.");
 		}
@@ -215,10 +202,10 @@ public class UserServiceImpl implements UserService{
 		userRepository.save(existingUser); // Update deleted_at
 		return new MessageResponse("User just deleted.");
 	}
-	
+
 	/**
 	 * Get infor of role by name
-	*/
+	 */
 	private Role getRoleByName(ERole roleName) {
 		return roleRepository.findByName(roleName)
 				.orElseThrow(() -> new BadRequestException("Error: Role " + roleName + " is not found."));
