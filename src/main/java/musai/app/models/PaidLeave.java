@@ -21,29 +21,31 @@ import lombok.NoArgsConstructor;
 @Table(name = "pay_leaves")
 public class PaidLeave {
 
-    public PaidLeave(String name) {
+	public PaidLeave(String name, Long parentId) {
 		this.name = name;
+		this.parentId = parentId;
 	}
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "name") // Assuming name refers to the type of leave (e.g., Vacation, Sick Leave)
-    private String name;
+	@Column(name = "parent_id")
+	private Long parentId;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-    
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+	@Column(name = "name") // Assuming name refers to the type of leave (e.g., Vacation, Sick Leave)
+	private String name;
 
-    @SoftDelete
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-    
+	@CreationTimestamp
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	@UpdateTimestamp
+	@Column(name = "updated_at")
+	private LocalDateTime updatedAt;
+
+	@SoftDelete
+	@Column(name = "deleted_at")
+	private LocalDateTime deletedAt;
+
 }
-    
-

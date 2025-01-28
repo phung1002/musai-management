@@ -10,5 +10,7 @@ public class PaidLeaveDTO {
 	private Long id;
 	
 	private String name;
+	
+	private Long parentId;
 
 }

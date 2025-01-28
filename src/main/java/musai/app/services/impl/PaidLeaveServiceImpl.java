@@ -1,6 +1,5 @@
 package musai.app.services.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +13,6 @@ import musai.app.exception.NotFoundException;
 import musai.app.models.PaidLeave;
 import musai.app.repositories.PaidLeaveResposity;
 import musai.app.services.PaidLeaveService;
-
 @Service
 public class PaidLeaveServiceImpl implements PaidLeaveService {
 	private final PaidLeaveResposity paidLeaveRepository;
@@ -31,7 +29,7 @@ public class PaidLeaveServiceImpl implements PaidLeaveService {
 		}
 
 		// Create new PaidLeave
-		PaidLeave paidLeave = new PaidLeave(paidLeaveDTO.getName());
+		PaidLeave paidLeave = new PaidLeave(paidLeaveDTO.getName(),paidLeaveDTO.getParentId());
 
 		paidLeaveRepository.save(paidLeave);
 
@@ -83,7 +81,7 @@ public class PaidLeaveServiceImpl implements PaidLeaveService {
 		List<PaidLeave> paidLeaves = paidLeaveRepository.findAll();
 
 		// Map each PaidLeave entity to PaidLeaveDTO
-		return paidLeaves.stream().map(leave -> new PaidLeaveDTO(leave.getId(), leave.getName())).toList();
+		return paidLeaves.stream().map(leave -> new PaidLeaveDTO(leave.getId(), leave.getName(), leave.getParentId())).toList();
 	}
 
 	@Override
@@ -92,25 +90,21 @@ public class PaidLeaveServiceImpl implements PaidLeaveService {
 		PaidLeave paidLeave = paidLeaveRepository.findByIdAndDeletedAtIsNull(id)
 				.orElseThrow(() -> new NotFoundException("Error: PaidLeave not found"));
 
-		return new PaidLeaveDTO(paidLeave.getId(), paidLeave.getName());
+		return new PaidLeaveDTO(paidLeave.getId(), paidLeave.getName(), paidLeave.getParentId());
 	}
 
 	@Override
-	
 	public List<PaidLeaveDTO> searchPaidLeave(String keyword) {
 
 		List<PaidLeaveDTO> filteredLeaves = paidLeaveRepository.findAll().stream()
 				.filter(leave -> leave.getName().toLowerCase().contains(keyword.toLowerCase()))
-				.map(leave -> new PaidLeaveDTO(leave.getId(), leave.getName()))
-				.collect(Collectors.toList());
-		
-	//	if(filteredLeaves.isEmpty()) {
-	//		throw new NotFoundException("Error: The keyword not found");
-	//	}
-		
+				.map(leave -> new PaidLeaveDTO(leave.getId(), leave.getName(), leave.getParentId())).collect(Collectors.toList());
+
+		// if(filteredLeaves.isEmpty()) {
+		// throw new NotFoundException("Error: The keyword not found");
+		// }
+
 		return filteredLeaves;
 	}
 
-
-	}
-
+}
