@@ -7,12 +7,14 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.NoResultException;
 import musai.app.DTO.MessageResponse;
-import musai.app.DTO.PaidLeaveDTO;
+import musai.app.DTO.request.PaidLeaveRequestDTO;
+import musai.app.DTO.response.PaidLeaveResponseDTO;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.PaidLeave;
 import musai.app.repositories.PaidLeaveResposity;
 import musai.app.services.PaidLeaveService;
+
 @Service
 public class PaidLeaveServiceImpl implements PaidLeaveService {
 	private final PaidLeaveResposity paidLeaveRepository;
@@ -22,14 +24,15 @@ public class PaidLeaveServiceImpl implements PaidLeaveService {
 	}
 
 	@Override
-	public MessageResponse createAddPaidLeave(PaidLeaveDTO paidLeaveDTO) {
+	public MessageResponse createAddPaidLeave(PaidLeaveRequestDTO paidLeaveDTO) {
 
 		if (paidLeaveRepository.existsByName(paidLeaveDTO.getName())) {
 			return new MessageResponse("Error: Name is already taken!");
 		}
 
 		// Create new PaidLeave
-		PaidLeave paidLeave = new PaidLeave(paidLeaveDTO.getName(),paidLeaveDTO.getParentId());
+		PaidLeave paidLeave = new PaidLeave(paidLeaveDTO.getName(), paidLeaveDTO.getParent(),
+				paidLeaveDTO.getChildren());
 
 		paidLeaveRepository.save(paidLeave);
 
@@ -39,7 +42,7 @@ public class PaidLeaveServiceImpl implements PaidLeaveService {
 	}
 
 	@Override
-	public MessageResponse updatePaidLeave(Long id, PaidLeaveDTO paidLeaveDTO) {
+	public MessageResponse updatePaidLeave(Long id, PaidLeaveRequestDTO paidLeaveDTO) {
 
 		// Fetch the existing PaidLeave
 		PaidLeave existingPaidLeave = paidLeaveRepository.findById(id)
@@ -75,30 +78,34 @@ public class PaidLeaveServiceImpl implements PaidLeaveService {
 	}
 
 	@Override
-	public List<PaidLeaveDTO> getAllPaidLeaves() {
+	public List<PaidLeaveResponseDTO> getAllPaidLeaves() {
 
 		// Fetch all PaidLeave entities from the repository
 		List<PaidLeave> paidLeaves = paidLeaveRepository.findAll();
 
 		// Map each PaidLeave entity to PaidLeaveDTO
-		return paidLeaves.stream().map(leave -> new PaidLeaveDTO(leave.getId(), leave.getName(), leave.getParentId())).toList();
+		return paidLeaves.stream()
+				.filter(leave -> leave.getParent() == null)
+				.map(leave -> new PaidLeaveResponseDTO(leave.getId(), leave.getName(), leave.getChildren()))
+				.toList();
 	}
 
 	@Override
-	public PaidLeaveDTO getPaidLeaveDetail(Long id) {
+	public PaidLeaveResponseDTO getPaidLeaveDetail(Long id) {
 
 		PaidLeave paidLeave = paidLeaveRepository.findByIdAndDeletedAtIsNull(id)
 				.orElseThrow(() -> new NotFoundException("Error: PaidLeave not found"));
 
-		return new PaidLeaveDTO(paidLeave.getId(), paidLeave.getName(), paidLeave.getParentId());
+		return new PaidLeaveResponseDTO(paidLeave.getId(), paidLeave.getName(), paidLeave.getChildren());
 	}
 
 	@Override
-	public List<PaidLeaveDTO> searchPaidLeave(String keyword) {
+	public List<PaidLeaveResponseDTO> searchPaidLeave(String keyword) {
 
-		List<PaidLeaveDTO> filteredLeaves = paidLeaveRepository.findAll().stream()
+		List<PaidLeaveResponseDTO> filteredLeaves = paidLeaveRepository.findAll().stream()
 				.filter(leave -> leave.getName().toLowerCase().contains(keyword.toLowerCase()))
-				.map(leave -> new PaidLeaveDTO(leave.getId(), leave.getName(), leave.getParentId())).collect(Collectors.toList());
+				.map(leave -> new PaidLeaveResponseDTO(leave.getId(), leave.getName(), leave.getChildren()))
+				.collect(Collectors.toList());
 
 		// if(filteredLeaves.isEmpty()) {
 		// throw new NotFoundException("Error: The keyword not found");

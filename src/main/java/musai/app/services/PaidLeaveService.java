@@ -3,20 +3,29 @@ package musai.app.services;
 import java.util.List;
 
 import musai.app.DTO.MessageResponse;
-import musai.app.DTO.PaidLeaveDTO;
+import musai.app.DTO.request.PaidLeaveRequestDTO;
+import musai.app.DTO.response.PaidLeaveResponseDTO;
 
 public interface PaidLeaveService {
 	
-	MessageResponse createAddPaidLeave(PaidLeaveDTO paidLeave);
+	MessageResponse createAddPaidLeave(PaidLeaveRequestDTO paidLeave);
 
-	MessageResponse updatePaidLeave(Long id, PaidLeaveDTO paidLeaveDTO);
+	MessageResponse updatePaidLeave(Long id, PaidLeaveRequestDTO paidLeaveDTO);
 
 	MessageResponse deletePaidLeave(Long id);
 	
-	List<PaidLeaveDTO> getAllPaidLeaves();
+	//List<PaidLeaveRequestDTO> getAllPaidLeaves();
 
-	PaidLeaveDTO getPaidLeaveDetail(Long id);
+	//PaidLeaveRequestDTO getPaidLeaveDetail(Long id);
 	
-	List<PaidLeaveDTO> searchPaidLeave(String keyword);
+	//PaidLeaveResponseDTO getPaidLeaveDetail(Long id);
+	
+	//List<PaidLeaveRequestDTO> searchPaidLeave(String keyword);
+	
+	List<PaidLeaveResponseDTO> getAllPaidLeaves(); 
+	
+    PaidLeaveResponseDTO getPaidLeaveDetail(Long id);
+
+    List<PaidLeaveResponseDTO> searchPaidLeave(String keyword); 
 	
 }
