@@ -5,20 +5,20 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import musai.app.models.PaidLeave;
+import musai.app.models.LeaveType;
 
 @Repository
-public interface PaidLeaveResposity extends JpaRepository<PaidLeave, Long> {
+public interface LeaveTypeResposity extends JpaRepository<LeaveType, Long> {
 
 	Boolean existsByName(String name);
 
-	Optional<PaidLeave> findById(Long id);
+	Optional<LeaveType> findById(Long id);
 	
 	// Fetch by ID where deleted_at is NULL
-	Optional<PaidLeave> findByIdAndDeletedAtIsNull(Long id); 
+	Optional<LeaveType> findByIdAndDeletedAtIsNull(Long id); 
 	
 	//Excluding Soft-Deleted Records
-	 // List<PaidLeave> findByNameContainingIgnoreCase(String name);
+	 // List<LeaveType> findByNameContainingIgnoreCase(String name);
 	
 	
 }

@@ -17,27 +17,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import musai.app.DTO.MessageResponse;
-import musai.app.DTO.request.PaidLeaveRequestDTO;
-import musai.app.DTO.response.PaidLeaveResponseDTO;
-import musai.app.services.PaidLeaveService;
+import musai.app.DTO.request.LeaveTypeRequestDTO;
+import musai.app.DTO.response.LeaveTypeResponseDTO;
+import musai.app.services.LeaveTypeService;
 
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
-@RequestMapping("/api/paid-leaves")
-public class PaidLeaveController {
+@RequestMapping("/api/leave-types")
+public class LeaveTypeController {
 
-	private final PaidLeaveService paidLeaveService;
+	private final LeaveTypeService leaveTypeService;
 
-	public PaidLeaveController(PaidLeaveService paidLeaveService) {
-		this.paidLeaveService = paidLeaveService;
+	public LeaveTypeController(LeaveTypeService LeaveTypeService) {
+		this.leaveTypeService = LeaveTypeService;
 	}
 	
 	// add a new paid leave request
 	@PostMapping("/add")
-	public ResponseEntity<?> addPaidLeave(@RequestBody PaidLeaveRequestDTO request) {
+	public ResponseEntity<?> addLeaveType(@RequestBody LeaveTypeRequestDTO request) {
 
 		// Call the service layer to process the update
-		MessageResponse addResponse = paidLeaveService.createAddPaidLeave(request);
+		MessageResponse addResponse = leaveTypeService.createAddLeaveType(request);
 
 		// Return the response with HTTP status
 		return new ResponseEntity<>(addResponse, HttpStatus.CREATED);
@@ -45,10 +45,10 @@ public class PaidLeaveController {
 
 	// update paid leave request
 	@PutMapping("/update/{id}")
-	public ResponseEntity<?> updatePaidLeave(@PathVariable Long id, @RequestBody PaidLeaveRequestDTO request) {
+	public ResponseEntity<?> updateLeaveType(@PathVariable Long id, @RequestBody LeaveTypeRequestDTO request) {
 
 		// Call the service layer to process the update
-		MessageResponse updateResponse = paidLeaveService.updatePaidLeave(id, request);
+		MessageResponse updateResponse = leaveTypeService.updateLeaveType(id, request);
 
 		// Return the response with HTTP status
 		return new ResponseEntity<>(updateResponse, HttpStatus.OK);
@@ -56,10 +56,10 @@ public class PaidLeaveController {
 
 	// delete paid leave request
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<?> deletePaidLeave(@PathVariable Long id) {
+	public ResponseEntity<?> deleteLeaveType(@PathVariable Long id) {
 
 		// Call the service layer to process the update
-		MessageResponse deleteResponse = paidLeaveService.deletePaidLeave(id);
+		MessageResponse deleteResponse = leaveTypeService.deleteLeaveType(id);
 
 		return new ResponseEntity<>(deleteResponse, HttpStatus.OK);
 
@@ -68,31 +68,31 @@ public class PaidLeaveController {
 	// Create API list
 	@GetMapping("/list")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> getAllPaidLeaves() {
+	public ResponseEntity<?> getAllLeaveTypes() {
 
 		// Call the service layer
-		List<PaidLeaveResponseDTO> paidLeaves = paidLeaveService.getAllPaidLeaves();
+		List<LeaveTypeResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypes();
 
 		// Return the list with HTTP status
-		return new ResponseEntity<>(paidLeaves, HttpStatus.OK);
+		return new ResponseEntity<>(leaveTypes, HttpStatus.OK);
 	}
 
 	// Get Detail
 	@GetMapping("/detail/{id}")
-	public ResponseEntity<?> getPaidLeaveDetail(@PathVariable Long id) {
+	public ResponseEntity<?> getLeaveTypeDetail(@PathVariable Long id) {
 
 		// Call the service layer
-		PaidLeaveResponseDTO getPaidLeaveDetail = paidLeaveService.getPaidLeaveDetail(id);
+		LeaveTypeResponseDTO getLeaveTypeDetail = leaveTypeService.getLeaveTypeDetail(id);
 
 		// Return the list with HTTP status
-		return new ResponseEntity<>(getPaidLeaveDetail, HttpStatus.OK);
+		return new ResponseEntity<>(getLeaveTypeDetail, HttpStatus.OK);
 	}
 
 	// @GetMapping("/search")
 	@GetMapping("/search")
-	public List<PaidLeaveResponseDTO> searchPaidLeaves(@RequestParam String keyword) {
-		// Call the searchPaidLeave method from the service layer and return the result
-		return paidLeaveService.searchPaidLeave(keyword);
+	public List<LeaveTypeResponseDTO> searchLeaveTypes(@RequestParam String keyword) {
+		// Call the searchLeaveType method from the service layer and return the result
+		return leaveTypeService.searchLeaveType(keyword);
 	}
 
 }

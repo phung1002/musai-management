@@ -4,18 +4,16 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import musai.app.models.PaidLeave;
+import musai.app.models.LeaveType;
 
 @Data
 @AllArgsConstructor
-public class PaidLeaveResponseDTO {
+public class LeaveTypeResponseDTO {
 
 	private Long id;
 
 	private String name;
 
-//	private PaidLeave parent;
-
-	private List<PaidLeave> children;
+	private List<LeaveType> children;
 
 }

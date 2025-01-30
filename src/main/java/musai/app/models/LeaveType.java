@@ -22,19 +22,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "pay_leaves")
-public class PaidLeave {
+@Table(name = "leave_types")
+public class LeaveType {
 
-	public PaidLeave(String name, PaidLeave parent, List<PaidLeave> children) {
+	public LeaveType(String name, LeaveType parent, List<LeaveType> children) {
 		this.name = name;
 		this.parent = parent;
 		this.children = children;
 	}
 
+	public LeaveType(String name, LeaveType parent) {
+		this.name = name;
+		this.parent = parent;
+	}
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -44,12 +50,12 @@ public class PaidLeave {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-	@JsonBackReference
-    private PaidLeave parent;
+	@JsonIgnore
+    private LeaveType parent;
 	
 	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-	@JsonManagedReference
-    private List<PaidLeave> children;
+	@JsonIgnore
+    private List<LeaveType> children;
 
 	@CreationTimestamp
 	@JsonBackReference
