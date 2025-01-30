@@ -5,6 +5,18 @@
     "userid": "社員番号",
     "sign_in": "ログイン",
     "email": "メール",
+    "invalid_login_input": "ユーザー名またはパスワードが正しくありません。",
+    "login_failed": "ログインに失敗しました。",
+    "paid_leave_management": "休暇管理",
+    "paid_leave_request": "休暇申請",
+    "add": "追加",
+    "no": "番号",
+    "type_something": "検索キーワードを入力",
+    "full_name": "名前",
+    "role": "権限",
+    "department": "部署",
+    "work_place": "現場",
+    "action": "操作",
     "attendees_input": "勤怠 入力",
     "leave_applying": "休暇 申請",
     "change_password": "パスワード 変更",
@@ -38,5 +50,7 @@
     "no": "いいえ",
     "status": "状態",
     "action": "アクション",
-    "leave_apply_list": "休暇 申請 一覧"
+    "leave_apply_list": "休暇 申請 一覧",
+    "items_per_page": "表示行数",
+    "register": "登録"
 }

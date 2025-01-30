@@ -1,6 +1,5 @@
 <!-- ログイン　画面 -->
 <script>
-import { useUserStore } from '@/store/userStore';
 import { reactive } from 'vue';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -13,30 +12,31 @@ export default {
   name: 'LoginView',
   setup() {
     const { t } = useLocale();
-    const userStore = useUserStore();
     const route = useRoute();
     const router = useRouter();
     const submiting = ref(false);
     const formValid = ref(false);
+    const errorMessage = ref('');
     const formModel = reactive({
-      username: null,
-      password: null
+      username: '',
+      password: '',
     });
     const handleSubmit = async () => {
       // if (formValid.value === true) {
       submiting.value = true;
       try {
-        const { data } = await login(formModel);
-        submiting.value = false;
-
-        const { token, username, roles } = data;
-        userStore.setToken(token);
-        userStore.setUsername(username);
-        userStore.setRoles(roles);
-        router.replace(route.query.to ? String(route.query.to) : '/home');
+        await login(formModel);
+        errorMessage.value = ''; // Delete error message if login success
+        const redirectPath = route.query.to ? String(route.query.to) : '/home';
+        router.replace(redirectPath); // direct
       } catch (error) {
-          submiting.value = false;
-          console.log(error);
+        // Catch error
+        const status = error.response?.status || 500;
+        errorMessage.value =
+          status === 400 ? 'invalid_login_input' :
+          error.response?.data?.message || 'login_failed';
+      } finally {
+        submiting.value = false;
       }
       // }
     };
@@ -47,6 +47,7 @@ export default {
       formModel,
       submiting,
       logoImg,
+      errorMessage,
       };
   },
 };
@@ -55,7 +56,7 @@ export default {
 <template>
   <div class="auth">
     <div class="auth-wrapper d-flex flex-column align-center justify-center pt-10">
-      <VCard rounded="md" elevation="10" class="login-card" max-width="500">
+      <VCard rounded="md" elevation="10" class="login-card" width="500">
         <VCardItem class="pa-sm-8">
           <div class="d-flex flex-column align-center justify-center py-6">
             <v-img :src="logoImg" alt="logo" contain class="logo py-2" max-width="200"></v-img>
@@ -79,6 +80,9 @@ export default {
                   color="primary"
                   v-model="formModel.password"
                 />
+              </VCol>
+              <VCol>
+                <VLabel v-if="errorMessage" class="error-message">{{ $t(errorMessage) }}</VLabel>
               </VCol>
               <VCol cols="12" class="py-4">
                 <VBtn :loading="submiting" type="submit" color="primary" block flat @click="handleSubmit">{{ $t('sign_in') }}</VBtn>

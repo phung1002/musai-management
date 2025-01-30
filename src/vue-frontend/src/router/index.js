@@ -2,14 +2,16 @@ import { createRouter, createWebHistory } from 'vue-router';
 import DefaultLayout from '../views/DefaultLayout.vue';
 import LoginView from '../views/LoginView.vue';
 import UnauthorizedView from '../views/UnauthorizedView.vue';
+import ListUser from '@/views/user/ListUser.vue';
+
 import { useUserStore } from '@/store/userStore';
 import PasChangeView from '@/views/PasChangeView.vue';
-import UserManagementView from '@/views/UserManagementView.vue';
 import LeaveApplyView from '@/views/LeaveApplyView.vue';
 import LeaveManagementView from '@/views/LeaveManagementView.vue';
 import UserLeaveManagementView from '@/views/UserLeaveManagementView.vue';
 import RequstConfirmView from '@/views/RequstConfirmView.vue';
 import ProfleView from '@/views/ProfleView.vue';
+import { validate } from '@/api/auth';
 const routes = [
   {
     path: '/unauthorized',
@@ -31,9 +33,13 @@ const routes = [
   },
    // ユーザー 管理
   {
-    path: '/userManagement',
-    name: 'userManagement',
-    component: UserManagementView,
+    path: '/admin/user',
+    name: 'admin-user-list',
+    component: ListUser,
+    meta: {
+      requiresAuth: true,
+      requiredRoles: ['ROLE_ADMIN']
+    },
   },
   // 休暇 管理
   {
@@ -87,23 +93,41 @@ const router = createRouter({
   routes,
 });
 
-// Navigation guard
-router.beforeEach((to, from, next) => {
-  const userStore = useUserStore();
-  const isAuthenticated = !!userStore.getAccessToken;
+// Helper function: Check user roles
+const hasRequiredRoles = (userRoles, requiredRoles) => {
+  return requiredRoles ? userRoles.some(role => requiredRoles.includes(role)) : true;
+};
 
-  if (to.meta.requiresAuth  && !isAuthenticated) {
-    // Redirect to login if not login yet
-    next({ name: 'login', query: { to: to.fullPath } });
+// Navigation guard
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore();
+  // If don't need to check auth
+  if (!to.meta.requiresAuth) {
+    return next();
   }
-  else if (to.meta.requiredRoles && !to.meta.requiredRoles.some(role => userStore.hasRole(role))) {
-    // Redirect to unauthorized screen if doesn't have role avaiable
-    next({ name: 'unauthorized' });
+  // If authenticated
+  if (userStore.authenticated) {
+    if (!hasRequiredRoles(userStore.roles, to.meta.requiredRoles)) {
+      return next({ name: 'unauthorized' });
+    }
+    return next();
   }
-  else {
-    // Continue if all avaiable
-    next();
+  // If not authenticated yet -> Call API validate token with timeout
+  try {
+    const response = await validate();
+    const { status, data } = response;
+
+    if (status === 200 && data.authenticated) {
+      if (!hasRequiredRoles(data.roles, to.meta.requiredRoles)) {
+        return next({ name: 'unauthorized' });
+      }
+      return next();
+    }
+  } catch (error) {
+    console.error('Error during token validation:', error);
   }
+  // If error when call API (timeout/connect), direct to login
+  next({ name: 'login', query: { to: to.fullPath } });
 });
 
 export default router;
