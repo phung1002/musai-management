@@ -36,6 +36,38 @@ a,
 .logo .v-img__img{
   position: relative !important;
 }
+
+@media (min-width: 1024px) {
+  .profile-card{
+    min-width: 750px;
+  }
+}
+@media (min-width: 350px) {
+  .profile-card{
+    min-width: 300px;
+  }
+}
+@media (min-width: 1024px) {
+  .table-label{
+    min-width: 200px;
+  }
+}
+@media (min-width: 1024px) {
+  .leave_form{
+    width: 750px;
+  }
+}
+@media (min-width: 1024px) {
+  .dropdown-box{
+    min-width: 100%;
+  }
+}
+@media (min-width: 350px) {
+  .dropdown-box{
+    min-width: 100%;
+  }
+}
+
 .error-message{
   color: red !important;
   font-size: 0.875rem !important;

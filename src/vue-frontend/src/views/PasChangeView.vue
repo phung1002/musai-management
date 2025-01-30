@@ -4,7 +4,7 @@
 // import { useLocale } from 'vuetify';
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import AppToolbar from '@/components/layout/AppToolbar.vue';
-import TabForm from '@/components/forms/TabForm.vue';
+import PasswordChangeTabForm from '@/components/forms/PasswordChangeForm.vue'
 
 // const route = useRoute();
 // const { t } = useLocale();
@@ -20,7 +20,7 @@ import TabForm from '@/components/forms/TabForm.vue';
     <VMain class="app-main">
       <VContainer class="app-container">
         <div class="page-wrapper">
-          <TabForm />
+          <PasswordChangeTabForm />
           <!--
           <h3 class="page-title">{{ t(String(route.name).toLocaleLowerCase()) }}</h3>
           -->

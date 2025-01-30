@@ -13,7 +13,6 @@ const filteredItems = computed(() => {
       });
 });
 const userRoles = computed(() => userStore.roles || []);
-
 const { t } = useI18n();
 const items = [
   { type: 'divider' },
@@ -107,17 +106,18 @@ const items = [
     value: '/changePassword',
     // roles: ['ROLE_ADMIN']
   },
-  {
-    title: t('logout'),
-    props: {
-      prependIcon: 'mdi-account-arrow-right-outline',
-      link: true,
-      to: '/login',
-      exact: true
-    },
-    value: '/login',
-    // roles: ['ROLE_ADMIN']
-  }
+  // {
+  //   title: t('logout'),
+  //   props: {
+  //     prependIcon: 'mdi-account-arrow-right-outline',
+  //     link: true,
+  //     to: '/login',
+  //     exact: true
+  //   },
+  //   value: '/login',
+  //   // value: showDialog
+  //   // roles: ['ROLE_ADMIN']
+  // }
 
 ];
 
