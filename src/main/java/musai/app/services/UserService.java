@@ -13,4 +13,9 @@ public interface UserService {
 	MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO);
 	
 	MessageResponse deleteUser(Long userId);
+	
+	UserResponseDTO detailUser(Long userId);
+
+	List<UserResponseDTO> searchUser(String keyword);
+
 }

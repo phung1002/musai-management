@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,4 +224,58 @@ public class UserServiceImpl implements UserService{
 		return roleRepository.findByName(roleName)
 				.orElseThrow(() -> new BadRequestException("Error: Role " + roleName + " is not found."));
 	}
+
+	//get detail
+	@Override
+	public UserResponseDTO detailUser(Long userId) {
+		User existingUser = userRepository.findById(userId)
+				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
+
+		//Check user deleted
+		if (existingUser.getDeletedAt() != null) {
+			throw new NotFoundException("Error: User not exist.");
+		}
+		
+		return new UserResponseDTO (				
+				existingUser.getId(),
+				existingUser.getUsername(),
+				existingUser.getEmail(),
+				existingUser.getRoles().stream() // change Set<Role> -> Set<String>
+				.map(role -> role.getName().name()) // get name of role (ERole)
+				.collect(Collectors.toSet()),
+				existingUser.getFullname(),
+				existingUser.getDepartment(),
+				existingUser.getWorkPlace(),
+				existingUser.getJoinDate(),
+				existingUser.getGender()
+		);
+		
+	}
+	
+	// get search
+	@Override
+	public List<UserResponseDTO> searchUser(String keyword) {
+		
+		List<UserResponseDTO> filteredUser = userRepository.findAll().stream()
+				.filter(user -> user.getUsername().toLowerCase().contains(keyword.toLowerCase()))
+				.map(user -> new UserResponseDTO(
+						user.getId(), 
+						user.getUsername(),
+						user.getEmail(), 
+						user.getRoles().stream()
+							.map(role -> role.getName().name())
+							.collect(Collectors.toSet()),
+						user.getFullname(),
+						user.getDepartment(), 
+						user.getWorkPlace(), 
+						user.getJoinDate(), 
+						user.getGender()
+						
+						))
+				.collect(Collectors.toList());
+		
+		return filteredUser;
+		
+	}
+	
 }
