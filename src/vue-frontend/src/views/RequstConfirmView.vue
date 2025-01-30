@@ -1,4 +1,4 @@
-<!-- ホーム 画面　-->
+<!-- 申請確認 画面　-->
 <script setup lang="ts">
 //import { RouterView, useRoute } from 'vue-router';
 // import { useLocale } from 'vuetify';

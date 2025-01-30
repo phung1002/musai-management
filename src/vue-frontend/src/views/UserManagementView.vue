@@ -1,4 +1,4 @@
-<!-- ユーザー登録 画面　-->
+<!-- ユーザー管理 画面　-->
 <script setup lang="ts">
 //import { RouterView, useRoute } from 'vue-router';
 // import { useLocale } from 'vuetify';

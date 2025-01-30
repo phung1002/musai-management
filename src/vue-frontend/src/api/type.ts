@@ -6,3 +6,25 @@ export interface IAccessToken {
   access_token: string;
   expire_in: number;
 }
+
+
+export interface ILeaveRequestList {
+  data: ILeaveRequest;
+}
+
+export interface IUserResp {
+  data: ILeaveRequest[];
+}
+
+export type confrimStatus = 'pending' | 'accepted';
+
+export interface ILeaveRequest {
+  userid: number;
+  username: string;
+  leave_type: string;
+  leave_duration_from: Date;
+  leave_duration_to: Date;
+  leave_reason: string;
+  status: confrimStatus;
+  access_token?: string;
+}
