@@ -11,7 +11,7 @@ import UserLeaveManagementView from '@/views/UserLeaveManagementView.vue';
 import RequstConfirmView from '@/views/RequstConfirmView.vue';
 import ProfleView from '@/views/ProfleView.vue';
 import { validate } from '@/api/auth';
-import { Roles } from '@/constants/role';
+import { ERole } from '@/constants/role';
 
 const routes = [
   {
@@ -39,7 +39,7 @@ const routes = [
     component: ListUser,
     meta: {
       requiresAuth: true,
-      requiredRoles: [Roles.ADMIN]
+      requiredRoles: [ERole.ADMIN]
     },
   },
   // 休暇 管理
@@ -84,7 +84,7 @@ const routes = [
     component: DefaultLayout,
     meta: {
       requiresAuth: true,
-      requiredRoles: [Roles.ADMIN]
+      requiredRoles: [ERole.ADMIN]
     },
   },
 ];
