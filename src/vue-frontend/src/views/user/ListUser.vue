@@ -7,6 +7,7 @@ import AppToolbar from '@/components/layout/AppToolbar.vue';
 import { IUser } from '@/api/type';
 import CreateUser from './CreateUser.vue';
 import { useUserStore } from '@/store/userStore';
+import SnackBar from '@/components/layout/SnackBar.vue';
 
 const userStore = useUserStore();
 
@@ -57,7 +58,6 @@ const fetchUsers = async () => {
 
 //set color for each role
 const getRoleColor = (role: string) => {
-  console.log('color: '+ role);
   switch (role) {
     case 'admin':
       return 'red';
@@ -83,6 +83,10 @@ const getRoleTitle = (roleValue: string) => {
 onMounted(() => {
   fetchUsers();
 });
+
+// SnackBar
+const snackbar = ref({ isColorSnackbarVisible : false, message : '', color : 'error' });
+
 </script>
 
 <template>
@@ -93,6 +97,7 @@ onMounted(() => {
     <AppToolbar />
     <!------Page-------->
     <VMain class="app-main">
+      <SnackBar :snackbar="snackbar"></SnackBar>
       <VContainer class="app-container">
         <div class="page-wrapper">
           <!-- Add user button -->

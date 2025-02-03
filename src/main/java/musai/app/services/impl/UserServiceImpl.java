@@ -72,8 +72,8 @@ public class UserServiceImpl implements UserService {
 		// Create new user's account
 		User user = new User(userRequestDTO.getUsername(), userRequestDTO.getEmail(),
 				encoder.encode(userRequestDTO.getPassword()), userRequestDTO.getFullName(),
-				userRequestDTO.getDepartment(), userRequestDTO.getWorkPlace(), userRequestDTO.getJoinDate(),
-				userRequestDTO.getGender());
+				userRequestDTO.getFullNameFufigana(), userRequestDTO.getBirthday(), userRequestDTO.getDepartment(),
+				userRequestDTO.getWorkPlace(), userRequestDTO.getJoinDate(), userRequestDTO.getGender());
 
 		Set<String> strRoles = userRequestDTO.getRoles();
 		Set<Role> roles = new HashSet<>();

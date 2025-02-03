@@ -5,11 +5,16 @@ import { IUser } from '@/api/type';
 import { useI18n } from 'vue-i18n';
 import { ref } from 'vue';
 import { createUser, getAllUsers } from '@/api/user';
+import { ERole } from '@/constants/role';
+import SnackBar from '@/components/layout/SnackBar.vue';
 
 const { t } = useI18n();
 const props = defineProps<{ user?: IUser, isEdit: boolean }>();
 const emit = defineEmits(['form:cancel']);
-
+const roles = Object.keys(ERole).map(key => ({
+  title: t(key.toLocaleLowerCase()),
+  value: ERole[key as keyof typeof ERole]
+}));
 const formRules = reactive({
   username: [
     (value: string) => {
@@ -39,6 +44,18 @@ const formRules = reactive({
     (value: string) => {
       if (value) return true;
       return t('full_name')+ t('requied');
+    }
+  ],
+  fullNameFurigana: [
+    (value: string) => {
+      if (value) return true;
+      return t('full_name_furigana')+ t('requied');
+    }
+  ],
+  birthday: [
+    (value: string) => {
+      if (value) return true;
+      return t('full_name_furigana')+ t('requied');
     }
   ],
   roles: [
@@ -80,6 +97,8 @@ const defaultUser: IUser = {
   email: '',
   password: '',
   fullName: '',
+  fullNameFurigana: '',
+  birthday: null,
   roles: [],
   department: '',
   workPlace: '',
@@ -92,24 +111,44 @@ const formModel = reactive<IUser>(
 );
 
 const confirmPassword =ref('');
-const userStore = useUserStore();
 const submiting = ref(false);
-const formValid = ref(true);
+const formValid = ref(false);
 const errorMessage = ref('');
-const handleSubmit = async () => {
-  if (formValid.value === true) {
-    submiting.value = true;
-      try {
-        await createUser(formModel);
-        errorMessage.value = '';
-        getAllUsers();
-        handleCancel();
-      } catch (error) {
 
-      } finally {
-        submiting.value = false;
-      }
-    }
+// SnackBar
+const snackbar = ref({
+  isColorSnackbarVisible : false,
+  message : '',
+  color : 'error'
+});
+
+//Submit
+const handleSubmit = async () => {
+  if (!formValid.value) {
+    snackbar.value.isColorSnackbarVisible = true
+    snackbar.value.color = 'error'
+    snackbar.value.message = t('message.add_failure')
+    return;
+  }
+  const payload : IUser = {
+    ...formModel,
+    birthday: formModel.birthday ? new Date(formModel.birthday).toISOString() : null,
+    joinDate: formModel.joinDate ? new Date(formModel.joinDate).toISOString() : null,
+  };
+  submiting.value = true;
+  try {
+    await createUser(payload);
+    errorMessage.value = '';
+    getAllUsers();
+    handleCancel();
+    snackbar.value.isColorSnackbarVisible = true
+    snackbar.value.color = 'success'
+    snackbar.value.message = t('message.add_success')
+  } catch (error) {
+
+  } finally {
+    submiting.value = false;
+  }
 };
 const handleCancel = () => {
   emit('form:cancel');
@@ -124,6 +163,7 @@ const activeTab =  ref('account');
 </script>
 
 <template>
+  <SnackBar :snackbar="snackbar"></SnackBar>
   <VCard width="940px">
     <VToolbar tag="div">
       <VToolbarTitle>{{ t('create_user') }}</VToolbarTitle>
@@ -197,6 +237,28 @@ const activeTab =  ref('account');
                     />
                   </VCol>
                   <VCol cols="6">
+                    <VLabel>{{t('full_name_furigana')}}</VLabel>
+                    <VTextField
+                      v-model="formModel.fullNameFurigana"
+                      :rules="formRules.fullNameFurigana"
+                      variant="outlined"
+                      color="primary"
+                      name="fullNameFurigana"
+                    />
+                  </VCol>
+                  <VCol cols="6">
+                    <VLabel>{{t('birthday')}}</VLabel>
+                    <VTextField
+                      v-model="formModel.birthday"
+                      :rules="formRules.birthday"
+                      variant="outlined"
+                      color="primary"
+                      name="birthday"
+                      input
+                      type="date"
+                    />
+                  </VCol>
+                  <VCol cols="6">
                     <VLabel>{{t('gender')}}</VLabel>
                     <VRadioGroup v-model="formModel.gender" :rules="formRules.gender" row name="gender" class="gender-radio-group" >
                       <VRadio :label="t('male')" :value="'male'" />
@@ -227,7 +289,7 @@ const activeTab =  ref('account');
                     <VLabel>{{t('role')}}</VLabel>
                     <VAutocomplete
                       v-model="formModel.roles"
-                      :items="userStore.roles"
+                      :items="roles"
                       item-title="title"
                       item-value="value"
                       variant="outlined"

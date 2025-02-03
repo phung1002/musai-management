@@ -33,7 +33,7 @@ public class DataInitializer implements CommandLineRunner {
 		// Add admin if empty
 		if (userRepository.count() == 0) {
 			User user = new User("admin", "admin@gmail.com",
-					"$2a$12$m3qeFYXkwyWhggLeiAAKd.l2yBfEkZhNkUuv/bCloaD/Pp5xyaDiS", null, null, null, null, null);
+					"$2a$12$m3qeFYXkwyWhggLeiAAKd.l2yBfEkZhNkUuv/bCloaD/Pp5xyaDiS", null, null, null, null, null, null, null);
 
 			Role adminRole = roleRepository.findByName(ERole.ADMIN)
 					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
