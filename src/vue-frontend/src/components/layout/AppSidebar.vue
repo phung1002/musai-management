@@ -4,7 +4,7 @@ import { reactive, computed } from 'vue';
 //import { useLocale } from 'vuetify';
 import { useI18n } from 'vue-i18n';
 import { useUserStore } from '@/store/userStore';
-import { Roles } from '@/constants/role';
+import { ERole } from '@/constants/role';
 
 const userStore = useUserStore();
 const filteredItems = computed(() => {
@@ -17,7 +17,7 @@ const userRoles = computed(() => userStore.roles || []);
 const { t } = useI18n();
 const items = [
   { type: 'divider' },
-  { type: 'subheader', title: t('admin'), roles:[Roles.ADMIN]},
+  { type: 'subheader', title: t('admin'), roles:[ERole.ADMIN]},
   { type: 'divider' },
   // {
   //   title: t('attendees_input'),
@@ -28,7 +28,7 @@ const items = [
   //     exact: true
   //   },
   //   value: '/attendanceInput',
-  //   roles: [Roles.MEMBER]
+  //   roles: [ERole.MEMBER]
   // },
   // 管理者画面
   {
@@ -40,7 +40,7 @@ const items = [
       exact: false
     },
     value: '/admin-user-list',
-    roles: [Roles.ADMIN]
+    roles: [ERole.ADMIN]
   },
   {
     title: t('leave_management'),
@@ -51,11 +51,11 @@ const items = [
       exact: false
     },
     value: '/leaveManagement',
-    roles: [Roles.ADMIN]
+    roles: [ERole.ADMIN]
   },
   // 担当者メニュー
   { type: 'divider' },
-  { type: 'subheader', title: t('management'), roles:[Roles.MANAGER]},
+  { type: 'subheader', title: t('management'), roles:[ERole.MANAGER]},
   { type: 'divider' },
   {
     title: t('user_requst_management'),
@@ -66,7 +66,7 @@ const items = [
       exact: true
     },
     value: '/userLeaveManagement',
-    roles: [Roles.MANAGER]
+    roles: [ERole.MANAGER]
   },
   {
     title: t('requst_confirm'),
@@ -77,11 +77,11 @@ const items = [
       exact: true
     },
     value: '/requstConfirm',
-    roles: [Roles.MANAGER]
+    roles: [ERole.MANAGER]
   },
   // ユーザーメニュー
   { type: 'divider' },
-  { type: 'subheader', title: t('member'), roles:[Roles.MEMBER]},
+  { type: 'subheader', title: t('member'), roles:[ERole.MEMBER]},
   { type: 'divider' },
   {
     title: t('leave_applying'),
@@ -92,7 +92,7 @@ const items = [
       exact: true
     },
     value: '/leaveApply',
-    roles: [Roles.MEMBER],
+    roles: [ERole.MEMBER],
   },
   { type: 'divider' },
   // 共通メニュー
@@ -105,7 +105,7 @@ const items = [
       exact: true
     },
     value: '/changePassword',
-    // roles: [Roles.ADMIN]
+    // roles: [ERole.ADMIN]
   },
   // {
   //   title: t('logout'),

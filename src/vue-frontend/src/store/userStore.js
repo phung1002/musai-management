@@ -1,4 +1,4 @@
-import { Roles } from '@/constants/role';
+import { ERole } from '@/constants/role';
 import { defineStore } from 'pinia';
 
 export const useUserStore = defineStore('user', {
@@ -13,13 +13,13 @@ export const useUserStore = defineStore('user', {
   // Getters
   getters: {
     isAdmin() {
-      return this.roles.some(role => role.value === Roles.ADMIN);
+      return this.roles.some(role => role.value === ERole.ADMIN);
     },
     isManager() {
-      return this.roles.some(role => role.value === Roles.MANAGER);
+      return this.roles.some(role => role.value === ERole.MANAGER);
     },
     isMember() {
-      return this.roles.some(role => role.value === Roles.MEMBER);
+      return this.roles.some(role => role.value === ERole.MEMBER);
     }
   },
   // Actions

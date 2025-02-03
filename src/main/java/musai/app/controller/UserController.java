@@ -4,7 +4,6 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,9 +19,9 @@ import musai.app.DTO.response.UserResponseDTO;
 import musai.app.services.UserService;
 import musai.app.validation.ValidationGroups;
 
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/user")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 	private final UserService userService;
 
@@ -36,7 +35,6 @@ public class UserController {
 	 * @return ResponseEntity
 	 */
 	@GetMapping("/list")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getAllUser() {
 		List<UserResponseDTO> response = userService.getAllUsers();
 		return ResponseEntity.ok(response);
@@ -49,7 +47,6 @@ public class UserController {
 	 * @return ResponseEntity
 	 */
 	@PostMapping("/add")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> addUser(
 			@Validated(ValidationGroups.CreateUser.class) @RequestBody UserRequestDTO userRequestDTO) {
 		MessageResponse response = userService.addUser(userRequestDTO);
@@ -63,7 +60,6 @@ public class UserController {
 	 * @return ResponseEntity
 	 */
 	@PutMapping("/edit/{userId}")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> editUser(@PathVariable Long userId,
 			@Validated @RequestBody UserRequestDTO userRequestDTO) {
 		MessageResponse response = userService.editUser(userId, userRequestDTO);
@@ -77,7 +73,7 @@ public class UserController {
 	 * @return ResponseEntity
 	 */
 	@DeleteMapping("/delete/{id}")
-	@PreAuthorize("hasRole('ROLE_ADMIN') and #id != principal.id")
+	@PreAuthorize("#id != principal.id")
 	public ResponseEntity<?> deleteUser(@PathVariable Long id) {
 		MessageResponse response = userService.deleteUser(id);
 		return ResponseEntity.ok(response);
