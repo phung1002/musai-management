@@ -1,5 +1,6 @@
 package musai.app.services.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,13 +28,13 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 	public MessageResponse createAddLeaveType(LeaveTypeRequestDTO leaveTypeDTO) {
 
 		if (leaveTypeRepository.existsByName(leaveTypeDTO.getName())) {
-			return new MessageResponse("Error: Name is already taken!");
+			throw new BadRequestException("Error: Name is already taken!");
 		}
 
 		LeaveType parent = null;
         if (leaveTypeDTO.getParentId() != null) {
             parent = leaveTypeRepository.findById(leaveTypeDTO.getParentId())
-                    .orElseThrow(() -> new RuntimeException("Parent not found!"));
+                    .orElseThrow(() -> new NotFoundException("Parent not found!"));
         }
         
 		// Create new LeaveType
@@ -52,6 +53,10 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 		// Fetch the existing LeaveType
 		LeaveType existingLeaveType = leaveTypeRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
+		
+		if (existingLeaveType.getDeletedAt() != null) {
+			throw new NotFoundException("Error: LeaveType not found");
+		}
 
 		if (leaveTypeRepository.existsByName(LeaveTypeDTO.getName())) {
 			throw new BadRequestException("Error: Name is already taken!");
@@ -70,12 +75,13 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 
 		// Fetch the existing LeaveType
 		LeaveType existingLeaveType = leaveTypeRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Error: LeaveType not found"));
+				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
 
 		if (existingLeaveType.getDeletedAt() != null) {
-			return new MessageResponse("Error: Not found!!");
+			 throw new NotFoundException("Error: LeaveType not found");
 		}
-
+		
+		existingLeaveType.setDeletedAt(LocalDateTime.now());
 		// Save Delete to database
 		leaveTypeRepository.save(existingLeaveType);
 
@@ -98,10 +104,14 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 	@Override
 	public LeaveTypeResponseDTO getLeaveTypeDetail(Long id) {
 
-		LeaveType LeaveType = leaveTypeRepository.findByIdAndDeletedAtIsNull(id)
+		LeaveType leaveType = leaveTypeRepository.findByIdAndDeletedAtIsNull(id)
 				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
 
-		return new LeaveTypeResponseDTO(LeaveType.getId(), LeaveType.getName(), LeaveType.getChildren());
+		if (leaveType.getDeletedAt() != null) {
+			throw new NotFoundException("Error: LeaveType not found");
+		}
+		
+		return new LeaveTypeResponseDTO(leaveType.getId(), leaveType.getName(), leaveType.getChildren());
 	}
 
 	@Override
@@ -112,13 +122,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 				.map(leave -> new LeaveTypeResponseDTO(leave.getId(), leave.getName(), leave.getChildren()))
 				.collect(Collectors.toList());
 
-		// if(filteredLeaves.isEmpty()) {
-		// throw new NotFoundException("Error: The keyword not found");
-		// }
-
 		return filteredLeaves;
 	}
 	
-
-
 }

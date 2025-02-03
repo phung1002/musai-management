@@ -7,6 +7,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,9 +23,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @NoArgsConstructor
@@ -30,11 +30,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "leave_types")
 public class LeaveType {
 
-	public LeaveType(String name, LeaveType parent, List<LeaveType> children) {
-		this.name = name;
-		this.parent = parent;
-		this.children = children;
-	}
+//	public LeaveType(String name, LeaveType parent, List<LeaveType> children) {
+//		this.name = name;
+//		this.parent = parent;
+//		this.children = children;
+//	}
 
 	public LeaveType(String name, LeaveType parent) {
 		this.name = name;
