@@ -47,7 +47,8 @@ public class UserServiceImpl implements UserService {
 																						// Set<String>
 								.map(role -> role.getName().name()) // get name of role (ERole)
 								.collect(Collectors.toSet()),
-						userResponseDTO.getFullName(), userResponseDTO.getDepartment(), userResponseDTO.getWorkPlace(),
+						userResponseDTO.getFullName(), userResponseDTO.getFullNameFufigana(),
+						userResponseDTO.getBirthday(), userResponseDTO.getDepartment(), userResponseDTO.getWorkPlace(),
 						userResponseDTO.getJoinDate(), userResponseDTO.getGender()))
 				.collect(Collectors.toList());
 		return lstUser;
@@ -78,7 +79,7 @@ public class UserServiceImpl implements UserService {
 		Set<Role> roles = new HashSet<>();
 
 		if (strRoles == null) {
-			Role memberRole = roleRepository.findByName(ERole.ROLE_MEMBER)
+			Role memberRole = roleRepository.findByName(ERole.MEMBER)
 					.orElseThrow(() -> new BadRequestException("Error: Role is not found."));
 			roles.add(memberRole);
 		} else {
@@ -91,16 +92,16 @@ public class UserServiceImpl implements UserService {
 				}
 
 				switch (enumRole) {
-				case ROLE_ADMIN:
-					roles.add(getRoleByName(ERole.ROLE_ADMIN));
+				case ADMIN:
+					roles.add(getRoleByName(ERole.ADMIN));
 					break;
 
-				case ROLE_MANAGER:
-					roles.add(getRoleByName(ERole.ROLE_MANAGER));
+				case MANAGER:
+					roles.add(getRoleByName(ERole.MANAGER));
 					break;
 
 				default:
-					roles.add(getRoleByName(ERole.ROLE_MEMBER));
+					roles.add(getRoleByName(ERole.MEMBER));
 					break;
 				}
 			});
@@ -163,16 +164,16 @@ public class UserServiceImpl implements UserService {
 					throw new BadRequestException("Error: Invalid role specified.");
 				}
 				switch (enumRole) {
-				case ROLE_ADMIN:
-					roles.add(getRoleByName(ERole.ROLE_ADMIN));
+				case ADMIN:
+					roles.add(getRoleByName(ERole.ADMIN));
 					break;
 
-				case ROLE_MANAGER:
-					roles.add(getRoleByName(ERole.ROLE_MANAGER));
+				case MANAGER:
+					roles.add(getRoleByName(ERole.MANAGER));
 					break;
 
 				default:
-					roles.add(getRoleByName(ERole.ROLE_MEMBER));
+					roles.add(getRoleByName(ERole.MEMBER));
 					break;
 				}
 			});

@@ -39,10 +39,16 @@ public class User {
 	@NotNull
 	@Column(name = "password", length = 120)
 	private String password;
-	
+
 	@Column(name = "full_name")
 	private String fullName;
 
+	@Column(name = "full_name_furigana")
+	private String fullNameFufigana;
+
+	@Column(name = "birthday")
+	private LocalDateTime birthday;
+	
 	@Column(name = "department")
 	private String department;
 

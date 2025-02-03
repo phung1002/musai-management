@@ -10,13 +10,14 @@
   "paid_leave_management": "Paid Leave Management",
   "paid_leave_request": "Paid Leave Request",
   "add": "Add",
-  "no": "No",
+  "number": "No",
   "type_something": "Type something",
   "full_name": "Full name",
   "role": "Role",
   "department": "Department",
   "work_place": "Work place",
-  "action": "Action",
+  "join_date": "Join date",
+  "gender": "Gender",
   "attendees_input": "Attendees Input",
   "leave_applying": "Leave Applying",
   "change_password": "Change Password",
@@ -39,7 +40,6 @@
   "half_day_leave": " Half Day Leave ",
   "special_day_leave": " Special Leave ",
   "special_occasions_leave": " Special Occasions Leave ",
-  "department": "Department",
   "leave_duration_from": "Leave Duration From",
   "leave_duration_to": "Leave Duration To",
   "leave_reason": "Leave Reason",
@@ -52,6 +52,11 @@
   "action": "Action",
   "leave_apply_list": "Leave Apply List",
   "items_per_page": "Items per page",
-  "register": "Register"
-
+  "register": "Register",
+  "create_user": "create User",
+  "requied": " requied",
+  "male": "male",
+  "female": "female",
+  "account": "account",
+  "detail_information": "detail information"
 }

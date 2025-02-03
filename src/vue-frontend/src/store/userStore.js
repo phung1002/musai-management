@@ -1,3 +1,4 @@
+import { Roles } from '@/constants/role';
 import { defineStore } from 'pinia';
 
 export const useUserStore = defineStore('user', {
@@ -5,24 +6,20 @@ export const useUserStore = defineStore('user', {
     token: '',
     username: '',
     fullName: '',
-    roles: [
-      { title: 'Admin', value: 'ROLE_ADMIN' },
-      { title: 'Management', value: 'ROLE_MANAGER' },
-      { title: 'Member', value: 'ROLE_MEMBER' }
-    ],
+    roles: [],
     authenticated: false
   }),
 
   // Getters
   getters: {
     isAdmin() {
-      return this.roles.some(role => role.value === 'ROLE_ADMIN');
+      return this.roles.some(role => role.value === Roles.ADMIN);
     },
     isManager() {
-      return this.roles.some(role => role.value === 'ROLE_MAMAGER');
+      return this.roles.some(role => role.value === Roles.MANAGER);
     },
     isMember() {
-      return this.roles.some(role => role.value === 'ROLE_MEMBER');
+      return this.roles.some(role => role.value === Roles.MEMBER);
     }
   },
   // Actions

@@ -23,23 +23,20 @@ public class DataInitializer implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		//Add roles if empty
+		// Add roles if empty
 		if (roleRepository.count() == 0) {
-			roleRepository.save(new Role(ERole.ROLE_ADMIN));
-			roleRepository.save(new Role(ERole.ROLE_MANAGER));
-			roleRepository.save(new Role(ERole.ROLE_MEMBER));
+			roleRepository.save(new Role(ERole.ADMIN));
+			roleRepository.save(new Role(ERole.MANAGER));
+			roleRepository.save(new Role(ERole.MEMBER));
 		}
-		
-		//Add admin if empty
-		if (userRepository.count() == 0) {
-			User user = new User(
-					"admin",
-					"admin@gmail.com",
-					"$2a$12$m3qeFYXkwyWhggLeiAAKd.l2yBfEkZhNkUuv/bCloaD/Pp5xyaDiS",
-					null, null, null, null, null);
 
-			Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-  				  .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+		// Add admin if empty
+		if (userRepository.count() == 0) {
+			User user = new User("admin", "admin@gmail.com",
+					"$2a$12$m3qeFYXkwyWhggLeiAAKd.l2yBfEkZhNkUuv/bCloaD/Pp5xyaDiS", null, null, null, null, null);
+
+			Role adminRole = roleRepository.findByName(ERole.ADMIN)
+					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 			user.getRoles().add(adminRole);
 			userRepository.save(user);
 		}

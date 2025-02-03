@@ -2,23 +2,17 @@
 import { reactive, ref, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { getAllUsers } from '@/api/user';
-import { useUserStore } from '@/store/userStore';
-import { computed } from 'vue';
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import AppToolbar from '@/components/layout/AppToolbar.vue';
+import { IUser } from '@/api/type';
+import CreateUser from './CreateUser.vue';
+import { useUserStore } from '@/store/userStore';
 
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  fullName: string;
-  roles: string[];
-  department: string;
-  workPlace: string;
-}
+const userStore = useUserStore();
+
 const formatRole = (role: string) => {
   // Delete "ROLE_" and upper the first case
-  return role.replace('ROLE_', '').toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  return role.toLowerCase();
 };
 
 // i18n: to translate
@@ -26,10 +20,10 @@ const { t } = useI18n();
 
 // Headers of table
 const headers = reactive([
-  { title: t('no'), key: 'no' },
+  { title: t('number'), key: 'number' },
   { title: t('username'), key: 'username' },
   { title: t('email'), key: 'email' },
-  { title: t('full_name'), key: 'fullname' },
+  { title: t('full_name'), key: 'fullName' },
   { title: t('role'), key: 'roles' },
   { title: t('department'), key: 'department' },
   { title: t('work_place'), key: 'workPlace' },
@@ -37,7 +31,7 @@ const headers = reactive([
 ]);
 
 // Status
-const users = ref<User[]>([]);
+const users = ref<IUser[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
 
@@ -48,9 +42,10 @@ const fetchUsers = async () => {
 
   try {
     const response = await getAllUsers(); // Call API
-    users.value = response.data.map((user: User) => ({
+
+    users.value = response.map((user: IUser) => ({
       ...user,
-      roles: user.roles.map(formatRole), // Format role
+      roles: user.roles.map(formatRole),
     }));
   } catch (error) {
     isError.value = true;
@@ -62,18 +57,28 @@ const fetchUsers = async () => {
 
 //set color for each role
 const getRoleColor = (role: string) => {
+  console.log('color: '+ role);
   switch (role) {
-    case 'Admin':
+    case 'admin':
       return 'red';
-    case 'Manager':
+    case 'manager':
       return 'yellow';
-    case 'Member':
+    case 'member':
       return 'green';
     default:
       return 'grey';
   }
 };
 
+const showDialog = ref(false);
+const handleCreateItem = () => {
+  showDialog.value = true;
+};
+// Hàm tìm kiếm role title theo value
+const getRoleTitle = (roleValue: string) => {
+  const role = userStore.roles.find(r => r.value === roleValue);
+  return role ? role.title : roleValue;
+};
 // Call API when component is mounted
 onMounted(() => {
   fetchUsers();
@@ -90,11 +95,11 @@ onMounted(() => {
     <VMain class="app-main">
       <VContainer class="app-container">
         <div class="page-wrapper">
-            <!-- Add user button -->
-            <VCardActions>
-              <VSpacer />
-              <VBtn color="primary" variant="elevated">{{ t('register') }}</VBtn>
-            </VCardActions>
+          <!-- Add user button -->
+          <VCardActions>
+           <VSpacer />
+            <VBtn color="primary" variant="elevated" @click="handleCreateItem">{{ t('register') }}</VBtn>
+          </VCardActions>
           <VCard>
             <!-- Search -->
             <VCardItem class="py-0">
@@ -123,7 +128,7 @@ onMounted(() => {
                 v-if="!isLoading && !isError"
               >
               <!-- Slot for 'no'  -->
-              <template v-slot:item.no="{ index }">
+              <template v-slot:item.number="{ index }">
                 {{ index + 1 }}
               </template>
 
@@ -137,7 +142,7 @@ onMounted(() => {
                     variant="elevated"
                     text-color="white"
                   >
-                    {{ role }}
+                    {{ t(getRoleTitle(role)) }}
                   </VChip>
                 </VChipGroup>
               </template>
@@ -171,6 +176,10 @@ onMounted(() => {
     </VContainer>
   </VMain>
 </VApp>
+
+<VDialog v-model="showDialog" width="auto" eager>
+  <CreateUser @form:cancel="showDialog = false" />
+</VDialog>
 </template>
 
 <style scoped>
