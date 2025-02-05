@@ -1,4 +1,4 @@
-<!--パスワード変更 確認　メッセージ -->
+<!--削除 確認　メッセージ -->
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 
@@ -15,7 +15,7 @@ const handleCancel = () => {
 <template>
   <VCard width="640px">
     <VToolbar tag="div">
-      <VToolbarTitle><VIcon icon= "mdi-alert"/>{{ t('pass_change_con_msg') }}</VToolbarTitle>
+      <VToolbarTitle><VIcon icon= "mdi-alert"/>{{ t('delete_con_msg') }}</VToolbarTitle>
       <VBtn icon="mdi-close" @click="$emit('form:cancel')"></VBtn>
     </VToolbar>
     <!-- 確認内容を表示 -->

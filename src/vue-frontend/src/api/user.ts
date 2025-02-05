@@ -26,3 +26,13 @@ export async function createUser(params: IUser): Promise<void> {
     throw error;
   }
 }
+export async function getProfile() {
+  const options = {
+    method: 'GET',
+    url: `/user/profile`,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  return axiosIns.request<IAccessToken>(options);
+}

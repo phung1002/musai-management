@@ -1,18 +1,62 @@
 <!-- パスワード変更　フォーム -->
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref,reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import PassChangeConrimView from '../massege/PassChangeConrimView.vue';
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const cPassword = ref('');
-const isPasswordVisible = ref(false);
-const isCPasswordVisible = ref(false);
-const showDialog = ref(false);
+import ConfimDialogView from '@/components/massege/ConfimDialogView.vue'
 const { t } = useI18n();
+const isDialogVisible = ref(false);
+
+// エラーメッセージの型定義
+interface Errors {
+  password: string | null;
+  confirmPassword: string | null;
+}
+
+// エラーメッセージ
+const errors = ref<Errors>({
+  password: null,
+  confirmPassword: null,
+})
+// フォームデータ
+const form = reactive({
+  username: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+})
+
+// フォームの送信処理
 const handleSubmit = () => {
-  showDialog.value = true;
+  // エラーをリセット
+  errors.value = { password: null, confirmPassword: null}
+
+  let valid = true
+
+  // パスワードチェック: 必須
+  if (form.password.valueOf() === '' ) {
+    errors.value.password = t('pw_required_error')
+    valid = false
+  }
+
+  // 再パスワードチェック: 必須
+  if (form.confirmPassword.valueOf() == '') {
+    errors.value.confirmPassword = t('confirm_pw_required_error')
+    valid = false
+  }
+  // パスワードと再パスワードの一致チェック
+  if (form.password.valueOf() !== form.confirmPassword.valueOf()) {
+    errors.value.confirmPassword = t('pw_matching_error')
+    valid = false
+  }
+  // バリデーション通過後、フォームデータを送信
+  if (valid) {
+    // 確認ポップアップを表示
+      isDialogVisible.value = true;
+    }
+}
+const onConfirmed = () => {
+  console.log("許可されました");
+  // ここに処理を追加
 };
 </script>
 
@@ -26,36 +70,43 @@ const handleSubmit = () => {
       <VForm class="mt-2" @submit.prevent="() => {}">
         <VRow>
           <VCol cols="12" md="6">
-            <VTextField v-model="username" :placeholder="t('username')"  readonly/>
+            <VTextField v-model="form.username" id = "username" :placeholder="t('username')"  readonly/>
           </VCol>
           <VCol cols="12" md="6">
-            <VTextField v-model="email" :placeholder="t('email')" readonly />
+            <VTextField v-model="form.email" id = "email" :placeholder="t('email')" readonly />
           </VCol>
           <VCol cols="12" md="6">
             <VTextField
-              v-model="password"
+              v-model="form.password"
+              id = "password"
               :placeholder="t('password')"
-              :type="isPasswordVisible ? 'text' : 'password'"
-              @click:append-inner="isPasswordVisible = !isPasswordVisible"
+              type="password" 
             />
+            <span style="color: red;" v-if="errors.password" class="error">{{ errors.password }}</span>
           </VCol>
           <VCol cols="12" md="6">
             <VTextField
-              v-model="cPassword"
+              v-model="form.confirmPassword"
+              id ="confirmPassword"
               :placeholder="t('password_confrim')"
-              :type="isCPasswordVisible ? 'text' : 'password'"
-              :append-inner-icon="isCPasswordVisible ? 'tabler-eye' : 'tabler-eye-off'"
-              @click:append-inner="isCPasswordVisible = !isCPasswordVisible"
+              type="password" 
             />
+            <span style="color: red;" v-if="errors.confirmPassword" class="error">{{ errors.confirmPassword }}</span>
           </VCol>
         </VRow>
         <VDivider />
         <VCardText class="d-flex gap-4">
           <VBtn @click="handleSubmit" class="mr-4">{{ t('change_password') }}</VBtn>
-          <VBtn type="reset" variant="tonal"> {{ t('cancel') }} </VBtn>
+          <VBtn type="reset" variant="tonal"> {{ t('reset') }} </VBtn>
         </VCardText>
-        <VDialog v-model="showDialog" width="auto" eager>
-          <PassChangeConrimView @form:cancel="showDialog = false" />
+        <VDialog v-model="isDialogVisible" width="auto" eager>
+          <ConfimDialogView 
+          :title="t('confrim')"
+          :message="t('pass_change_con_msg')"
+          :isVisible="isDialogVisible"
+          @update:isVisible="isDialogVisible = $event"
+          @confirmed="onConfirmed"
+        />
         </VDialog>
       </VForm>
     </VCardText>

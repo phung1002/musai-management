@@ -1,16 +1,27 @@
 <!-- プロファイル　表示 -->
 <script setup lang="ts">
 
-import { reactive, computed } from 'vue';
+import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUserStore } from '@/store/userStore';
-const { t } = useI18n();
+// import { getProfile } from '@/api/user';
 const userStore = useUserStore();
-const userRoles = computed(() => userStore.roles || []);
+const fullName = userStore.fullName;
+const { t } = useI18n();
 const emit = defineEmits(['form:cancel']);
 const handleCancel = () => {
   emit('form:cancel');
 };
+
+const filters = reactive({
+  userid: '',
+  username: '',
+  email: '',
+  department: '',
+  gender: '',
+  join_date: '',
+  birth_day: '',
+});
 </script>
 
 <template>
@@ -21,12 +32,21 @@ const handleCancel = () => {
         <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
       </VCardActions>
     </VToolbar>
-    <!-- <VDivider></VDivider> -->
-    <VCardText class="text-center">
+    <!-- 性別　男性の場合写真表示設定 -->
+    <VCardText class="text-center" v-if="filters.gender.valueOf() === 'male'">
       <img src="@\assets\images\users\avatar-4.png"  size="160" />
+    </VCardText>
+    <!-- 性別　女性の場合写真表示設定 -->
+    <VCardText class="text-center" v-if="filters.gender.valueOf() === 'female'">
+      <img src="@\assets\images\users\avatar-2.png"  size="160" />
+    </VCardText>
+    <!-- 性別　未登録の場合写真表示設定 -->
+    <VCardText class="text-center" v-if="filters.gender.valueOf() === ''">
+      <img src="@\assets\images\users\user.png"  size="160" />
+    </VCardText>
+    <VCardText class="text-center">
       <div class="mt-5">
-        <h3>user name</h3>
-        <!-- <p>{{ user.role }}</p> -->
+        <h3>{{ fullName }}</h3>
       </div>
     </VCardText>
     <VCardItem>
@@ -36,7 +56,7 @@ const handleCancel = () => {
           <template v-slot:prepend>
             <v-icon icon="mdi-card-account-details-outline"></v-icon>
           </template>
-          <VListItemTitle>id</VListItemTitle>
+          <VListItemTitle></VListItemTitle>
         </VListItem>
         <VListItem>
           <template v-slot:prepend>
@@ -54,13 +74,13 @@ const handleCancel = () => {
           <template v-slot:prepend>
             <v-icon icon="mdi-human-male-female"></v-icon>
           </template>
-          <VListItemTitle>sex</VListItemTitle>
+          <VListItemTitle>gender</VListItemTitle>
         </VListItem>
         <VListItem>
           <template v-slot:prepend>
             <v-icon icon="mdi-bank-transfer-in"></v-icon>
           </template>
-          <VListItemTitle>in date</VListItemTitle>
+          <VListItemTitle>join_date</VListItemTitle>
         </VListItem>
         <VListItem>
           <template v-slot:prepend>
