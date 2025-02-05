@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ProfileDropdown from '@/components/dropdown/ProfileDropdown.vue';
+import ProfileDropdown from '@/components/ui/ProfileDropdown.vue';
 import { useUserStore } from '@/store/userStore';
 
 const userStore = useUserStore();

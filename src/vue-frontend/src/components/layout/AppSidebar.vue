@@ -88,10 +88,10 @@ const items = [
     props: {
       prependIcon: 'mdi-email-arrow-right',
       link: true,
-      to: '/leaveApply',
+      to: '/leaveRequstList',
       exact: true
     },
-    value: '/leaveApply',
+    value: '/leaveRequstList',
     roles: [ERole.MEMBER],
   },
   { type: 'divider' },

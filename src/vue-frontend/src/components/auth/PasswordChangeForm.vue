@@ -2,7 +2,7 @@
 <script lang="ts" setup>
 import { ref,reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import ConfimDialogView from '@/components/massege/ConfimDialogView.vue'
+import ConfimDialogView from '@/components/common/ConfimDialog.vue';
 const { t } = useI18n();
 const isDialogVisible = ref(false);
 

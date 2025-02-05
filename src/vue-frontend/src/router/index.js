@@ -1,15 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import DefaultLayout from '../views/DefaultLayout.vue';
-import LoginView from '../views/LoginView.vue';
+import DefaultLayout from '../components/layout/DefaultLayout.vue';
+import LoginView from '../components/auth/LoginView.vue';
 import UnauthorizedView from '../views/UnauthorizedView.vue';
-import ListUser from '@/views/User.vue';
+import ListUser from '@/views/lists/User.vue';
 import { useUserStore } from '@/store/userStore';
-import PasChangeView from '@/views/PasChangeView.vue';
-import LeaveApplyView from '@/views/LeaveApplyView.vue';
+import PasChangeView from '@/views/PasswordChange.vue';
+import leaveRequstList from '@/views/LeaveRequestView.vue';
 import LeaveManagementView from '@/views/LeaveManagementView.vue';
 import UserLeaveManagementView from '@/views/UserLeaveManagementView.vue';
 import RequstConfirmView from '@/views/RequstConfirmView.vue';
-import ProfleView from '@/views/ProfleView.vue';
 import { validate } from '@/api/auth';
 import { ERole } from '@/constants/role';
 
@@ -62,21 +61,15 @@ const routes = [
   },
   // 休暇 申請
   {
-    path: '/leaveApply',
-    name: 'leaveApply',
-    component: LeaveApplyView,
+    path: '/leaveRequstList',
+    name: 'leaveRequstList',
+    component: leaveRequstList,
   },
   // パスワード 変更
   {
     path: '/changePassword',
     name: 'changePassword',
     component: PasChangeView,
-  },
-  // ユーザー プロフィル
-  {
-    path: '/profile',
-    name: 'profile',
-    component: ProfleView,
   },
   {
     path: '/admin/home',

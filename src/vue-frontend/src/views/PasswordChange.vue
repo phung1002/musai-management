@@ -1,11 +1,8 @@
-<!-- プロファイル　画面 -->
+<!-- パスワード変更　画面 -->
 <script setup lang="ts">
-//import { RouterView, useRoute } from 'vue-router';
-// import { useLocale } from 'vuetify';
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import AppToolbar from '@/components/layout/AppToolbar.vue';
-// const route = useRoute();
-// const { t } = useLocale();
+import PasswordChangeTabForm from '@/components/auth/PasswordChangeForm.vue'
 </script>
 
 <template>
@@ -18,9 +15,7 @@ import AppToolbar from '@/components/layout/AppToolbar.vue';
     <VMain class="app-main">
       <VContainer class="app-container">
         <div class="page-wrapper">
-          <!--
-          <h3 class="page-title">{{ t(String(route.name).toLocaleLowerCase()) }}</h3>
-          -->
+          <PasswordChangeTabForm />
           <RouterView />
         </div>
       </VContainer>
@@ -42,5 +37,3 @@ import AppToolbar from '@/components/layout/AppToolbar.vue';
   }
 }
 </style>
-
-

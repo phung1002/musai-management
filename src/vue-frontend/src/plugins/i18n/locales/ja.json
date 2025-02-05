@@ -16,6 +16,7 @@
     "full_name_furigana": "氏名（フリガナ）",
     "birthday": "生年月日",
     "role": "権限",
+    "department": "部署名",
     "work_place": "現場",
     "join_date": "入社日",
     "gender": "性別",
@@ -62,9 +63,8 @@
     "pw_required_error": "パスワード入力必須" ,
     "confirm_pw_required_error": "パスワード再入力必須",
     "required" : "必須",
-    "invalid_range": "より前の日選択しています。"
+    "invalid_range": "より前の日選択しています。",
     "create_user": "ユーザー登録",
-    "required": "を入力してください",
     "male": "男性",
     "female": "女性",
     "account": "アカウント",
