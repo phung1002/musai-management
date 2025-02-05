@@ -65,7 +65,6 @@
   "required" : "required",
   "invalid_range": "Select day not matching",
   "create_user": "create User",
-  "required": " required",
   "male": "male",
   "female": "female",
   "account": "account",

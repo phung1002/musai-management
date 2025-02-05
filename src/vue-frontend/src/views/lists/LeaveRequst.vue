@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import LeaveApplyForm from '@/components/forms/LeaveApplyForm.vue';
-import ConfimDialogView from '@/components/massege/ConfimDialogView.vue'
+import LeaveRequestFormVue from '@/components/leaveRequest/LeaveRequestForm.vue.vue';
+import ConfimDialogView from '@/components/common/ConfimDialog.vue';
 import { getAllUsers } from '@/api/user';
 import { getApplyLists} from '@/api/requst';
 const { t } = useI18n();
@@ -142,7 +142,7 @@ const onDeleted = () => {
               <VSpacer />
               <VBtn color="primary" variant="elevated" @click="handleCreateItem"><v-icon icon="mdi-plus" start></v-icon>{{ t('leave_applying') }}
                 <VDialog v-model="applyFrom" width="auto" eager>
-                  <LeaveApplyForm @form:cancel="applyFrom = false" />
+                  <LeaveRequestFormVue @form:cancel="applyFrom = false" />
                 </VDialog>
               </VBtn>
             </VCardActions>

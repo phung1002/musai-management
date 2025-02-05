@@ -1,4 +1,4 @@
-import { IUser } from '@/types/type';
+import { IAccessToken, IUser } from '@/types/type';
 import axiosIns from '@/plugins/axios';
 
 // call to api create user

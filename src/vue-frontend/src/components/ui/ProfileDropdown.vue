@@ -2,8 +2,8 @@
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import {reactive,ref } from 'vue';
-import ConfimDialogView from '../massege/ConfimDialogView.vue';
-import ProfileDropdown from '@/components/profile/VerticalProfileCard.vue';
+import ConfimDialogView from '@/components/common/ConfimDialog.vue';
+import ProfileDropdown from '@/components/auth/ProfileCard.vue';
 const isDialogVisible = ref(false);
 const showProfileView = ref(false);
 const { t } = useI18n();
