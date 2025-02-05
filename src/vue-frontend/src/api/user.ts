@@ -11,3 +11,13 @@ export async function getAllUsers() {
   };
   return axiosIns.request<IAccessToken>(options);
 }
+export async function getProfile() {
+  const options = {
+    method: 'GET',
+    url: `/user/profile`,
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  return axiosIns.request<IAccessToken>(options);
+}

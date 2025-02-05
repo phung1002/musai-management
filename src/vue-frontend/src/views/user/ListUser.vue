@@ -26,7 +26,7 @@ const { t } = useI18n();
 
 // Headers of table
 const headers = reactive([
-  { title: t('no'), key: 'no' },
+  { title: t('number'), key: 'no' },
   { title: t('username'), key: 'username' },
   { title: t('email'), key: 'email' },
   { title: t('full_name'), key: 'fullname' },
@@ -89,39 +89,40 @@ onMounted(() => {
     <!------Page-------->
     <VMain class="app-main">
       <VContainer class="app-container">
-        <div class="page-wrapper">
+        <VCard flat elevation="0">
+          <VToolbar tag="div">
+            <VToolbarTitle><VIcon icon= "mdi-list-box"/>{{ t('user_list') }}</VToolbarTitle>
             <!-- Add user button -->
             <VCardActions>
               <VSpacer />
-              <VBtn color="primary" variant="elevated">{{ t('register') }}</VBtn>
+              <VBtn color="primary" variant="elevated"><v-icon icon="mdi-plus" start></v-icon>{{ t('user_register') }}</VBtn>
             </VCardActions>
-          <VCard>
+          </VToolbar>
             <!-- Search -->
-            <VCardItem class="py-0">
-              <VToolbar tag="div" color="transparent" flat>
-                <VTextField
-                  :prepend-icon="'mdi-filter-variant'"
-                  :placeholder="t('type_something')"
-                  hide-details
-                  clearable
-                  variant="plain"
-                  class="search"
-                />
-                <VBtn icon density="comfortable">
-                  <VIcon>mdi-magnify</VIcon>
-                </VBtn>
-              </VToolbar>
-            </VCardItem>
-
-            <VDivider/>
-            <!--Table list user -->
-            <VCardItem>
-              <VDataTable
-                :headers="headers"
-                :items="users"
-                :items-per-page-text="t('items_per_page')"
-                v-if="!isLoading && !isError"
-              >
+          <VCardItem class="py-0">
+            <VToolbar tag="div" color="transparent" flat>
+              <VTextField
+                :prepend-icon="'mdi-filter-variant'"
+                :placeholder="t('type_something')"
+                hide-details
+                clearable
+                variant="plain"
+                class="search"
+              />
+              <VBtn icon density="comfortable">
+                <VIcon>mdi-magnify</VIcon>
+              </VBtn>
+            </VToolbar>
+          </VCardItem>
+          <VDivider/>
+          <!--Table list user -->
+          <VCardItem>
+            <VDataTable
+              :headers="headers"
+              :items="users"
+              :items-per-page-text="t('items_per_page')"
+              v-if="!isLoading && !isError"
+            >
               <!-- Slot for 'no'  -->
               <template v-slot:item.no="{ index }">
                 {{ index + 1 }}
@@ -142,32 +143,30 @@ onMounted(() => {
                 </VChipGroup>
               </template>
 
-              <!-- Slot for 'action'  -->
-              <template v-slot:item.action="{ item }">
-                <div class="action-buttons">
-                  <VBtn
-                    icon
-                    variant="plain"
-                    class="action-btn"
-                    @click="onEdit(item)"
-                  >
-                    <VIcon color="blue">mdi-pencil</VIcon>
-                  </VBtn>
-                  <VBtn
-                    icon
-                    variant="plain"
-                    class="action-btn"
-                    @click="onDelete(item)"
-                  >
-                    <VIcon color="red">mdi-delete</VIcon>
-                  </VBtn>
-                </div>
-              </template>
-
+            <!-- Slot for 'action'  -->
+            <template v-slot:item.action="{ item }">
+              <div class="action-buttons">
+                <VBtn
+                  icon
+                  variant="plain"
+                  class="action-btn"
+                  @click="onEdit(item)"
+                >
+                  <VIcon color="blue">mdi-pencil</VIcon>
+                </VBtn>
+                <VBtn
+                  icon
+                  variant="plain"
+                  class="action-btn"
+                  @click="onDelete(item)"
+                >
+                  <VIcon color="red">mdi-delete</VIcon>
+                </VBtn>
+              </div>
+            </template>
             </VDataTable>
           </VCardItem>
         </VCard>
-      </div>
     </VContainer>
   </VMain>
 </VApp>

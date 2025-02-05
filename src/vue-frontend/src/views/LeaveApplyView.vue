@@ -4,8 +4,7 @@
 // import { useLocale } from 'vuetify';
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import AppToolbar from '@/components/layout/AppToolbar.vue';
-import LeaveApplyForm from '@/components/forms/LeaveApplyForm.vue';
-import UserApplyLiset from './lists/UserApplyLiset.vue';
+import UserApplyList from './lists/UserApplyList.vue';
 // const route = useRoute();
 // const { t } = useLocale();
 </script>
@@ -21,7 +20,7 @@ import UserApplyLiset from './lists/UserApplyLiset.vue';
       <VContainer class="app-container">
         <div class="page-wrapper">
           <!-- <LeaveApplyForm /> -->
-          <UserApplyLiset />
+          <UserApplyList />
           <!--
           <h3 class="page-title">{{ t(String(route.name).toLocaleLowerCase()) }}</h3>
           -->

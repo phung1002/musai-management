@@ -83,7 +83,7 @@ const items = [
   { type: 'subheader', title: t('member'), roles:['ROLE_MEMBER']},
   { type: 'divider' },
   {
-    title: t('leave_applying'),
+    title: t('leave_apply_list'),
     props: {
       prependIcon: 'mdi-email-arrow-right',
       link: true,
