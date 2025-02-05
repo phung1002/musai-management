@@ -2,8 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import DefaultLayout from '../views/DefaultLayout.vue';
 import LoginView from '../views/LoginView.vue';
 import UnauthorizedView from '../views/UnauthorizedView.vue';
-import ListUser from '@/views/user/ListUser.vue';
-
+import ListUser from '@/views/User.vue';
 import { useUserStore } from '@/store/userStore';
 import PasChangeView from '@/views/PasChangeView.vue';
 import LeaveApplyView from '@/views/LeaveApplyView.vue';
@@ -12,6 +11,8 @@ import UserLeaveManagementView from '@/views/UserLeaveManagementView.vue';
 import RequstConfirmView from '@/views/RequstConfirmView.vue';
 import ProfleView from '@/views/ProfleView.vue';
 import { validate } from '@/api/auth';
+import { ERole } from '@/constants/role';
+
 const routes = [
   {
     path: '/unauthorized',
@@ -38,7 +39,7 @@ const routes = [
     component: ListUser,
     meta: {
       requiresAuth: true,
-      requiredRoles: ['ROLE_ADMIN']
+      requiredRoles: [ERole.ADMIN]
     },
   },
   // 休暇 管理
@@ -83,7 +84,7 @@ const routes = [
     component: DefaultLayout,
     meta: {
       requiresAuth: true,
-      requiredRoles: ['ROLE_ADMIN']
+      requiredRoles: [ERole.ADMIN]
     },
   },
 ];

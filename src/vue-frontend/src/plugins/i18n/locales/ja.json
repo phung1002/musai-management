@@ -12,9 +12,13 @@
     "add": "追加",
     "number": "番号",
     "type_something": "検索キーワードを入力",
-    "full_name": "名前",
+    "full_name": "氏名",
+    "full_name_furigana": "氏名（フリガナ）",
+    "birthday": "生年月日",
     "role": "権限",
     "work_place": "現場",
+    "join_date": "入社日",
+    "gender": "性別",
     "attendees_input": "勤怠 入力",
     "leave_applying": "休暇 申請",
     "change_password": "パスワード 変更",
@@ -28,7 +32,7 @@
     "requst_confirm": "申請 確認",
     "leave_management": "休暇 管理",
     "admin": "管理者",
-    "management" : "担当者",
+    "manager" : "担当者",
     "member": "ユーザー",
     "leave_type": "休暇 区分",
     "paid_leave": "有休",
@@ -37,7 +41,6 @@
     "half_day_leave": " 半休 ",
     "special_day_leave": " 特別 休暇 ",
     "special_occasions_leave": " 慶弔 休暇 ",
-    "department": "部署",
     "leave_duration_from": "休暇 開始日",
     "leave_duration_to": "休暇 終了日",
     "leave_reason": "休暇 理由",
@@ -60,4 +63,31 @@
     "confirm_pw_required_error": "パスワード再入力必須",
     "required" : "必須",
     "invalid_range": "より前の日選択しています。"
+    "create_user": "ユーザー登録",
+    "required": "を入力してください",
+    "male": "男性",
+    "female": "女性",
+    "account": "アカウント",
+    "detail_information": "詳細情報",
+    "message": {
+        "add_success": "新規作成が成功しました。",
+        "add_failure": "新規作成に失敗しました。",
+        "update_success": "更新が成功しました。",
+        "update_failure": "更新に失敗しました。",
+        "delete_success": "削除が成功しました。",
+        "delete_failure": "削除に失敗しました。"
+    },
+    "validation": {
+        "required_input": "このフィールドは必須です",
+        "length_between": "{n} 文字から {m} 文字の間で入力してください。",
+        "email_format": "正しいメールアドレスを入力してください。",
+        "password_confirm": "パスワードの確認はパスワードと一致する必要があります。",
+        "password_format": "パスワードには大文字、小文字、数字が含まれている必要があります。",
+        "furigana_format": "正しいふりがなの形式で入力してください。",
+        "halfsize": "半角文字のみを入力してください。"
+  },
+  "genders": {
+    "male": "男性",
+    "female": "女性"
+  }
 }

@@ -1,4 +1,4 @@
-import { IAccessToken } from './type';
+import { IAccessToken } from '@/types/type';
 import axiosIns from '@/plugins/axios';
 import { useUserStore } from '@/store/userStore';
 
@@ -23,19 +23,28 @@ export async function login(params: LoginParams): Promise<IAccessToken> {
 
     // return data
     return response.data;
-  } catch (error) {
-    // Catch error
-    console.error('Login failed', error);
+  } catch (error: any) {
+    if (error.response) {
+      console.error('Login failed:', error.response.data);
+    } else {
+      console.error('Network or unexpected error:', error);
+    }
     throw error;
   }
 }
 
 // call to api logout
 export async function logout() {
+  const userStore = useUserStore();
   try {
-    // server will delete cookie
     await axiosIns.post('/auth/logout');
     console.log('Logged out successfully');
+
+    // Reset user state
+    userStore.setAuthenticated(false);
+    userStore.setRoles([]);
+    userStore.setUsername('');
+    userStore.setFullName('');
   } catch (error) {
     console.error('Logout failed', error);
   }

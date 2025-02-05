@@ -28,3 +28,18 @@ export interface ILeaveRequest {
   status: confrimStatus;
   access_token?: string;
 }
+
+export interface IUser {
+  id: number | null;
+  username: string;
+  email: string;
+  password: string;
+  fullName: string;
+  fullNameFurigana: string;
+  birthday: string | null;
+  roles: string[];
+  department: string;
+  workPlace: string;
+  joinDate:  string | null;
+  gender: string;
+}

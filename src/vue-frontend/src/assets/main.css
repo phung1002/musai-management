@@ -103,3 +103,9 @@ a,
     padding: 10px;
   }
 }
+.gender-radio-group .v-selection-control-group{
+  display: flex;
+  flex-direction: row;
+  gap: 10px; 
+  margin-left: 20%;
+}

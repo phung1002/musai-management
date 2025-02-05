@@ -3,13 +3,14 @@ package musai.app.DTO.response;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
 public class UserResponseDTO {
-	
+
 	private Long id;
 
 	private String username;
@@ -19,6 +20,10 @@ public class UserResponseDTO {
 	private Set<String> roles;
 
 	private String fullName;
+
+	private String fullNameFufigana;
+
+	private LocalDateTime birthday;
 
 	private String department;
 

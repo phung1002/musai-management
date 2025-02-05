@@ -13,9 +13,13 @@
   "number": "No",
   "type_something": "Type something",
   "full_name": "Full name",
+  "full_name_furigana": "Full name furigana",
+  "birthday": "Birthday",
   "role": "Role",
   "department": "Department",
   "work_place": "Work place",
+  "join_date": "Join date",
+  "gender": "Gender",
   "attendees_input": "Attendees Input",
   "leave_applying": "Leave Applying",
   "change_password": "Change Password",
@@ -29,7 +33,7 @@
   "requst_confirm": "Rqust Confirm",
   "leave_management": "Leave Management",
   "admin": "Admin",
-  "management" : "Management",
+  "manager" : "Management",
   "member": "Member",
   "leave_type": "Leave Type",
   "paid_leave": "Paid Leave",
@@ -59,6 +63,28 @@
   "pw_required_error": "Password is required" ,
   "confirm_pw_required_error": "Confirm Password is required",
   "required" : "required",
-  "invalid_range": "Select day not matching"
-
+  "invalid_range": "Select day not matching",
+  "create_user": "create User",
+  "required": " required",
+  "male": "male",
+  "female": "female",
+  "account": "account",
+  "detail_information": "detail information",
+  "message": {
+    "add_success": "Addition successful!",
+    "add_failure": "Addition failed.",
+    "update_success": "Update successful!",
+    "update_failure": "Update failed.",
+    "delete_success": "Deletion successful!",
+    "delete_failure": "Deletion failed."
+  },
+  "validation": {
+    "required_input": "This field is required",
+    "length_between": "Please enter between {n} and {m} characters.",
+    "email_format": "Please enter a valid email address.",
+    "password_confirm": "Password confirmation must match the password.",
+    "password_format": "Password must include uppercase, lowercase, and numbers.",
+    "furigana_format": "Please enter the furigana in the correct format.",
+    "halfsize": "Please enter half-size characters only."
+  }
 }
