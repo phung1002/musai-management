@@ -1,4 +1,4 @@
-import { IAccessToken } from './type';
+import { IAccessToken } from '@/types/type';
 import axiosIns from '@/plugins/axios';
 import { useUserStore } from '@/store/userStore';
 
@@ -20,8 +20,6 @@ export async function login(params: LoginParams): Promise<IAccessToken> {
     userStore.setRoles(data.roles);
     userStore.setUsername(data.username);
     userStore.setFullName(data.fullName);
-
-    console.log(userStore);
 
     // return data
     return response.data;

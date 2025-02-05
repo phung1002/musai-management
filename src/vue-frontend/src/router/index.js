@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import DefaultLayout from '../views/DefaultLayout.vue';
 import LoginView from '../views/LoginView.vue';
 import UnauthorizedView from '../views/UnauthorizedView.vue';
-import ListUser from '@/views/user/ListUser.vue';
+import ListUser from '@/views/User.vue';
 import { useUserStore } from '@/store/userStore';
 import PasChangeView from '@/views/PasChangeView.vue';
 import LeaveApplyView from '@/views/LeaveApplyView.vue';

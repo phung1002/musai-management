@@ -12,8 +12,8 @@
     "add": "追加",
     "number": "番号",
     "type_something": "検索キーワードを入力",
-    "full_name": "名前",
-    "full_name_furigana": "フリガナ",
+    "full_name": "氏名",
+    "full_name_furigana": "氏名（フリガナ）",
     "birthday": "生年月日",
     "role": "権限",
     "department": "部署",
@@ -56,17 +56,30 @@
     "items_per_page": "表示行数",
     "register": "登録",
     "create_user": "ユーザー登録",
-    "requied": "を入力してください",
+    "required": "を入力してください",
     "male": "男性",
     "female": "女性",
     "account": "アカウント",
     "detail_information": "詳細情報",
     "message": {
-    "add_success": "新規作成が成功しました。",
-    "add_failure": "新規作成に失敗しました。",
-    "update_success": "更新が成功しました。",
-    "update_failure": "更新に失敗しました。",
-    "delete_success": "削除が成功しました。",
-    "delete_failure": "削除に失敗しました。"
-    }
+        "add_success": "新規作成が成功しました。",
+        "add_failure": "新規作成に失敗しました。",
+        "update_success": "更新が成功しました。",
+        "update_failure": "更新に失敗しました。",
+        "delete_success": "削除が成功しました。",
+        "delete_failure": "削除に失敗しました。"
+    },
+    "validation": {
+        "required_input": "このフィールドは必須です",
+        "length_between": "{n} 文字から {m} 文字の間で入力してください。",
+        "email_format": "正しいメールアドレスを入力してください。",
+        "password_confirm": "パスワードの確認はパスワードと一致する必要があります。",
+        "password_format": "パスワードには大文字、小文字、数字が含まれている必要があります。",
+        "furigana_format": "正しいふりがなの形式で入力してください。",
+        "halfsize": "半角文字のみを入力してください。"
+  },
+  "genders": {
+    "male": "男性",
+    "female": "女性"
+  }
 }

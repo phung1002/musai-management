@@ -56,7 +56,7 @@
   "items_per_page": "Items per page",
   "register": "Register",
   "create_user": "create User",
-  "requied": " requied",
+  "required": " required",
   "male": "male",
   "female": "female",
   "account": "account",
@@ -68,5 +68,14 @@
     "update_failure": "Update failed.",
     "delete_success": "Deletion successful!",
     "delete_failure": "Deletion failed."
+  },
+  "validation": {
+    "required_input": "This field is required",
+    "length_between": "Please enter between {n} and {m} characters.",
+    "email_format": "Please enter a valid email address.",
+    "password_confirm": "Password confirmation must match the password.",
+    "password_format": "Password must include uppercase, lowercase, and numbers.",
+    "furigana_format": "Please enter the furigana in the correct format.",
+    "halfsize": "Please enter half-size characters only."
   }
 }

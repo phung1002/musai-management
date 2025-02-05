@@ -1,11 +1,6 @@
 <template>
   <div>
-    <VSnackbar
-      v-model="snackbar.isColorSnackbarVisible"
-      top
-      center
-      :color="snackbar.color"
-    >
+    <VSnackbar v-model="snackbar.isColorSnackbarVisible" top center :color="snackbar.color">
       <!-- Render message type array -->
       <template v-if="isMessageObject">
         <div v-for="(messages, key) in snackbar.message" :key="key">
@@ -18,14 +13,10 @@
       <template v-else>
         {{ snackbar.message }}
       </template>
+
       <!-- Close button -->
       <template v-slot:action="{ attrs }">
-        <VBtn
-          color="white"
-          text
-          v-bind="attrs"
-          @click="snackbar.isColorSnackbarVisible = false"
-        >
+        <VBtn color="white" text v-bind="attrs" @click="closeSnackbar">
           <VIcon>{{ icons.mdiClose }}</VIcon>
         </VBtn>
       </template>
@@ -36,25 +27,19 @@
 <script>
 import { mdiClose } from '@mdi/js';
 import { computed } from 'vue';
+import { useSnackbar } from '@/composables/useSnackbar';
 
 export default {
-  props: {
-    snackbar: {
-      type: Object,
-      required: true,
-      default: () => ({
-        isColorSnackbarVisible: false,
-        message: null,
-        color: 'error',
-      }),
-    },
-  },
-  setup(props) {
+  setup() {
+    const { snackbar, closeSnackbar } = useSnackbar();
     const isMessageObject = computed(() =>
-      Object.prototype.toString.call(props.snackbar.message) === '[object Object]'
+
+      Object.prototype.toString.call(snackbar.value.message) === '[object Object]'
     );
 
     return {
+      snackbar,
+      closeSnackbar,
       icons: { mdiClose },
       isMessageObject,
     };
@@ -64,9 +49,9 @@ export default {
 
 <style>
 .theme--light.v-data-table td {
-  color: rgba(0,0,0,.87) !important;
+  color: rgba(0, 0, 0, 0.87) !important;
 }
-.v-snackbar{
+.v-snackbar {
   align-items: flex-start !important;
 }
 </style>
