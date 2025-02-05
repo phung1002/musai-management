@@ -35,9 +35,11 @@ export interface IUser {
   email: string;
   password: string;
   fullName: string;
+  fullNameFurigana: string;
+  birthday: string | null;
   roles: string[];
   department: string;
   workPlace: string;
-  joinDate:  Date | null;
+  joinDate:  string | null;
   gender: string;
 }

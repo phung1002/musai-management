@@ -4,16 +4,16 @@ import { useI18n } from 'vue-i18n';
 import { getAllUsers } from '@/api/user';
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import AppToolbar from '@/components/layout/AppToolbar.vue';
-import { IUser } from '@/api/type';
-import CreateUser from './CreateUser.vue';
+import { IUser } from '@/types/type';
+import UserForm from '@/components/user/UserForm.vue';
 import { useUserStore } from '@/store/userStore';
+import SnackBar from '@/components/common/SnackBar.vue';
+import { useSnackbar } from '@/composables/useSnackbar';
 
+const { snackbar } = useSnackbar();
 const userStore = useUserStore();
 
-const formatRole = (role: string) => {
-  // Delete "ROLE_" and upper the first case
-  return role.toLowerCase();
-};
+const formatRole = (role: string) => role.toLowerCase();
 
 // i18n: to translate
 const { t } = useI18n();
@@ -57,7 +57,6 @@ const fetchUsers = async () => {
 
 //set color for each role
 const getRoleColor = (role: string) => {
-  console.log('color: '+ role);
   switch (role) {
     case 'admin':
       return 'red';
@@ -69,9 +68,10 @@ const getRoleColor = (role: string) => {
       return 'grey';
   }
 };
-
+const isEdit = ref(false);
 const showDialog = ref(false);
 const handleCreateItem = () => {
+  isEdit.value = false;
   showDialog.value = true;
 };
 // Hàm tìm kiếm role title theo value
@@ -93,6 +93,7 @@ onMounted(() => {
     <AppToolbar />
     <!------Page-------->
     <VMain class="app-main">
+      <SnackBar :snackbar="snackbar"></SnackBar>
       <VContainer class="app-container">
         <div class="page-wrapper">
           <!-- Add user button -->
@@ -150,20 +151,10 @@ onMounted(() => {
               <!-- Slot for 'action'  -->
               <template v-slot:item.action="{ item }">
                 <div class="action-buttons">
-                  <VBtn
-                    icon
-                    variant="plain"
-                    class="action-btn"
-                    @click="onEdit(item)"
-                  >
+                  <VBtn icon variant="plain" class="action-btn" @click="onEdit(item)">
                     <VIcon color="blue">mdi-pencil</VIcon>
                   </VBtn>
-                  <VBtn
-                    icon
-                    variant="plain"
-                    class="action-btn"
-                    @click="onDelete(item)"
-                  >
+                  <VBtn icon variant="plain" class="action-btn" @click="onDelete(item)">
                     <VIcon color="red">mdi-delete</VIcon>
                   </VBtn>
                 </div>
@@ -176,9 +167,9 @@ onMounted(() => {
     </VContainer>
   </VMain>
 </VApp>
-
-<VDialog v-model="showDialog" width="auto" eager>
-  <CreateUser @form:cancel="showDialog = false" />
+<!-- Dialog Create/Update user -->
+<VDialog v-model="showDialog" width="auto" persistent>
+  <UserForm :isEdit="isEdit" @form:cancel="showDialog = false" />
 </VDialog>
 </template>
 
@@ -211,3 +202,4 @@ onMounted(() => {
   background-color: #f5f5f5;
 }
 </style>
+../../components/user/UserForm.vue

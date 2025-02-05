@@ -13,6 +13,8 @@
   "number": "No",
   "type_something": "Type something",
   "full_name": "Full name",
+  "full_name_furigana": "Full name furigana",
+  "birthday": "Birthday",
   "role": "Role",
   "department": "Department",
   "work_place": "Work place",
@@ -31,7 +33,7 @@
   "requst_confirm": "Rqust Confirm",
   "leave_management": "Leave Management",
   "admin": "Admin",
-  "management" : "Management",
+  "manager" : "Management",
   "member": "Member",
   "leave_type": "Leave Type",
   "paid_leave": "Paid Leave",
@@ -54,9 +56,26 @@
   "items_per_page": "Items per page",
   "register": "Register",
   "create_user": "create User",
-  "requied": " requied",
+  "required": " required",
   "male": "male",
   "female": "female",
   "account": "account",
-  "detail_information": "detail information"
+  "detail_information": "detail information",
+  "message": {
+    "add_success": "Addition successful!",
+    "add_failure": "Addition failed.",
+    "update_success": "Update successful!",
+    "update_failure": "Update failed.",
+    "delete_success": "Deletion successful!",
+    "delete_failure": "Deletion failed."
+  },
+  "validation": {
+    "required_input": "This field is required",
+    "length_between": "Please enter between {n} and {m} characters.",
+    "email_format": "Please enter a valid email address.",
+    "password_confirm": "Password confirmation must match the password.",
+    "password_format": "Password must include uppercase, lowercase, and numbers.",
+    "furigana_format": "Please enter the furigana in the correct format.",
+    "halfsize": "Please enter half-size characters only."
+  }
 }

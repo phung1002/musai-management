@@ -1,137 +1,73 @@
 <script setup lang="ts">
-import { reactive, watch } from 'vue';
-import { useUserStore } from '@/store/userStore';
-import { IUser } from '@/api/type';
+import { reactive, ref, watch, computed } from 'vue';
+import { IUser } from '@/types/type';
 import { useI18n } from 'vue-i18n';
-import { ref } from 'vue';
-import { createUser, getAllUsers } from '@/api/user';
+import { userValidator } from '@/utils/validation';
+import { roles, defaultUser, formRules, genders } from '../../configs/userFormConfig';
+import { handleSubmit  } from '../../composables/useUserForm';
 
 const { t } = useI18n();
+const submiting = ref(false);
+const validator = userValidator(t);
+const formRef = ref(null);
 const props = defineProps<{ user?: IUser, isEdit: boolean }>();
+const activeTab =  ref('account');
 const emit = defineEmits(['form:cancel']);
 
-const formRules = reactive({
-  username: [
-    (value: string) => {
-      if (value) return true;
-      return t('username')+ t('requied');
-    }
-  ],
-  email: [
-    (value: string) => {
-      if (value) return true;
-      return t('email')+ t('requied');
-    }
-  ],
-  password: [
-    (value: string) => {
-      if (value) return true;
-      return t('password')+ t('requied');
-    }
-  ],
-  confirmPassword: [
-    (value: string) => {
-      if (value) return true;
-      return t('password_confrim')+ t('requied');
-    }
-  ],
-  fullName: [
-    (value: string) => {
-      if (value) return true;
-      return t('full_name')+ t('requied');
-    }
-  ],
-  roles: [
-    (value: string[]) => {
-      console.log(value);
-
-      if (value) return true;
-      return t('role')+ t('requied');
-    }
-  ],
-  department: [
-    (value: string) => {
-      if (value) return true;
-      return t('department')+ t('requied');
-    }
-  ],
-  workPlace: [
-    (value: string) => {
-      if (value) return true;
-      return t('work_place')+ t('requied');
-    }
-  ],
-  joinDate: [
-    (value: string) => {
-      if (value) return true;
-      return t('join_date')+ t('requied');
-    }
-  ],
-  gender: [
-    (value: string) => {
-      if (value) return true;
-      return t('gender')+ t('requied');
-    }
-  ],
-});
-const defaultUser: IUser = {
-  id: null,
-  username: '',
-  email: '',
-  password: '',
-  fullName: '',
-  roles: [],
-  department: '',
-  workPlace: '',
-  joinDate: null,
-  gender: '',
-};
 const formModel = reactive<IUser>(
   props.isEdit ? { ...defaultUser, ...props.user } :
   { ...defaultUser }
 );
+// const formModel: Ref<IUser> = ref({ ...defaultUser });
 
-const confirmPassword =ref('');
-const userStore = useUserStore();
-const submiting = ref(false);
-const formValid = ref(true);
-const errorMessage = ref('');
-const handleSubmit = async () => {
-  if (formValid.value === true) {
-    submiting.value = true;
-      try {
-        await createUser(formModel);
-        errorMessage.value = '';
-        getAllUsers();
-        handleCancel();
-      } catch (error) {
+// Form validation rules
+const formRulesConfig = formRules(validator, formModel);
+const confirmPassword = ref('');
+const formValid = ref(false);
 
-      } finally {
-        submiting.value = false;
-      }
-    }
+// trans title of genders
+const translatedGenders = computed(() =>
+  genders.map(gender => ({
+    ...gender,
+    title: t(`genders.${gender.value}`),
+  }))
+);
+const resetForm = () => {
+  Object.assign(formModel, defaultUser);
+  // Object.assign(formModel, props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser });
+  if (formRef.value && formRef.value.resetValidation) {
+    formRef.value.resetValidation();
+  }
+
+  formValid.value = false;
+  activeTab.value = 'account';  // Reset to first tab
 };
 const handleCancel = () => {
+  resetForm();
   emit('form:cancel');
 };
+
+// watch(() => props.user, (newUser) => {
+//   if (props.isEdit) {
+//     Object.assign(formModel, newUser);
+//   }
+// }, { deep: true });
 
 watch(props, () => {
   if (props.isEdit) {
     Object.assign(formModel, props.user);
   }
 });
-const activeTab =  ref('account');
 </script>
 
 <template>
   <VCard width="940px">
     <VToolbar tag="div">
       <VToolbarTitle>{{ t('create_user') }}</VToolbarTitle>
-      <VBtn icon="mdi-close" @click="$emit('form:cancel')"></VBtn>
+      <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
     <!-- <VCardText> -->
-      <VForm>
-        <VLabel>{{errorMessage}}</VLabel>
+      <VForm ref="formRef" v-model="formValid">
         <VTabs v-model="activeTab" color="primary">
           <VTab value="account">{{ t('account') }}</VTab>
           <VTab value="security">{{ t('detail_information') }}</VTab>
@@ -144,7 +80,7 @@ const activeTab =  ref('account');
                     <VLabel>{{t('username')}}</VLabel>
                     <VTextField
                       v-model="formModel.username"
-                      :rules="formRules.username"
+                      :rules="formRulesConfig.username"
                       variant="outlined"
                       color="primary"
                       name="username"
@@ -154,7 +90,7 @@ const activeTab =  ref('account');
                     <VLabel>{{t('email')}}</VLabel>
                     <VTextField
                       v-model="formModel.email"
-                      :rules="formRules.email"
+                      :rules="formRulesConfig.email"
                       variant="outlined"
                       color="primary"
                       name="email"
@@ -164,7 +100,7 @@ const activeTab =  ref('account');
                     <VLabel>{{t('password')}}</VLabel>
                     <VTextField
                       v-model="formModel.password"
-                      :rules="formRules.password"
+                      :rules="formRulesConfig.password"
                       variant="outlined"
                       color="primary"
                       name="password"
@@ -175,59 +111,19 @@ const activeTab =  ref('account');
                     <VLabel>{{t('password_confrim')}}</VLabel>
                     <VTextField
                       v-model="confirmPassword"
-                      :rules="formRules.confirmPassword"
+                      :rules="formRulesConfig.confirmPassword"
                       variant="outlined"
                       color="primary"
                       name="confirmPassword"
                       type="password"
                     />
                   </VCol>
-                </VRow>
-              </VWindowItem>
-              <VWindowItem value="security">
-                <VRow class="d-flex mb-3">
-                  <VCol cols="6">
-                    <VLabel>{{t('full_name')}}</VLabel>
-                    <VTextField
-                      v-model="formModel.fullName"
-                      :rules="formRules.fullName"
-                      variant="outlined"
-                      color="primary"
-                      name="fullName"
-                    />
-                  </VCol>
-                  <VCol cols="6">
-                    <VLabel>{{t('gender')}}</VLabel>
-                    <VRadioGroup v-model="formModel.gender" :rules="formRules.gender" row name="gender" class="gender-radio-group" >
-                      <VRadio :label="t('male')" :value="'male'" />
-                      <VRadio :label="t('female')" :value="'female'" />
-                    </VRadioGroup>
-                  </VCol>
-                  <VCol cols="6">
-                    <VLabel>{{t('department')}}</VLabel>
-                    <VTextField
-                      v-model="formModel.department"
-                      :rules="formRules.department"
-                      variant="outlined"
-                      color="primary"
-                      name="department"
-                    />
-                  </VCol>
-                  <VCol cols="6">
-                    <VLabel>{{t('work_place')}}</VLabel>
-                    <VTextField
-                      v-model="formModel.workPlace"
-                      :rules="formRules.workPlace"
-                      variant="outlined"
-                      color="primary"
-                      name="workPlace"
-                    />
-                  </VCol>
                   <VCol cols="6">
                     <VLabel>{{t('role')}}</VLabel>
                     <VAutocomplete
                       v-model="formModel.roles"
-                      :items="userStore.roles"
+                      :rules="[validator.required]"
+                      :items="roles"
                       item-title="title"
                       item-value="value"
                       variant="outlined"
@@ -240,33 +136,98 @@ const activeTab =  ref('account');
                     <template v-slot:selection="{ item }">
                       <span>{{ t(item.title) }}</span>
                     </template>
-                    <template v-slot:default="{ item }">
-                      <span>{{ t(item.title) }}</span>
-                    </template>
+                    </VAutocomplete>
+                  </VCol>
+                </VRow>
+              </VWindowItem>
+              <VWindowItem value="security">
+                <VRow class="d-flex mb-3">
+                  <VCol cols="6">
+                    <VLabel>{{t('full_name')}}</VLabel>
+                    <VTextField
+                      v-model="formModel.fullName"
+                      :rules="formRulesConfig.fullName"
+                      variant="outlined"
+                      color="primary"
+                      name="fullName"
+                    />
+                  </VCol>
+                  <VCol cols="6">
+                    <VLabel>{{t('full_name_furigana')}}</VLabel>
+                    <VTextField
+                      v-model="formModel.fullNameFurigana"
+                      :rules="formRulesConfig.fullNameFurigana"
+                      variant="outlined"
+                      color="primary"
+                      name="fullNameFurigana"
+                    />
+                  </VCol>
+                  <VCol cols="3">
+                    <VLabel>{{t('birthday')}}</VLabel>
+                    <VTextField
+                      v-model="formModel.birthday"
+                      :rules="[validator.required]"
+                      variant="outlined"
+                      color="primary"
+                      name="birthday"
+                      input
+                      type="date"
+                    />
+                  </VCol>
+                  <VCol cols="3">
+                    <VLabel>{{t('gender')}}</VLabel>
+                    <VAutocomplete
+                      v-model="formModel.gender"
+                      :rules="[validator.required]"
+                      :items="translatedGenders"
+                      variant="outlined"
+                      color="primary"
+                      name="gender"
+                    >
                     </VAutocomplete>
                   </VCol>
                   <VCol cols="6">
+                    <VLabel>{{t('department')}}</VLabel>
+                    <VTextField
+                      v-model="formModel.department"
+                      :rules="[validator.required]"
+                      variant="outlined"
+                      color="primary"
+                      name="department"
+                    />
+                  </VCol>
+                  <VCol cols="6">
+                    <VLabel>{{t('work_place')}}</VLabel>
+                    <VTextField
+                      v-model="formModel.workPlace"
+                      :rules="[validator.required]"
+                      variant="outlined"
+                      color="primary"
+                      name="workPlace"
+                    />
+                  </VCol>
+                  <VCol cols="3">
                     <VLabel>{{t('join_date')}}</VLabel>
                     <VTextField
                       v-model="formModel.joinDate"
+                      :rules="[validator.required]"
                       variant="outlined"
                       color="primary"
                       name="joinDate"
                       input
                       type="date"
                     />
-
                   </VCol>
                 </VRow>
               </VWindowItem>
             </VWindow>
           </VCardText>
-
       </VForm>
     <!-- </VCardText> -->
     <VCardActions>
-      <VBtn type="submit" variant="outlined" color="primary" @click="handleSubmit">{{ t('register') }}</VBtn>
+      <VBtn type="submit" variant="outlined" color="primary" @click="handleSubmit(formValid,formModel, submiting)">{{ t('register') }}</VBtn>
       <VBtn @click="handleCancel">{{t('cancel')}}</VBtn>
     </VCardActions>
   </VCard>
 </template>
+./useUserForm../../configs/userFormConfig

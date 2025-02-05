@@ -55,7 +55,7 @@ const items = [
   },
   // 担当者メニュー
   { type: 'divider' },
-  { type: 'subheader', title: t('management'), roles:[ERole.MANAGER]},
+  { type: 'subheader', title: t('manager'), roles:[ERole.MANAGER]},
   { type: 'divider' },
   {
     title: t('user_requst_management'),
