@@ -79,10 +79,11 @@
         "update_success": "更新が成功しました。",
         "update_failure": "更新に失敗しました。",
         "delete_success": "削除が成功しました。",
-        "delete_failure": "削除に失敗しました。"
+        "delete_failure": "削除に失敗しました。",
+        "validation_error": "送信前にエラーを修正してください。"
     },
     "validation": {
-        "required_input": "このフィールドは必須です",
+        "required_input": "このフィールドは必須です。",
         "length_between": "{n} 文字から {m} 文字の間で入力してください。",
         "email_format": "正しいメールアドレスを入力してください。",
         "password_confirm": "パスワードの確認はパスワードと一致する必要があります。",

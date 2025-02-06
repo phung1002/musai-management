@@ -79,7 +79,8 @@
     "update_success": "Update successful!",
     "update_failure": "Update failed.",
     "delete_success": "Deletion successful!",
-    "delete_failure": "Deletion failed."
+    "delete_failure": "Deletion failed.",
+    "validation_error": "Please correct the highlighted errors before submitting."
   },
   "validation": {
     "required_input": "This field is required",
