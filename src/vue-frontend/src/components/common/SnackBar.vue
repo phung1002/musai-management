@@ -1,3 +1,15 @@
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useSnackbar } from '@/composables/useSnackbar';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+const { snackbar, closeSnackbar } = useSnackbar();
+const isMessageObject = computed(() =>
+  Object.prototype.toString.call(snackbar.value.message) === '[object Object]'
+);
+</script>
+
 <template>
   <div>
     <VSnackbar v-model="snackbar.isColorSnackbarVisible" top center :color="snackbar.color">
@@ -5,47 +17,23 @@
       <template v-if="isMessageObject">
         <div v-for="(messages, key) in snackbar.message" :key="key">
           <div v-for="message in messages" :key="message">
-            {{ message }}
+            {{  t(`message.${message}`) }}
           </div>
         </div>
       </template>
       <!-- Render message type string -->
       <template v-else>
-        {{ snackbar.message }}
+        {{  t(`message.${snackbar.message}`) }}
       </template>
-
       <!-- Close button -->
-      <template v-slot:action="{ attrs }">
+      <template v-slot:actions="{ attrs }">
         <VBtn color="white" text v-bind="attrs" @click="closeSnackbar">
-          <VIcon>{{ icons.mdiClose }}</VIcon>
+          <VIcon>mdi-close</VIcon>
         </VBtn>
       </template>
     </VSnackbar>
   </div>
 </template>
-
-<script>
-import { mdiClose } from '@mdi/js';
-import { computed } from 'vue';
-import { useSnackbar } from '@/composables/useSnackbar';
-
-export default {
-  setup() {
-    const { snackbar, closeSnackbar } = useSnackbar();
-    const isMessageObject = computed(() =>
-
-      Object.prototype.toString.call(snackbar.value.message) === '[object Object]'
-    );
-
-    return {
-      snackbar,
-      closeSnackbar,
-      icons: { mdiClose },
-      isMessageObject,
-    };
-  },
-};
-</script>
 
 <style>
 .theme--light.v-data-table td {
