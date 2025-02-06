@@ -1,6 +1,7 @@
 package musai.app.services.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,11 +34,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 			throw new BadRequestException("Error: Name is already taken!");
 		}
 
-		LeaveType parent = null;
-		if (leaveTypeDTO.getParentId() != null) {
-			parent = leaveTypeRepository.findById(leaveTypeDTO.getParentId())
-					.orElseThrow(() -> new NotFoundException("Parent not found!"));
-		}
+		LeaveType parent = findParent(leaveTypeDTO.getParentId());
 
 		// Create new LeaveType
 		LeaveType leaveType = new LeaveType(leaveTypeDTO.getName(), parent);
@@ -62,16 +59,11 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 			// Update fields of the LeaveType
 			existingLeaveType.setName(leaveTypeDTO.getName());
 		}
-
-		LeaveType parent = null;
 		// check parent
 		if (leaveTypeDTO.getParentId() == id) {
 			throw new BadRequestException("Error: Itself can not be parent");
 		}
-		if (leaveTypeDTO.getParentId() != null) {
-			parent = leaveTypeRepository.findByIdAndDeletedAtIsNull(leaveTypeDTO.getParentId())
-					.orElseThrow(() -> new NotFoundException("Error: LeaveType parent not found"));
-		}
+		LeaveType parent = findParent(leaveTypeDTO.getParentId());
 
 		existingLeaveType.setParent(parent);
 
@@ -88,7 +80,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 		LeaveType existingLeaveType = leaveTypeRepository.findByIdAndDeletedAtIsNull(id)
 				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
 
-		if(existingLeaveType.getChildren() != null) {
+		if (existingLeaveType.getChildren() != null) {
 			throw new BadRequestException("Error: LeaveType had children can't be delete");
 		}
 		existingLeaveType.setDeletedAt(LocalDateTime.now());
@@ -102,24 +94,31 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 	public List<LeaveTypeResponseDTO> getAllLeaveTypes() {
 
 		// Fetch all LeaveType entities from the repository
-		List<LeaveType> LeaveTypes = leaveTypeRepository.findAllByDeletedAtIsNull();
+		List<LeaveType> leaveTypes = leaveTypeRepository.findAllByDeletedAtIsNull();
 
 		// Map each LeaveType entity to LeaveTypeDTO
-		return LeaveTypes.stream().filter(leave -> leave.getParent() == null)
-				.map(leave -> new LeaveTypeResponseDTO(leave.getId(), leave.getName())).collect(Collectors.toList());
+		return leaveTypes.stream().map(leave -> new LeaveTypeResponseDTO(leave.getId(), leave.getName()))
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<LeaveTypeChildrenResponseDTO> getAllLeaveTypeTree() {
+		List<LeaveType> leaveTypes = leaveTypeRepository.findAll();
 
-		// Fetch all LeaveType entities from the repository
-		List<LeaveType> LeaveTypes = leaveTypeRepository.findAll();
+		List<LeaveType> activeLeaveTypes = leaveTypes.stream().filter(leave -> leave.getDeletedAt() == null).toList();
 
-		// Map each LeaveType entity to LeaveTypeDTO
-		return LeaveTypes.stream().filter(leave -> leave.getParent() == null)
-				.map(leave -> new LeaveTypeChildrenResponseDTO(leave.getId(), leave.getName(), leave.getChildren()))
+		return activeLeaveTypes.stream().filter(leave -> leave.getParent() == null)
+				.map(leave -> new LeaveTypeChildrenResponseDTO(leave.getId(), leave.getName(),
+						filterChildren(leave.getChildren(), activeLeaveTypes)))
 				.toList();
 	}
+
+	private List<LeaveType> filterChildren(List<LeaveType> children, List<LeaveType> activeLeaveTypes) {
+		if (children == null)
+			return new ArrayList<>();
+		return children.stream().filter(activeLeaveTypes::contains).toList();
+	}
+
 	@Override
 	public LeaveTypeParentResponseDTO getLeaveTypeDetail(Long id) {
 		LeaveType leaveType = leaveTypeRepository.findByIdAndDeletedAtIsNull(id)
@@ -142,6 +141,13 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 				.collect(Collectors.toList());
 
 		return filteredLeaves;
+	}
+
+	private LeaveType findParent(Long id) {
+		if (id == null)
+			return null;
+		return leaveTypeRepository.findByIdAndDeletedAtIsNull(id)
+				.orElseThrow(() -> new NotFoundException("Parent not found!"));
 	}
 
 }

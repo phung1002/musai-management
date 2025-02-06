@@ -78,6 +78,18 @@ public class LeaveTypeController {
 		// Return the list with HTTP status
 		return new ResponseEntity<>(leaveTypes, HttpStatus.OK);
 	}
+	
+	// Create API list
+	@GetMapping("/tree")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<?> getAllLeaveTypeTree() {
+
+		// Call the service layer
+		List<LeaveTypeChildrenResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypeTree();
+
+		// Return the list with HTTP status
+		return new ResponseEntity<>(leaveTypes, HttpStatus.OK);
+	}
 
 	// Get Detail
 	@GetMapping("/detail/{id}")
