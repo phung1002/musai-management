@@ -5,10 +5,13 @@ import ConfimDialogView from '@/components/common/ConfimDialog.vue';
 import { VTab } from 'vuetify/lib/components/index.mjs';
 import { useLeaveTypesStore } from '@/store/leaveTypesStore';
 const isDialogVisible = ref(false);
-const errorMessage = ref('');
 const { t } = useI18n();
 const leaveUserStore = useLeaveTypesStore();
 const emit = defineEmits(['form:cancel']);
+const handleCancel = () => {
+  handleResetFilter(); // 入力をリセット
+  emit('form:cancel');
+};
 // // エラーメッセージデータの型定義
 interface Errors {
   leave_type: string;
@@ -107,6 +110,8 @@ const handleSubmit = () => {
 const onConfirmed = () => {
   console.log("許可されました");
   // ここに処理を追加
+  // レスポンスOKになったら入力値初期化し、フォーム閉じろ
+  handleCancel(); //フォーム閉じる
 };
 // メイン休暇タブで分類
 const activeTab = ref('personal-info');
@@ -125,7 +130,7 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave
   <VCard class="leave_form">
     <VToolbar tag="div">
       <VToolbarTitle><VIcon icon= "mdi-lead-pencil"/>{{ t('leave_applying') }}</VToolbarTitle>
-      <VBtn icon="mdi-close" @click="$emit('form:cancel')"></VBtn>
+      <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
     <VForm @submit.prevent="() => {}">
       <v-container >
@@ -265,21 +270,21 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave
           </thead>
         </v-table>
         <VDivider />
-        <VCardText class="d-flex gap-4">
-          <VBtn @click="handleSubmit" color="primary" class="mr-4">{{ t('submit') }}</VBtn>
-          <VBtn @click="handleResetFilter" class="mr-4">{{ t('reset') }}</VBtn>
-        </VCardText>
-        <!-- 確認ダイアログ表示 -->
-        <VDialog v-model="isDialogVisible" width="auto" eager>
-          <ConfimDialogView
-          :title="t('confrim')"
-          :message="t('leave_apply_con_msg')"
-          :isVisible="isDialogVisible"
-          @update:isVisible="isDialogVisible = $event"
-          @confirmed="onConfirmed"
-        />
-        </VDialog>
       </v-container>
     </VForm>
+    <VCardActions>
+      <VBtn @click="handleSubmit" type="submit" variant="elevated" color="primary">{{ t('submit') }}</VBtn>
+      <VBtn @click="handleResetFilter" type="reset" variant="tonal">{{ t('reset') }}</VBtn>
+    </VCardActions>
+    <!-- 確認ダイアログ表示 -->
+    <VDialog v-model="isDialogVisible" width="auto" eager>
+      <ConfimDialogView
+      :title="t('confrim')"
+      :message="t('leave_apply_con_msg')"
+      :isVisible="isDialogVisible"
+      @update:isVisible="isDialogVisible = $event"
+      @confirmed="onConfirmed"
+    />
+    </VDialog>
   </VCard>
 </template>

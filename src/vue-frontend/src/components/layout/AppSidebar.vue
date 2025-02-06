@@ -32,7 +32,7 @@ const items = [
   // },
   // 管理者画面
   {
-    title: t('user_management'),
+    title: t('user_lists'),
     props: {
       prependIcon: 'mdi-account-box-plus-outline',
       link: true,
@@ -84,7 +84,7 @@ const items = [
   { type: 'subheader', title: t('member'), roles:[ERole.MEMBER]},
   { type: 'divider' },
   {
-    title: t('leave_apply_list'),
+    title: t('leave_apply_lists'),
     props: {
       prependIcon: 'mdi-email-arrow-right',
       link: true,

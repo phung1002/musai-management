@@ -1,5 +1,8 @@
-<!-- パスワード変更　フォーム -->
-<script lang="ts" setup>
+<!-- パスワード変更　画面 -->
+<script setup lang="ts">
+import AppSidebar from '@/components/layout/AppSidebar.vue';
+import AppToolbar from '@/components/layout/AppToolbar.vue';
+// import PasswordChangeTabForm from '@/components/auth/PasswordChangeForm.vue'
 import { ref,reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ConfimDialogView from '@/components/common/ConfimDialog.vue';
@@ -8,44 +11,72 @@ const isDialogVisible = ref(false);
 
 // エラーメッセージの型定義
 interface Errors {
+  newPassword: string | null;
   password: string | null;
-  confirmPassword: string | null;
+  passwordCheck: string | null;
+  newPasswordConfrim: string | null;
 }
 
 // エラーメッセージ
 const errors = ref<Errors>({
+  newPassword: null,
   password: null,
-  confirmPassword: null,
+  passwordCheck: null,
+  newPasswordConfrim: null,
 })
 // フォームデータ
 const form = reactive({
-  username: '',
-  email: '',
+  newPassword: '',
   password: '',
-  confirmPassword: '',
+  newPasswordConfrim: '',
 })
-
+// 入力初期化
+const handleResetFilter = () => {
+  form.newPassword = '';
+  form.password = '';
+  form.newPasswordConfrim = '';
+}
 // フォームの送信処理
 const handleSubmit = () => {
   // エラーをリセット
-  errors.value = { password: null, confirmPassword: null}
+  errors.value = { newPassword: null, password: null, passwordCheck: null, newPasswordConfrim: null}
 
   let valid = true
 
   // パスワードチェック: 必須
-  if (form.password.valueOf() === '' ) {
+  if (form.password.valueOf() === '')
+  {
     errors.value.password = t('pw_required_error')
     valid = false
-  }
-
-  // 再パスワードチェック: 必須
-  if (form.confirmPassword.valueOf() == '') {
-    errors.value.confirmPassword = t('confirm_pw_required_error')
+  } 
+  // 新パスワードチェック: 必須
+  if (form.newPassword.valueOf() === '' ) {
+    errors.value.newPassword = t('new_pw_required_error')
     valid = false
   }
-  // パスワードと再パスワードの一致チェック
-  if (form.password.valueOf() !== form.confirmPassword.valueOf()) {
-    errors.value.confirmPassword = t('pw_matching_error')
+  // 再パスワードチェック: 必須
+  if (form.newPasswordConfrim.valueOf() == '') {
+    errors.value.newPasswordConfrim = t('confirm_pw_required_error')
+    valid = false
+  }
+  // 現在のパスワードと入力パスワードの一致チェック
+  if (form.newPassword.valueOf() == form.password.valueOf()) {
+    errors.value.passwordCheck = t('pw_matching_error')
+    valid = false
+  }
+  // 新パスワードと再パスワードの一致チェック
+  if (form.newPassword.valueOf()!== form.newPasswordConfrim.valueOf()) {
+    errors.value.newPasswordConfrim = t('new_pw_matching_error')
+    valid = false
+  }
+  // ��リデーション通過後、フォームデータを送信
+  if (valid) {
+    // 確認ポップアップを表示
+    isDialogVisible.value = true;
+  }
+  // 新パスワードと再パスワードの一致チェック
+  if (form.newPassword.valueOf() !== form.newPasswordConfrim.valueOf()) {
+    errors.value.newPasswordConfrim = t('pw_matching_error')
     valid = false
   }
   // バリデーション通過後、フォームデータを送信
@@ -57,58 +88,110 @@ const handleSubmit = () => {
 const onConfirmed = () => {
   console.log("許可されました");
   // ここに処理を追加
+  // レスポンスOKになったら入力値初期化
+  handleResetFilter();
 };
 </script>
 
 <template>
-  <VDivider />
-  <VCard flat elevation="0">
-    <VToolbar tag="div">
-       <VToolbarTitle><VIcon icon= "mdi-lock"/>{{ t('change_password') }}</VToolbarTitle>
-    </VToolbar>
-    <VCardText>
-      <VForm class="mt-2" @submit.prevent="() => {}">
-        <VRow>
-          <VCol cols="12" md="6">
-            <VTextField v-model="form.username" id = "username" :placeholder="t('username')"  readonly/>
-          </VCol>
-          <VCol cols="12" md="6">
-            <VTextField v-model="form.email" id = "email" :placeholder="t('email')" readonly />
-          </VCol>
-          <VCol cols="12" md="6">
-            <VTextField
-              v-model="form.password"
-              id = "password"
-              :placeholder="t('password')"
-              type="password" 
-            />
-            <span style="color: red;" v-if="errors.password" class="error">{{ errors.password }}</span>
-          </VCol>
-          <VCol cols="12" md="6">
-            <VTextField
-              v-model="form.confirmPassword"
-              id ="confirmPassword"
-              :placeholder="t('password_confrim')"
-              type="password" 
-            />
-            <span style="color: red;" v-if="errors.confirmPassword" class="error">{{ errors.confirmPassword }}</span>
-          </VCol>
-        </VRow>
-        <VDivider />
-        <VCardText class="d-flex gap-4">
-          <VBtn @click="handleSubmit" class="mr-4">{{ t('change_password') }}</VBtn>
-          <VBtn type="reset" variant="tonal"> {{ t('reset') }} </VBtn>
-        </VCardText>
-        <VDialog v-model="isDialogVisible" width="auto" eager>
-          <ConfimDialogView 
-          :title="t('confrim')"
-          :message="t('pass_change_con_msg')"
-          :isVisible="isDialogVisible"
-          @update:isVisible="isDialogVisible = $event"
-          @confirmed="onConfirmed"
-        />
-        </VDialog>
-      </VForm>
-    </VCardText>
-  </VCard>
+  <VApp class="app">
+    <!------Sidebar-------->
+    <AppSidebar />
+    <!------Header-------->
+    <AppToolbar />
+    <!------Page-------->
+    <VMain class="app-main">
+      <VContainer class="app-container">
+        <div class="page-wrapper">
+          <VContainer class="app-container">
+            <VCard flat elevation="0">
+              <VToolbar tag="div">
+                <VToolbarTitle><VIcon icon= "mdi-lock"/>{{ t('change_password') }}</VToolbarTitle>
+              </VToolbar>
+              <VCardText>
+                <VForm class="mt-2" @submit.prevent="() => {}">
+                  <VRow>
+                    <VCol cols="12" md="6">
+                      <VTextField 
+                        v-model="form.password" 
+                        id = "password" 
+                        :placeholder="t('password')"  
+                        type="password" 
+                      />
+                      <span style="color: red;" v-if="errors.password" class="error">{{ errors.password }}</span>
+                    </VCol>
+                    <VCol cols="12" md="6">
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="form.newPassword"
+                        id = "newPassword"
+                        :placeholder="t('newPassword')"
+                        type="password" 
+                      />
+                      <span style="color: red;" v-if="errors.newPassword" class="error">{{ errors.newPassword }}</span>
+                      <span style="color: red;" v-if="errors.passwordCheck" class="error">{{ errors.passwordCheck }}</span>
+                    </VCol>
+                    <VCol cols="12" md="6">
+                      <VTextField
+                        v-model="form.newPasswordConfrim"
+                        id ="newPasswordConfrim"
+                        :placeholder="t('newPassword_confrim')"
+                        type="password" 
+                      />
+                      <span style="color: red;" v-if="errors.newPasswordConfrim" class="error">{{ errors.newPasswordConfrim }}</span>
+                    </VCol>
+                  </VRow>
+                  <VDivider />
+                </VForm>
+              </VCardText>
+              <VCardActions class="d-flex justify-end">
+                <VBtn type="submit" variant="elevated" color="primary" @click="handleSubmit">{{ t('change_password') }}</VBtn>
+                <VBtn type="reset" variant="tonal" @click="handleResetFilter"> {{ t('reset') }} </VBtn>
+              </VCardActions>
+              <VDialog v-model="isDialogVisible" width="auto" eager>
+                <ConfimDialogView 
+                :title="t('confrim')"
+                :message="t('pass_change_con_msg')"
+                :isVisible="isDialogVisible"
+                @update:isVisible="isDialogVisible = $event"
+                @confirmed="onConfirmed"
+              />
+              </VDialog>
+            </VCard>
+          </VContainer>
+        </div>
+      </VContainer>
+    </VMain>
+  </VApp>
 </template>
+
+<style scoped>
+.page-wrapper {
+  padding: 20px;
+}
+
+.search {
+  flex-grow: 1;
+}
+
+.text-error {
+  color: red;
+}
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-btn {
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+}
+
+.action-btn:hover {
+  background-color: #f5f5f5;
+}
+</style>
