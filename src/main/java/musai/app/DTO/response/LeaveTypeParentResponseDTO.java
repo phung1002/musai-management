@@ -5,10 +5,12 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class LeaveTypeResponseDTO {
+public class LeaveTypeParentResponseDTO {
 
 	private Long id;
 
 	private String name;
+
+	private Long parentId;
 
 }

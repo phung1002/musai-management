@@ -1,5 +1,6 @@
 package musai.app.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,13 +14,16 @@ public interface LeaveTypeResposity extends JpaRepository<LeaveType, Long> {
 	Boolean existsByName(String name);
 
 	Optional<LeaveType> findById(Long id);
-	
+
 	// Fetch by ID where deleted_at is NULL
-	Optional<LeaveType> findByIdAndDeletedAtIsNull(Long id); 
+	Optional<LeaveType> findByIdAndDeletedAtIsNull(Long id);
 	
-	//Excluding Soft-Deleted Records
-	 // List<LeaveType> findByNameContainingIgnoreCase(String name);
+	LeaveType findByName(String name);
+
+	List<LeaveType> findAllByDeletedAtIsNull(); 
 	
+	// Excluding Soft-Deleted Records
+	// List<LeaveType> findByNameContainingIgnoreCase(String name);	
 	
 }
  

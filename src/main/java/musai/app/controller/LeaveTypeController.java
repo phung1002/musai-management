@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveTypeRequestDTO;
+import musai.app.DTO.response.LeaveTypeChildrenResponseDTO;
+import musai.app.DTO.response.LeaveTypeParentResponseDTO;
 import musai.app.DTO.response.LeaveTypeResponseDTO;
 import musai.app.services.LeaveTypeService;
 
@@ -82,7 +84,7 @@ public class LeaveTypeController {
 	public ResponseEntity<?> getLeaveTypeDetail(@PathVariable Long id) {
 
 		// Call the service layer
-		LeaveTypeResponseDTO getLeaveTypeDetail = leaveTypeService.getLeaveTypeDetail(id);
+		LeaveTypeParentResponseDTO getLeaveTypeDetail = leaveTypeService.getLeaveTypeDetail(id);
 
 		// Return the list with HTTP status
 		return new ResponseEntity<>(getLeaveTypeDetail, HttpStatus.OK);
@@ -90,7 +92,7 @@ public class LeaveTypeController {
 
 	// @GetMapping("/search")
 	@GetMapping("/search")
-	public List<LeaveTypeResponseDTO> searchLeaveTypes(@RequestParam String keyword) {
+	public List<LeaveTypeChildrenResponseDTO> searchLeaveTypes(@RequestParam String keyword) {
 		// Call the searchLeaveType method from the service layer and return the result
 		return leaveTypeService.searchLeaveType(keyword);
 	}
