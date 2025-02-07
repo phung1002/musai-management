@@ -44,9 +44,8 @@ public class UserServiceImpl implements UserService {
 	public List<UserResponseDTO> getAllUsers() {
 		List<UserResponseDTO> lstUser = userRepository.findAll().stream()
 				.map(userResponseDTO -> new UserResponseDTO(userResponseDTO.getId(), userResponseDTO.getUsername(),
-						userResponseDTO.getEmail(), userResponseDTO.getRoles().stream() // change Set<Role> ->
-																						// Set<String>
-								.map(role -> role.getName().name()) // get name of role (ERole)
+						userResponseDTO.getEmail(),
+						userResponseDTO.getRoles().stream().map(role -> role.getName().name())
 								.collect(Collectors.toSet()),
 						userResponseDTO.getFullName(), userResponseDTO.getFullNameFufigana(),
 						userResponseDTO.getBirthday(), userResponseDTO.getDepartment(), userResponseDTO.getWorkPlace(),
@@ -213,57 +212,40 @@ public class UserServiceImpl implements UserService {
 				.orElseThrow(() -> new BadRequestException("Error: Role " + roleName + " is not found."));
 	}
 
-	//get detail
+	// get detail
 	@Override
 	public UserResponseDTO detailUser(Long userId) {
 		User existingUser = userRepository.findById(userId)
 				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
 
-		//Check user deleted
+		// Check user deleted
 		if (existingUser.getDeletedAt() != null) {
 			throw new NotFoundException("Error: User not exist.");
 		}
-		
-		return new UserResponseDTO (				
-				existingUser.getId(),
-				existingUser.getUsername(),
-				existingUser.getEmail(),
-				existingUser.getRoles().stream() // change Set<Role> -> Set<String>
-				.map(role -> role.getName().name()) // get name of role (ERole)
-				.collect(Collectors.toSet()),
-				existingUser.getFullname(),
-				existingUser.getDepartment(),
-				existingUser.getWorkPlace(),
-				existingUser.getJoinDate(),
-				existingUser.getGender()
-		);
-		
+
+		return new UserResponseDTO(existingUser.getId(), existingUser.getUsername(), existingUser.getEmail(),
+				existingUser.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),
+				existingUser.getFullName(), existingUser.getFullNameFufigana(), existingUser.getBirthday(),
+				existingUser.getDepartment(), existingUser.getWorkPlace(), existingUser.getJoinDate(),
+				existingUser.getGender());
+
 	}
-	
+
 	// get search
 	@Override
 	public List<UserResponseDTO> searchUser(String keyword) {
-		
+
 		List<UserResponseDTO> filteredUser = userRepository.findAll().stream()
 				.filter(user -> user.getUsername().toLowerCase().contains(keyword.toLowerCase()))
-				.map(user -> new UserResponseDTO(
-						user.getId(), 
-						user.getUsername(),
-						user.getEmail(), 
-						user.getRoles().stream()
-							.map(role -> role.getName().name())
-							.collect(Collectors.toSet()),
-						user.getFullname(),
-						user.getDepartment(), 
-						user.getWorkPlace(), 
-						user.getJoinDate(), 
-						user.getGender()
-						
-						))
-				.collect(Collectors.toList());
-		
+				.map(user -> new UserResponseDTO(user.getId(), user.getUsername(), user.getEmail(),
+						user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),
+						user.getFullName(), user.getFullNameFufigana(), user.getBirthday(), user.getDepartment(),
+						user.getWorkPlace(), user.getJoinDate(), user.getGender()
+
+				)).collect(Collectors.toList());
+
 		return filteredUser;
-		
+
 	}
-	
+
 }
