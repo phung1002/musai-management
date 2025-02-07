@@ -18,58 +18,70 @@ const routes = [
     name: 'unauthorized',
     component: UnauthorizedView,
   },
-  // ホーム
   {
     path: '/home',
     name: 'home',
     component: DefaultLayout,
     meta: { requiresAuth: true },
   },
-  // ログイン
   {
     path: '/login',
     name: 'login',
     component: LoginView,
   },
-   // ユーザー 管理
+  // Admin routes
   {
-    path: '/admin/user',
+    path: '/admin/users',
     name: 'admin-user-list',
     component: ListUser,
     meta: {
       requiresAuth: true,
-      requiredRoles: [ERole.ADMIN]
+      requiredRoles: [ERole.ADMIN],
     },
   },
-  // 休暇 管理
   {
-    path: '/leaveManagement',
-    name: 'leaveManagement',
+    path: '/admin/leave-management',
+    name: 'admin-leave-management',
     component: LeaveManagementView,
+    meta: {
+      requiresAuth: true,
+      requiredRoles: [ERole.ADMIN],
+    },
   },
-  // 申請 管理
   {
-    path: '/userLeaveManagement',
-    name: 'userLeaveManagement',
+    path: '/manager/user-leave-management',
+    name: 'manager-user-leave-management',
     component: UserLeaveManagementView,
+    meta: {
+      requiresAuth: true,
+      requiredRoles: [ERole.MANAGER],
+    },
   },
-  // 申請 確認
   {
-    path: '/requstConfirm',
-    name: 'requstConfirm',
+    path: '/manager/request-confirm',
+    name: 'manager-request-confirm',
     component: RequstConfirmView,
+    meta: {
+      requiresAuth: true,
+      requiredRoles: [ERole.MANAGER],
+    },
   },
-  // 休暇 申請
   {
-    path: '/leaveRequstList',
-    name: 'leaveRequstList',
+    path: '/member/leave-requests',
+    name: 'member-leave-requests',
     component: leaveRequstList,
+    meta: {
+      requiresAuth: true,
+      requiredRoles: [ERole.MEMBER],
+    },
   },
-  // パスワード 変更
   {
-    path: '/changePassword',
-    name: 'changePassword',
+    path: '/account/change-password',
+    name: 'change-password',
     component: PasChangeView,
+    meta: {
+      requiresAuth: true,
+    },
   },
   {
     path: '/admin/home',
@@ -77,7 +89,7 @@ const routes = [
     component: DefaultLayout,
     meta: {
       requiresAuth: true,
-      requiredRoles: [ERole.ADMIN]
+      requiredRoles: [ERole.ADMIN],
     },
   },
 ];

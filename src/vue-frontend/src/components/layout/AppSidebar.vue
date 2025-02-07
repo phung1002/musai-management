@@ -17,83 +17,76 @@ const userRoles = computed(() => userStore.roles || []);
 const { t } = useI18n();
 const items = [
   { type: 'divider' },
-  { type: 'subheader', title: t('admin'), roles:[ERole.ADMIN]},
-  // { type: 'divider' },
-  // 管理者画面
+  { type: 'subheader', title: t('admin'), roles: [ERole.ADMIN] },
   {
     title: t('user_management'),
     props: {
       prependIcon: 'mdi-account-box-plus-outline',
       link: true,
-      to: '/admin/user',
-      exact: false
+      to: '/admin/users',
+      exact: false,
     },
-    value: '/admin-user-list',
-    roles: [ERole.ADMIN]
+    value: '/admin/users',
+    roles: [ERole.ADMIN],
   },
   {
     title: t('leave_management'),
     props: {
       prependIcon: 'mdi-calendar-star-outline',
       link: true,
-      to: '/leaveManagement',
-      exact: false
+      to: '/admin/leave-management',
+      exact: false,
     },
-    value: '/leaveManagement',
-    roles: [ERole.ADMIN]
+    value: '/admin/leave-management',
+    roles: [ERole.ADMIN],
   },
-  // 担当者メニュー
   { type: 'divider' },
-  { type: 'subheader', title: t('manager'), roles:[ERole.MANAGER]},
-  // { type: 'divider' },
+  { type: 'subheader', title: t('manager'), roles: [ERole.MANAGER] },
   {
     title: t('user_leave_management'),
     props: {
       prependIcon: 'mdi-badge-account-horizontal-outline',
       link: true,
-      to: '/userLeaveManagement',
-      exact: true
+      to: '/manager/user-leave-management',
+      exact: true,
     },
-    value: '/userLeaveManagement',
-    roles: [ERole.MANAGER]
+    value: '/manager/user-leave-management',
+    roles: [ERole.MANAGER],
   },
   {
     title: t('request_confirm'),
     props: {
       prependIcon: 'mdi-message-check-outline',
       link: true,
-      to: '/requstConfirm',
-      exact: true
+      to: '/manager/request-confirm',
+      exact: true,
     },
-    value: '/requstConfirm',
-    roles: [ERole.MANAGER]
+    value: '/manager/request-confirm',
+    roles: [ERole.MANAGER],
   },
-  // ユーザーメニュー
   { type: 'divider' },
-  { type: 'subheader', title: t('member'), roles:[ERole.MEMBER]},
-  // { type: 'divider' },
+  { type: 'subheader', title: t('member'), roles: [ERole.MEMBER] },
   {
     title: t('leave_request'),
     props: {
       prependIcon: 'mdi-email-arrow-right-outline',
       link: true,
-      to: '/leaveRequstList',
-      exact: true
+      to: '/member/leave-requests',
+      exact: true,
     },
-    value: '/leaveRequstList',
+    value: '/member/leave-requests',
     roles: [ERole.MEMBER],
   },
   { type: 'divider' },
-  // 共通メニュー
   {
     title: t('change_password'),
     props: {
       prependIcon: 'mdi-account-convert',
       link: true,
-      to: '/changePassword',
-      exact: true
+      to: '/account/change-password',
+      exact: true,
     },
-    value: '/changePassword',
+    value: '/account/change-password',
   },
 ];
 
