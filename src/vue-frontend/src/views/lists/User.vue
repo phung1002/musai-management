@@ -112,7 +112,7 @@ onMounted(() => {
                 <!-- Add user button -->
                 <VCard flat elevation="0" >
                   <VToolbar tag="div">
-                    <VToolbarTitle><VIcon icon= "mdi-account-details"/>{{ t('user_lists') }}</VToolbarTitle>
+                    <VToolbarTitle><VIcon icon= "mdi-account-details"/>{{ t('user_management') }}</VToolbarTitle>
                       <!-- 申請入力フォーム　ボタン-->
                       <VCardActions>
                         <VSpacer />
@@ -173,9 +173,9 @@ onMounted(() => {
                           <VBtn icon variant="plain" class="action-btn" @click="handleDeleteItem">
                             <VIcon color="red">mdi-delete</VIcon>
                             <VDialog v-model="isDialogVisible" width="auto" eager>
-                                <ConfimDialogView 
-                                :title="t('confrim')"
-                                :message="t('delete_con_msg')"
+                                <ConfimDialogView
+                                :title="t('confirm')"
+                                :message="t('delete_confirm_message')"
                                 :isVisible="isDialogVisible"
                                 @update:isVisible="isDialogVisible = $event"
                                 @confirmed="onDeleted"

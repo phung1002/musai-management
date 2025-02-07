@@ -29,7 +29,7 @@ const formValid = ref(false);
 const translatedGenders = computed(() =>
   genders.map(gender => ({
     ...gender,
-    title: t(`genders.${gender.value}`),
+    title: t(`${gender.value}`),
   }))
 );
 const resetForm = () => {
@@ -108,7 +108,7 @@ watch(props, () => {
                     />
                   </VCol>
                   <VCol cols="6">
-                    <VLabel>{{t('password_confrim')}}</VLabel>
+                    <VLabel>{{t('password_confirm')}}</VLabel>
                     <VTextField
                       v-model="confirmPassword"
                       :rules="formRulesConfig.confirmPassword"

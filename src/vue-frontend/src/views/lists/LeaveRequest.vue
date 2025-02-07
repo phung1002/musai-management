@@ -62,7 +62,7 @@ const headers = reactive([
   { title: t('status'), key: 'status' },
   { title: t('action'), key: 'action' }
 ]);
-// GET申請リスト　API　
+// GET申請リスト　API
 const fetchRequests = async () => {
   isLoading.value = true;
   isError.value = false;
@@ -103,7 +103,7 @@ const onDeleted = () => {
                 <VContainer class="app-container">
                   <VCard flat elevation="0" >
                     <VToolbar tag="div">
-                      <VToolbarTitle><VIcon icon= "mdi-list-box-outline"/>{{ t('leave_apply_lists') }}</VToolbarTitle>
+                      <VToolbarTitle><VIcon icon= "mdi-email-arrow-right-outline"/> {{ t('leave_request') }} </VToolbarTitle>
                       <!-- 申請入力フォーム　ボタン-->
                       <VCardActions>
                         <VSpacer />
@@ -157,7 +157,7 @@ const onDeleted = () => {
                             >
                               <VIcon color="blue">mdi-pencil</VIcon>
                               <VDialog v-model="editForm" width="auto" eager>
-                                
+
                               </VDialog>
                             </VBtn>
                             <VBtn
@@ -168,9 +168,9 @@ const onDeleted = () => {
                             >
                               <VIcon color="red">mdi-delete</VIcon>
                               <VDialog v-model="isDialogVisible" width="auto" eager>
-                                <ConfimDialogView 
-                                :title="t('confrim')"
-                                :message="t('delete_con_msg')"
+                                <ConfimDialogView
+                                :title="t('confirm')"
+                                :message="t('delete_confirm_message')"
                                 :isVisible="isDialogVisible"
                                 @update:isVisible="isDialogVisible = $event"
                                 @confirmed="onDeleted"

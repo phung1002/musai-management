@@ -18,21 +18,10 @@ const { t } = useI18n();
 const items = [
   { type: 'divider' },
   { type: 'subheader', title: t('admin'), roles:[ERole.ADMIN]},
-  { type: 'divider' },
-  // {
-  //   title: t('attendees_input'),
-  //   props: {
-  //     prependIcon: 'mdi-view-dashboard-edit',
-  //     link: true,
-  //     to: '/attendanceInput',
-  //     exact: true
-  //   },
-  //   value: '/attendanceInput',
-  //   roles: [ERole.MEMBER]
-  // },
+  // { type: 'divider' },
   // 管理者画面
   {
-    title: t('user_lists'),
+    title: t('user_management'),
     props: {
       prependIcon: 'mdi-account-box-plus-outline',
       link: true,
@@ -45,7 +34,7 @@ const items = [
   {
     title: t('leave_management'),
     props: {
-      prependIcon: 'mdi-view-dashboard-edit',
+      prependIcon: 'mdi-calendar-star-outline',
       link: true,
       to: '/leaveManagement',
       exact: false
@@ -56,11 +45,11 @@ const items = [
   // 担当者メニュー
   { type: 'divider' },
   { type: 'subheader', title: t('manager'), roles:[ERole.MANAGER]},
-  { type: 'divider' },
+  // { type: 'divider' },
   {
-    title: t('user_requst_management'),
+    title: t('user_leave_management'),
     props: {
-      prependIcon: 'mdi-comment-edit',
+      prependIcon: 'mdi-badge-account-horizontal-outline',
       link: true,
       to: '/userLeaveManagement',
       exact: true
@@ -69,9 +58,9 @@ const items = [
     roles: [ERole.MANAGER]
   },
   {
-    title: t('requst_confirm'),
+    title: t('request_confirm'),
     props: {
-      prependIcon: 'mdi-message-alert',
+      prependIcon: 'mdi-message-check-outline',
       link: true,
       to: '/requstConfirm',
       exact: true
@@ -82,11 +71,11 @@ const items = [
   // ユーザーメニュー
   { type: 'divider' },
   { type: 'subheader', title: t('member'), roles:[ERole.MEMBER]},
-  { type: 'divider' },
+  // { type: 'divider' },
   {
-    title: t('leave_apply_lists'),
+    title: t('leave_request'),
     props: {
-      prependIcon: 'mdi-email-arrow-right',
+      prependIcon: 'mdi-email-arrow-right-outline',
       link: true,
       to: '/leaveRequstList',
       exact: true
@@ -105,20 +94,7 @@ const items = [
       exact: true
     },
     value: '/changePassword',
-    // roles: [ERole.ADMIN]
   },
-  // {
-  //   title: t('logout'),
-  //   props: {
-  //     prependIcon: 'mdi-account-arrow-right-outline',
-  //     link: true,
-  //     to: '/login',
-  //     exact: true
-  //   },
-  //   value: '/login',
-  //   // value: showDialog
-  //   // roles: ['ROLE_ADMIN']
-  // }
 ];
 
 const drawerProps = reactive({
@@ -135,17 +111,17 @@ const handleDrawerWidth = () => {
   drawerProps.icon = drawerProps.railWidth === 256 ? 'mdi-arrow-expand-left  ' : 'mdi-arrow-expand-right';
 };
 
-const menus = computed(() => {
-  console.log(userStore.roles);
+// const menus = computed(() => {
+//   console.log(userStore.roles);
 
-  if (drawerProps.railWidth === 256) {
-    return items;
-  } else {
-    return items.filter((item) => {
-      return item.type !== 'subheader';
-    });
-  }
-});
+//   if (drawerProps.railWidth === 256) {
+//     return items;
+//   } else {
+//     return items.filter((item) => {
+//       return item.type !== 'subheader';
+//     });
+//   }
+// });
 </script>
 
 <template>

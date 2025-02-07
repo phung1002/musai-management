@@ -60,12 +60,12 @@ const onConfirmed = () => {
       <div class="pt-4 pb-4 px-5 text-center">
       <VBtn color="primary" block @click="handleSubmit" class="mr-4"><v-icon icon="mdi-logout" start></v-icon>{{ t('logout') }}</VBtn>
       <VDialog v-model="isDialogVisible" width="auto" eager>
-        <ConfimDialogView 
-          :title="t('confrim')"
-          :message="t('log_out_con_msg')"
+        <ConfimDialogView
+          :title="t('confirm')"
+          :message="t('logout_confirm_message')"
           :isVisible="isDialogVisible"
           @update:isVisible="isDialogVisible = $event"
-          @confirmed="onConfirmed" 
+          @confirmed="onConfirmed"
         />
       </VDialog>
     </div>

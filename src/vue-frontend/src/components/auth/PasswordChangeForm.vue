@@ -46,27 +46,27 @@ const handleSubmit = () => {
   // パスワードチェック: 必須
   if (form.password.valueOf() === '')
   {
-    errors.value.password = t('pw_required_error')
+    errors.value.password = t('password_required_error')
     valid = false
-  } 
+  }
   // 新パスワードチェック: 必須
   if (form.newPassword.valueOf() === '' ) {
-    errors.value.newPassword = t('new_pw_required_error')
+    errors.value.newPassword = t('new_password_required_error')
     valid = false
   }
   // 再パスワードチェック: 必須
   if (form.newPasswordConfrim.valueOf() == '') {
-    errors.value.newPasswordConfrim = t('confirm_pw_required_error')
+    errors.value.newPasswordConfrim = t('confirm_password_required_error')
     valid = false
   }
   // 現在のパスワードと入力パスワードの一致チェック
   if (form.newPassword.valueOf() == form.password.valueOf()) {
-    errors.value.passwordCheck = t('pw_matching_error')
+    errors.value.passwordCheck = t('password_matching_error')
     valid = false
   }
   // 新パスワードと再パスワードの一致チェック
   if (form.newPassword.valueOf()!== form.newPasswordConfrim.valueOf()) {
-    errors.value.newPasswordConfrim = t('new_pw_matching_error')
+    errors.value.newPasswordConfrim = t('new_password_matching_error')
     valid = false
   }
   // ��リデーション通過後、フォームデータを送信
@@ -76,7 +76,7 @@ const handleSubmit = () => {
   }
   // 新パスワードと再パスワードの一致チェック
   if (form.newPassword.valueOf() !== form.newPasswordConfrim.valueOf()) {
-    errors.value.newPasswordConfrim = t('pw_matching_error')
+    errors.value.newPasswordConfrim = t('password_matching_error')
     valid = false
   }
   // バリデーション通過後、フォームデータを送信
@@ -112,11 +112,11 @@ const onConfirmed = () => {
                 <VForm class="mt-2" @submit.prevent="() => {}">
                   <VRow>
                     <VCol cols="12" md="6">
-                      <VTextField 
-                        v-model="form.password" 
-                        id = "password" 
-                        :placeholder="t('password')"  
-                        type="password" 
+                      <VTextField
+                        v-model="form.password"
+                        id = "password"
+                        :placeholder="t('password')"
+                        type="password"
                       />
                       <span style="color: red;" v-if="errors.password" class="error">{{ errors.password }}</span>
                     </VCol>
@@ -126,8 +126,8 @@ const onConfirmed = () => {
                       <VTextField
                         v-model="form.newPassword"
                         id = "newPassword"
-                        :placeholder="t('newPassword')"
-                        type="password" 
+                        :placeholder="t('new_password')"
+                        type="password"
                       />
                       <span style="color: red;" v-if="errors.newPassword" class="error">{{ errors.newPassword }}</span>
                       <span style="color: red;" v-if="errors.passwordCheck" class="error">{{ errors.passwordCheck }}</span>
@@ -136,8 +136,8 @@ const onConfirmed = () => {
                       <VTextField
                         v-model="form.newPasswordConfrim"
                         id ="newPasswordConfrim"
-                        :placeholder="t('newPassword_confrim')"
-                        type="password" 
+                        :placeholder="t('new_password_confirm')"
+                        type="password"
                       />
                       <span style="color: red;" v-if="errors.newPasswordConfrim" class="error">{{ errors.newPasswordConfrim }}</span>
                     </VCol>
@@ -150,9 +150,9 @@ const onConfirmed = () => {
                 <VBtn type="reset" variant="tonal" @click="handleResetFilter"> {{ t('reset') }} </VBtn>
               </VCardActions>
               <VDialog v-model="isDialogVisible" width="auto" eager>
-                <ConfimDialogView 
-                :title="t('confrim')"
-                :message="t('pass_change_con_msg')"
+                <ConfimDialogView
+                :title="t('confirm')"
+                :message="t('password_change_confirm_message')"
                 :isVisible="isDialogVisible"
                 @update:isVisible="isDialogVisible = $event"
                 @confirmed="onConfirmed"

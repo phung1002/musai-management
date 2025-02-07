@@ -26,7 +26,7 @@ const errors = ref<Errors>({
   leave_duration_to: '',
   leave_reason: ''
 });
- 
+
 // フォームデータ
 const filters = reactive({
   paid_leave: '',
@@ -58,10 +58,10 @@ const resetErrors = () => {
 };
 // 入力チェック　バリデーションを行う
 const handleSubmit = () => {
- 
+
   resetErrors();  // フォーム送信前にエラーメッセージをリセット
   let valid = true
- 
+
   // leave_type のバリデーション
   if (
       filters.paid_leave.valueOf() === '' &&
@@ -76,7 +76,7 @@ const handleSubmit = () => {
     errors.value.leave_type = t('leave_type') + t('must_select_one_category');
     valid = false;
   }
- 
+
   // leave_duration_from のバリデーション
   if (filters.leave_duration_from.valueOf() === '') {
     errors.value.leave_duration_from = t('leave_duration_from') + t('required');
@@ -85,7 +85,7 @@ const handleSubmit = () => {
     errors.value.leave_duration_to = t('leave_duration_from') + t('invalid_range');
     valid = false;
   }
- 
+
   // leave_duration_to のバリデーション
   if (filters.leave_duration_to.valueOf() === '') {
     errors.value.leave_duration_to = t('leave_duration_to') + t('required');
@@ -94,7 +94,7 @@ const handleSubmit = () => {
     errors.value.leave_duration_to = t('leave_duration_from') + t('invalid_range');
     valid = false;
   }
- 
+
   // 休暇　理由
   if (filters.leave_reason.valueOf() === '' ) {
     errors.value.leave_reason = t('leave_reason')+ t('required');
@@ -125,7 +125,7 @@ const public_leave = leaveUserStore.getPublicLeave;
 const special_day_leave = leaveUserStore.getSpecialDayLeave;
 const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave
 </script>
- 
+
 <template>
   <VCard class="leave_form">
     <VToolbar tag="div">
@@ -194,7 +194,7 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave
         <v-table>
           <!-- <thead>
             <tr >
-              <th><label for="id">{{ t('userid') }}</label></th>
+              <th><label for="id">{{ t('user_id') }}</label></th>
               <th><VTextField
                 v-model="filters.userid"
                 type="text"
@@ -279,8 +279,8 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave
     <!-- 確認ダイアログ表示 -->
     <VDialog v-model="isDialogVisible" width="auto" eager>
       <ConfimDialogView
-      :title="t('confrim')"
-      :message="t('leave_apply_con_msg')"
+      :title="t('confirm')"
+      :message="t('leave_apply_confirm_message')"
       :isVisible="isDialogVisible"
       @update:isVisible="isDialogVisible = $event"
       @confirmed="onConfirmed"
