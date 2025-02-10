@@ -34,6 +34,8 @@
   "user_leave_management": "leave of user management",
   "request_confirm": "request answer",
   "leave_request": "leave request",
+  "calendar": "calendar",
+  "document": "document",
   "change_password": "change password",
   "admin": "admin",
   "manager": "management",

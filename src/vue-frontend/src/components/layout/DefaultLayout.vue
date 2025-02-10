@@ -1,11 +1,13 @@
 <!-- ホーム 画面　-->
 <script setup lang="ts">
-//import { RouterView, useRoute } from 'vue-router';
-// import { useLocale } from 'vuetify';
+import { RouterView, useRoute } from 'vue-router';
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import AppToolbar from '@/components/layout/AppToolbar.vue';
-// const route = useRoute();
-// const { t } = useLocale();
+import { useSnackbar } from '@/composables/useSnackbar';
+import SnackBar from '@/components/common/SnackBar.vue';
+
+const { snackbar } = useSnackbar();
+const route = useRoute();
 </script>
 
 <template>
@@ -18,9 +20,7 @@ import AppToolbar from '@/components/layout/AppToolbar.vue';
     <VMain class="app-main">
       <VContainer class="app-container">
         <div class="page-wrapper">
-          <!--
-          <h3 class="page-title">{{ t(String(route.name).toLocaleLowerCase()) }}</h3>
-          -->
+          <SnackBar :snackbar="snackbar"></SnackBar>
           <RouterView />
         </div>
       </VContainer>
@@ -31,8 +31,10 @@ import AppToolbar from '@/components/layout/AppToolbar.vue';
 <style lang="scss">
 .app-main {
   background-color: var(--v-theme-background, '#f6f6f6');
+
   .app-container {
     max-width: 1440px;
+
     .page-title {
       color: #3f434a;
       font-size: 28px;

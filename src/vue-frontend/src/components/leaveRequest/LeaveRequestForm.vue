@@ -64,14 +64,14 @@ const handleSubmit = () => {
 
   // leave_type のバリデーション
   if (
-      filters.paid_leave.valueOf() === '' &&
-      filters.public_leave.valueOf() === ''
-    ) {
-      errors.value.leave_type = t('leave_type') + t('required');
-      valid = false;
+    filters.paid_leave.valueOf() === '' &&
+    filters.public_leave.valueOf() === ''
+  ) {
+    errors.value.leave_type = t('leave_type') + t('required');
+    valid = false;
   } else if (
-    ( filters.public_leave.valueOf() !== '' && filters.special_occasions_leave.valueOf() === '') &&
-    ( filters.public_leave.valueOf() !== '' && filters.special_day_leave.valueOf() === '')
+    (filters.public_leave.valueOf() !== '' && filters.special_occasions_leave.valueOf() === '') &&
+    (filters.public_leave.valueOf() !== '' && filters.special_day_leave.valueOf() === '')
   ) {
     errors.value.leave_type = t('leave_type') + t('must_select_one_category');
     valid = false;
@@ -96,16 +96,16 @@ const handleSubmit = () => {
   }
 
   // 休暇　理由
-  if (filters.leave_reason.valueOf() === '' ) {
-    errors.value.leave_reason = t('leave_reason')+ t('required');
+  if (filters.leave_reason.valueOf() === '') {
+    errors.value.leave_reason = t('leave_reason') + t('required');
     valid = false;
   }
   // バリデーション通過後、フォームデータを送信
   if (valid) {
     // 確認ポップアップを表示
-      isDialogVisible.value = true;
-      console.log('確認ポップアップを表示');
-    }
+    isDialogVisible.value = true;
+    console.log('確認ポップアップを表示');
+  }
 };
 const onConfirmed = () => {
   console.log("許可されました");
@@ -129,30 +129,28 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave
 <template>
   <VCard class="leave_form">
     <VToolbar tag="div">
-      <VToolbarTitle><VIcon icon= "mdi-lead-pencil"/>{{ t('leave_applying') }}</VToolbarTitle>
+      <VToolbarTitle>
+        <VIcon icon="mdi-lead-pencil" />{{ t('leave_applying') }}
+      </VToolbarTitle>
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
-    <VForm @submit.prevent="() => {}">
-      <v-container >
+    <VForm @submit.prevent="() => { }">
+      <v-container>
         <VTable>
           <VTabs v-model="activeTab" color="primary">
-            <VTab v-for="item in tabs" :key="item.icon" :value="item.tab" >
+            <VTab v-for="item in tabs" :key="item.icon" :value="item.tab">
               <VIcon size="20" start :icon="item.icon" />
               {{ item.title }}
             </VTab>
           </VTabs>
-          <VCardText >
+          <VCardText>
             <VWindow v-model="activeTab">
               <span v-if="errors.leave_type" class="error" style="color: red;">{{ errors.leave_type }}</span>
               <VWindowItem value="paid">
                 <VCardText>
                   <VRow>
                     <VCol :cols="4" class="dropdown-box">
-                      <VAutocomplete
-                      v-model="filters.paid_leave"
-                      :items="paid_leave"
-                      :label="t('paid_leave')"
-                      />
+                      <VAutocomplete v-model="filters.paid_leave" :items="paid_leave" :label="t('paid_leave')" />
                     </VCol>
                   </VRow>
                 </VCardText>
@@ -161,27 +159,18 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave
                 <VCardText>
                   <VRow>
                     <VCol :cols="4" class="dropdown-box">
-                      <VAutocomplete
-                      v-model="filters.public_leave"
-                      :items="public_leave"
-                      :label="t('public_leave')"
-                      />
+                      <VAutocomplete v-model="filters.public_leave" :items="public_leave" :label="t('public_leave')" />
                     </VCol>
                     <!-- 特別休暇選択場合　特別休暇リストのみ表示設定 -->
                     <VCol :cols="4" v-if="filters.public_leave.valueOf() === 'SPECIAL_DAY_LEAVE'" class="dropdown-box">
-                      <VAutocomplete
-                      v-model="filters.special_day_leave"
-                      :items="special_day_leave"
-                      :label="t('special_day_leave')"
-                      />
+                      <VAutocomplete v-model="filters.special_day_leave" :items="special_day_leave"
+                        :label="t('special_day_leave')" />
                     </VCol>
                     <!-- 慶弔休暇選択場合　慶弔休暇リストのみ表示設定 -->
-                    <VCol :cols="4" v-if="filters.public_leave.valueOf() === 'SPECIAL_OCCASIONS_LEAVE'" class="dropdown-box">
-                      <VAutocomplete
-                      v-model="filters.special_occasions_leave"
-                      :items="special_occasions_leave"
-                      :label="t('special_occasions_leave')"
-                      />
+                    <VCol :cols="4" v-if="filters.public_leave.valueOf() === 'SPECIAL_OCCASIONS_LEAVE'"
+                      class="dropdown-box">
+                      <VAutocomplete v-model="filters.special_occasions_leave" :items="special_occasions_leave"
+                        :label="t('special_occasions_leave')" />
                     </VCol>
                   </VRow>
                 </VCardText>
@@ -189,82 +178,37 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave
             </VWindow>
           </VCardText>
         </VTable>
-        <!--row2--->
         <VDivider />
         <v-table>
-          <!-- <thead>
-            <tr >
-              <th><label for="id">{{ t('user_id') }}</label></th>
-              <th><VTextField
-                v-model="filters.userid"
-                type="text"
-                readonly
-                />
-              </th>
-            </tr>
-          </thead>
-          <VDivider /> -->
-          <!---row3--->
-          <!-- <thead>
-            <tr>
-              <th><label for="username">{{t('username')}}</label></th>
-              <th><VTextField
-                v-model="filters.username"
-                type="text"
-                readonly
-                />
-              </th>
-            </tr>
-          </thead>
-         <VDivider /> -->
-          <!---row4--->
-          <!-- <thead>
-            <tr>
-              <th><label for="department">{{t('department')}}</label></th>
-              <th><VTextField
-                v-model="filters.department"
-                type="text"
-                readonly
-                />
-              </th>
-            </tr>
-          </thead> -->
           <VDivider />
-          <!---row5--->
           <thead>
             <tr>
-              <th><label for="leave_duration_from">{{t('leave_duration_from')}}</label></th>
-              <th><VTextField
-                v-model="filters.leave_duration_from"
-                input type="date"
-                />
-                <span v-if="errors.leave_duration_from" class="error" style="color: red;">{{ errors.leave_duration_from}}</span>
+              <th><label for="leave_duration_from">{{ t('leave_duration_from') }}</label></th>
+              <th>
+                <VTextField v-model="filters.leave_duration_from" input type="date" />
+                <span v-if="errors.leave_duration_from" class="error" style="color: red;">{{
+                  errors.leave_duration_from}}</span>
               </th>
             </tr>
           </thead>
           <VDivider />
-            <!---row6--->
           <thead>
             <tr>
-                <th><label for="leave_duration_to">{{t('leave_duration_to')}}</label></th>
-                <th><VTextField
-                  v-model="filters.leave_duration_to"
-                  input type="date"
-                  />
-                  <span v-if="errors.leave_duration_to" class="error" style="color: red;">{{ errors.leave_duration_to }}</span>
-                </th>
+              <th><label for="leave_duration_to">{{ t('leave_duration_to') }}</label></th>
+              <th>
+                <VTextField v-model="filters.leave_duration_to" input type="date" />
+                <span v-if="errors.leave_duration_to" class="error" style="color: red;">{{ errors.leave_duration_to
+                  }}</span>
+              </th>
             </tr>
           </thead>
           <VDivider />
-          <!---row7--->
           <thead>
-            <tr >
-              <th><label for="leave_reason">{{t('leave_reason')}}</label></th>
-              <th><VTextField
-                v-model="filters.leave_reason"
-                input type="text"
-                />
-                <span v-if="errors.leave_reason" class="error" style="color: red;">{{ errors.leave_reason}}</span>
+            <tr>
+              <th><label for="leave_reason">{{ t('leave_reason') }}</label></th>
+              <th>
+                <VTextField v-model="filters.leave_reason" input type="text" />
+                <span v-if="errors.leave_reason" class="error" style="color: red;">{{ errors.leave_reason }}</span>
               </th>
             </tr>
           </thead>
@@ -278,13 +222,8 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave
     </VCardActions>
     <!-- 確認ダイアログ表示 -->
     <VDialog v-model="isDialogVisible" width="auto" eager>
-      <ConfimDialogView
-      :title="t('confirm')"
-      :message="t('leave_apply_confirm_message')"
-      :isVisible="isDialogVisible"
-      @update:isVisible="isDialogVisible = $event"
-      @confirmed="onConfirmed"
-    />
+      <ConfimDialogView :title="t('confirm')" :message="t('leave_apply_confirm_message')" :isVisible="isDialogVisible"
+        @update:isVisible="isDialogVisible = $event" @confirmed="onConfirmed" />
     </VDialog>
   </VCard>
 </template>
