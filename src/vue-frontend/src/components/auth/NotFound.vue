@@ -1,3 +1,14 @@
+<script setup lang="ts">
+
+import { useRouter } from 'vue-router';
+const router = useRouter()
+const backHome = () => {
+  router.push({
+    path: '/main'
+  });
+};
+</script>
+
 <template>
   <div class="page-notfound">
     <div class="notfound">
@@ -8,7 +19,7 @@
         Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily
         unavailable
       </p>
-      <VBtn>BACK HOME</VBtn>
+      <VBtn @click="backHome()">BACK HOME</VBtn>
     </div>
   </div>
 </template>

@@ -79,14 +79,37 @@ const items = [
   },
   { type: 'divider' },
   {
+    title: t('calendar'),
+    props: {
+      prependIcon: 'mdi-calendar-month-outline',
+      link: true,
+      to: '/calendar',
+      exact: true,
+    },
+    value: '/calendar',
+    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN]
+  },
+  {
+    title: t('document'),
+    props: {
+      prependIcon: 'mdi-invoice-text-multiple-outline',
+      link: true,
+      to: '/document',
+      exact: true,
+    },
+    value: '/document',
+    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN]
+  },
+  {
     title: t('change_password'),
     props: {
       prependIcon: 'mdi-account-convert',
       link: true,
-      to: '/account/change-password',
+      to: '/change-password',
       exact: true,
     },
-    value: '/account/change-password',
+    value: '/change-password',
+    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN]
   },
 ];
 
@@ -152,10 +175,7 @@ const handleDrawerWidth = () => {
 }
 
 .v-navigation-drawer--border {
-    border-width: inherit ;
-    box-shadow: none;
+  border-width: inherit;
+  box-shadow: none;
 }
-// .v-toolbar {
-//   height: 55px !important;
-// }
 </style>

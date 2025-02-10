@@ -11,6 +11,8 @@ import LeaveManagementViewVue from "@/views/LeaveManagementView.vue";
 import UserLeaveManagementViewVue from "@/views/UserLeaveManagementView.vue";
 import RequestConfirmViewVue from "@/views/RequestConfirmView.vue";
 import PasswordChangeVue from "@/components/auth/PasswordChange.vue";
+import CalendarVue from "@/views/Calendar.vue";
+import DocumentVue from "@/views/Document.vue";
 
 const publicRoutes = {
   path: "/login",
@@ -79,7 +81,23 @@ const routes = {
       },
     },
     {
-      path: "/account/change-password",
+      path: "/calendar",
+      name: "calendar",
+      component: CalendarVue,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: "/document",
+      name: "document",
+      component: DocumentVue,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: "/change-password",
       name: "change-password",
       component: PasswordChangeVue,
       meta: {
