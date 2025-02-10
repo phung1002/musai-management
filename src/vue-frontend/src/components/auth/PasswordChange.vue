@@ -96,7 +96,8 @@ const onConfirmed = () => {
   <VCard flat elevation="0">
     <VToolbar tag="div">
       <VToolbarTitle>
-        <VIcon icon="mdi-lock" />{{ t('change_password') }}
+        <VIcon>mdi-lock</VIcon>
+        <span class="text-lg font-medium ml-2">{{ t('change_password') }}</span>
       </VToolbarTitle>
     </VToolbar>
     <VCardText>

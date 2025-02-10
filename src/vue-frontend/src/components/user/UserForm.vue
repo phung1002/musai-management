@@ -226,7 +226,7 @@ watch(props, () => {
     <!-- </VCardText> -->
     <VCardActions>
       <VBtn type="submit" variant="elevated" color="primary" @click="handleSubmit(formValid,formModel, submiting)">{{ t('register') }}</VBtn>
-      <VBtn type="reset" variant="tonal" @click="handleCancel">{{t('cancel')}}</VBtn>
+      <VBtn type="reset" variant="tonal" @click="resetForm">{{t('reset')}}</VBtn>
     </VCardActions>
   </VCard>
 </template>
