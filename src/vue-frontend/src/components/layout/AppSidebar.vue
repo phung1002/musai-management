@@ -9,9 +9,9 @@ import { ERole } from '@/constants/role';
 const userStore = useUserStore();
 const filteredItems = computed(() => {
   return items.filter((item) => {
-        if (!item.roles) return true;
-        return item.roles.some((role) => userRoles.value.includes(role));
-      });
+    if (!item.roles) return true;
+    return item.roles.some((role) => userRoles.value.includes(role));
+  });
 });
 const userRoles = computed(() => userStore.roles || []);
 const { t } = useI18n();
@@ -21,7 +21,7 @@ const items = [
   {
     title: t('user_management'),
     props: {
-      prependIcon: 'mdi-account-box-plus-outline',
+      prependIcon: 'mdi-account-box-multiple-outline',
       link: true,
       to: '/admin/users',
       exact: false,
@@ -119,21 +119,14 @@ const handleDrawerWidth = () => {
 
 <template>
   <VNavigationDrawer :rail-width="drawerProps.railWidth" :rail="drawerProps.rail" :border="true" :elevation="1">
-    <VToolbar class="px-3" color="transparent">
+    <VToolbar color="transparent">
       <v-img :src="logoImg" alt="logo" contain class="logo py-2" :height="200"></v-img>
     </VToolbar>
     <div class="app-drawer__inner">
       <VList :items="filteredItems" color="primary" class="menu-list" nav :slim="true" />
     </div>
-    <VBtn
-      class="btn-collapse"
-      rounded="lg"
-      color="white"
-      size="x-small"
-      :icon="drawerProps.icon"
-      @click="handleDrawerWidth"
-      :style="{ left: drawerProps.railWidth - 12 + 'px' }"
-    />
+    <VBtn class="btn-collapse" rounded="lg" color="white" size="x-small" :icon="drawerProps.icon"
+      @click="handleDrawerWidth" :style="{ left: drawerProps.railWidth - 12 + 'px' }" />
   </VNavigationDrawer>
 </template>
 
@@ -143,15 +136,26 @@ const handleDrawerWidth = () => {
   inset-block-start: 50%;
   transform: translateY(-50%);
 }
+
 .menu-list {
   .v-list-subheader__text {
     text-transform: uppercase;
   }
-  .v-list-item__prepend > .v-icon {
+
+  .v-list-item__prepend>.v-icon {
     margin-inline-end: 16px;
   }
+
   .v-list-item-title {
     text-transform: capitalize;
   }
 }
+
+.v-navigation-drawer--border {
+    border-width: inherit ;
+    box-shadow: none;
+}
+// .v-toolbar {
+//   height: 55px !important;
+// }
 </style>
