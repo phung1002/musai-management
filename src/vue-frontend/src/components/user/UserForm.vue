@@ -25,6 +25,14 @@ const formRulesConfig = formRules(validator, formModel);
 const confirmPassword = ref('');
 const formValid = ref(false);
 
+// trans title of roles
+const translatedRoles = computed(() =>
+  roles.map(role => ({
+    ...role,
+    title: t(role.value.toLocaleLowerCase()),
+  }))
+);
+
 // trans title of genders
 const translatedGenders = computed(() =>
   genders.map(gender => ({
@@ -32,6 +40,7 @@ const translatedGenders = computed(() =>
     title: t(`${gender.value}`),
   }))
 );
+
 const resetForm = () => {
   Object.assign(formModel, defaultUser);
   // Object.assign(formModel, props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser });
@@ -123,9 +132,7 @@ watch(props, () => {
                     <VAutocomplete
                       v-model="formModel.roles"
                       :rules="[validator.required]"
-                      :items="roles"
-                      item-title="title"
-                      item-value="value"
+                      :items="translatedRoles"
                       variant="outlined"
                       color="primary"
                       name="roles"
@@ -133,9 +140,6 @@ watch(props, () => {
                       chips
                       clearable
                     >
-                    <template v-slot:selection="{ item }">
-                      <span>{{ t(item.title) }}</span>
-                    </template>
                     </VAutocomplete>
                   </VCol>
                 </VRow>
