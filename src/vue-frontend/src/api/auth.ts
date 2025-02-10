@@ -59,3 +59,17 @@ export async function validate() {
     throw error;
   }
 }
+
+// パスワート変更API呼び出し
+export interface ChangePasswordPayload {
+  password: string;
+  newPassword: string;
+}
+export const changePassword = async (payload: ChangePasswordPayload): Promise<void> => {
+  console.log("OK", payload);
+  try {
+    await axiosIns.post('/auth/user/passwordChange', payload);
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "パスワード変更に失敗しました");
+  }
+};
