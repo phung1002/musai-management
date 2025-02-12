@@ -146,7 +146,7 @@ onMounted(() => {
   </VRow>
   <!-- Dialog Create/Update user -->
   <VDialog v-model="showDialog" width="auto" persistent>
-    <UserForm :isEdit="isEdit" @form:cancel="showDialog = false" />
+    <UserForm :isEdit="isEdit" @form:cancel="showDialog = false" @refetch-data="fetchUsers" />
   </VDialog>
 </template>
 

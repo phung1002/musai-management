@@ -64,7 +64,7 @@ const handleSubmit = async () => {
   try {
     const success = await createUser(payload);
     showSnackbar("add_success", "success");
-    getAllUsers();
+    emit("refetch-data");
     handleCancel();
   } catch (error) {
     const errorMessage = ["add_failure"];
