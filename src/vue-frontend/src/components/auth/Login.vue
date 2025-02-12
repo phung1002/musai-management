@@ -27,7 +27,7 @@ export default {
       try {
         await login(formModel);
         errorMessage.value = ''; // Delete error message if login success
-        const redirectPath = route.query.to ? String(route.query.to) : '/home';
+        const redirectPath = route.query.to ? String(route.query.to) : '/calendar';
         router.replace(redirectPath); // direct
       } catch (error) {
         // Catch error

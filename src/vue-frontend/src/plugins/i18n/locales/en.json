@@ -83,7 +83,9 @@
     "update_failure": "update failed.",
     "delete_success": "deletion successful!",
     "delete_failure": "deletion failed.",
-    "validation_error": "please correct the highlighted errors before submitting."
+    "validation_error": "please correct the highlighted errors before submitting.",
+    "user_exists": "The username already exists in the system.",
+    "user_not_found": "The username does not exist in the system."
   },
   "validation": {
     "required_input": "this field is required",

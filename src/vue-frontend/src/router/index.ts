@@ -26,7 +26,7 @@ const routes = {
   meta: {
     requiresAuth: true,
   },
-  redirect: "/main",
+  redirect: "/calendar",
   component: DefaultLayoutVue,
   children: [
     {

@@ -28,9 +28,9 @@ export const defaultUser: IUser = {
 
 export const formRules = (validator: any, formModel: IUser) => ({
   username: [validator.required, validator.halfSize, validator.checkLength(5, 20)],
-  email: [validator.required, validator.halfSize, validator.checkLength(5, 20), validator.emailFormat],
-  password: [validator.required, validator.halfSize, validator.checkLength(8, 20)],
-  confirmPassword: [validator.checkPasswordConfirm(formModel.password)],
+  email: [validator.required, validator.halfSize, validator.checkLength(5, 30), validator.emailFormat],
+  password: [validator.required, validator.halfSize, validator.checkLength(6, 20)],
+  confirmPassword: [validator.checkEqual(formModel.password)],
   fullName: [validator.required, validator.checkLength(2, 50)],
   fullNameFurigana: [validator.required, validator.checkFurigana, validator.checkLength(2, 50)],
 });

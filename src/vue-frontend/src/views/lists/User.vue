@@ -51,29 +51,11 @@ const fetchUsers = async () => {
   }
 };
 
-//set color for each role
-const getRoleColor = (role: string) => {
-  switch (role) {
-    case 'admin':
-      return 'red';
-    case 'manager':
-      return 'yellow';
-    case 'member':
-      return 'green';
-    default:
-      return 'grey';
-  }
-};
 const isEdit = ref(false);
 const showDialog = ref(false);
 const handleCreateItem = () => {
   isEdit.value = false;
   showDialog.value = true;
-};
-// Hàm tìm kiếm role title theo value
-const getRoleTitle = (roleValue: string) => {
-  const role = userStore.roles.find(r => r.value === roleValue);
-  return role ? role.title : roleValue;
 };
 const handleDeleteItem = (id: number) => {
   isDialogVisible.value = true;
@@ -132,9 +114,9 @@ onMounted(() => {
               <!-- Slot for 'roles' -->
               <template v-slot:item.roles="{ item }">
                 <VChipGroup column active-class="bg-primary text-white">
-                  <VChip v-for="(role, index) in item.roles" :key="index" :color="getRoleColor(role)" variant="elevated"
+                  <VChip v-for="(role, index) in item.roles" :key="index" variant="elevated"
                     text-color="white">
-                    {{ t(getRoleTitle(role)) }}
+                    {{ t(role) }}
                   </VChip>
                 </VChipGroup>
               </template>

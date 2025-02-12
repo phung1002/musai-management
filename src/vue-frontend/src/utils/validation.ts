@@ -1,5 +1,5 @@
 // validation.ts
-export const userValidator = (t: Function) => ({
+export const useValidator = (t: Function) => ({
   required: (value: string) => (value && value.length ? true : t('validation.required_input')),
 
   emailFormat: (value: string) =>
@@ -28,7 +28,7 @@ export const userValidator = (t: Function) => ({
     return true;
   },
 
-  checkPasswordConfirm: (password: string) => (value: string) => {
+  checkEqual: (password: string) => (value: string) => {
     if(password != value) {
       return t('validation.password_confirm');
     }

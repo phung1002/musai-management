@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useSnackbar } from '@/composables/useSnackbar';
+import { snackbar, closeSnackbar } from '@/composables/useSnackbar';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
-const { snackbar, closeSnackbar } = useSnackbar();
 const isMessageObject = computed(() =>
   Object.prototype.toString.call(snackbar.value.message) === '[object Object]'
 );
