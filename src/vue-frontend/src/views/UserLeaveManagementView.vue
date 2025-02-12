@@ -4,6 +4,7 @@
 // import { useLocale } from 'vuetify';
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import AppToolbar from '@/components/layout/AppToolbar.vue';
+import FileUpload from '@/components/upload/FileUpload.vue';
 // const route = useRoute();
 // const { t } = useLocale();
 </script>
@@ -18,6 +19,7 @@ import AppToolbar from '@/components/layout/AppToolbar.vue';
     <VMain class="app-main">
       <VContainer class="app-container">
         <div class="page-wrapper">
+          <FileUpload />
           <!--
           <h3 class="page-title">{{ t(String(route.name).toLocaleLowerCase()) }}</h3>
           -->
