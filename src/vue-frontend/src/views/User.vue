@@ -8,7 +8,7 @@ import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { showSnackbar } from "@/composables/useSnackbar";
 
 const isConfirmDialogVisible = ref(false)
-const formatRole = (role: string) => role.toLowerCase();
+const formatRole = (role: string) => role;
 const { t } = useI18n();
 
 // Headers of table
@@ -192,7 +192,7 @@ onMounted(() => {
     <UserForm
       :isEdit="isEdit"
       :user="selectedUser"
-      @form:cancel="showDialog = false"
+      @form-cancel="showDialog = false"
       @refetch-data="fetchUsers"
     />
   </VDialog>

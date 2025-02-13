@@ -9,7 +9,7 @@ import {
   formRules,
   genders,
 } from "../../configs/userFormConfig";
-import { createUser, getAllUsers } from "@/api/user";
+import { createUser } from "@/api/user";
 import { showSnackbar } from "@/composables/useSnackbar";
 
 const formatDate = (date: string | null) =>
@@ -20,13 +20,12 @@ const submiting = ref(false);
 const validator = useValidator(t);
 const formRef = ref(null);
 const activeTab = ref("account");
-const emit = defineEmits(["form:cancel"]);
+const emit = defineEmits(["form-cancel", "refetch-data"]);
 const props = defineProps<{ user?: IUser; isEdit: boolean }>();
 
 const formModel = reactive<IUser>(
   props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser }
 );
-// const formModel: Ref<IUser> = ref({ ...defaultUser });
 
 // Form validation rules
 const formRulesConfig = formRules(validator, formModel);
@@ -37,9 +36,15 @@ const formValid = ref(false);
 const translatedRoles = computed(() =>
   roles.map((role) => ({
     ...role,
-    title: t(role.value.toLocaleLowerCase()),
+    title: t(`${role.value}`),
   }))
 );
+// const formattedRoles = computed({
+//   get: () => formModel.roles,
+//   set: (newValues) => {
+//     formModel.roles = newValues;
+//   },
+// });
 
 // trans title of genders
 const translatedGenders = computed(() =>
@@ -48,11 +53,29 @@ const translatedGenders = computed(() =>
     title: t(`${gender.value}`),
   }))
 );
+const convertDate = (date: string | null): string | null => {
+  if (date == null) return null;
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+const formattedBirthday = computed({
+  get: () => convertDate(formModel.birthday),
+  set: (newDate) => {
+    formModel.birthday = newDate;
+  },
+});
+const formattedJoinDate = computed({
+  get: () => convertDate(formModel.joinDate),
+  set: (newDate) => {
+    formModel.joinDate = newDate;
+  },
+});
 
 const handleSubmit = async () => {
-  console.log(formModel);
-
-  const isValid = await formRef.value?.validate(); // Lấy giá trị trả về từ validate()
+  const isValid = await formRef.value?.validate();
   if (!isValid.valid) {
     showSnackbar("validation_error", "error");
     return;
@@ -64,11 +87,11 @@ const handleSubmit = async () => {
   };
   submiting.value = true;
   try {
-    const success = await createUser(payload);
+    await createUser(payload);
     showSnackbar("add_success", "success");
     emit("refetch-data");
     handleCancel();
-  } catch (error) {
+  } catch (error: any) {
     const errorMessage = ["add_failure"];
     if (error.status === 400) {
       console.log(error.status);
@@ -81,8 +104,10 @@ const handleSubmit = async () => {
 };
 
 const resetForm = () => {
-  Object.assign(formModel, defaultUser);
-  // Object.assign(formModel, props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser });
+  Object.assign(
+    formModel,
+    props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser }
+  );
   if (formRef.value && formRef.value.resetValidation) {
     formRef.value.resetValidation();
   }
@@ -91,7 +116,7 @@ const resetForm = () => {
   activeTab.value = "account"; // Reset to first tab
 };
 const handleCancel = () => {
-  emit("form:cancel");
+  emit("form-cancel");
   resetForm();
 };
 
@@ -101,11 +126,11 @@ const handleCancel = () => {
 //   }
 // }, { deep: true });
 
-watch(props, () => {
-  if (props.isEdit) {
-    Object.assign(formModel, props.user);
-  }
-});
+// watch(props, () => {
+//   if (props.isEdit) {
+//     Object.assign(formModel, props.user);
+//   }
+// });
 </script>
 
 <template>
@@ -207,7 +232,7 @@ watch(props, () => {
               <VCol cols="3">
                 <VLabel>{{ t("birthday") }}</VLabel>
                 <VTextField
-                  v-model="formModel.birthday"
+                  v-model="formattedBirthday"
                   :rules="[validator.required]"
                   variant="outlined"
                   color="primary"
@@ -251,7 +276,7 @@ watch(props, () => {
               <VCol cols="3">
                 <VLabel>{{ t("join_date") }}</VLabel>
                 <VTextField
-                  v-model="formModel.joinDate"
+                  v-model="formattedJoinDate"
                   :rules="[validator.required]"
                   variant="outlined"
                   color="primary"

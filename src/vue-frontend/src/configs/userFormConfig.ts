@@ -2,7 +2,7 @@ import { IUser } from '@/types/type';
 import { ERole } from '@/constants/role';
 
 export const roles = Object.keys(ERole).map(key => ({
-  title: key.toLocaleLowerCase(),
+  title: key,
   value: ERole[key as keyof typeof ERole],
 }));
 
