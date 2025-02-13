@@ -16,18 +16,17 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response && error.response.status === 401) {
-      console.error('Unauthorized, redirecting to login...');
-      const userStore = useUserStore();
-      userStore.setToken('');
-      userStore.setUsername('');
-      userStore.setRoles([]);
-      userStore.setAuthenticated(false);
+      // const userStore = useUserStore();
+      // userStore.setToken('');
+      // userStore.setUsername('');
+      // userStore.setRoles([]);
+      // userStore.setAuthenticated(false);
 
       // Delete token from cookie
-      document.cookie = "access_token=; Max-Age=0; path=/";
+      // document.cookie = "access_token=; Max-Age=0; path=/";
 
-      // Direct to login page
-      await router.replace({ name: 'login', query: { to: router.currentRoute.value.fullPath } });
+      // Direct to not found page
+      await router.replace({ name: 'not-found', query: { to: router.currentRoute.value.fullPath } });
     }
     return Promise.reject(error);
   }

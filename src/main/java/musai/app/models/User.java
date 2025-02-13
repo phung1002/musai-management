@@ -1,6 +1,5 @@
 package musai.app.models;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +40,7 @@ public class User {
 	private String fullName;
 
 	@Column(name = "full_name_furigana")
-	private String fullNameFufigana;
+	private String fullNameFurigana;
 
 	@Column(name = "birthday")
 	private LocalDateTime birthday;
@@ -80,7 +79,7 @@ public class User {
 		this.email = email;
 		this.password = encode;
 		this.fullName = fullName;
-		this.fullNameFufigana = fullNameFurigana;
+		this.fullNameFurigana = fullNameFurigana;
 		this.birthday = birthday;
 		this.department = department;
 		this.workPlace = workPlace;

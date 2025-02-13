@@ -3,8 +3,10 @@ package musai.app.DTO.request;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import musai.app.validation.ValidationGroups;
 
@@ -30,7 +32,7 @@ public class UserRequestDTO {
 
 	private String fullName;
 
-	private String fullNameFufigana;
+	private String fullNameFurigana;
 
 	private LocalDateTime birthday;
 

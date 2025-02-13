@@ -84,6 +84,7 @@
     "update_failure": "更新に失敗しました。",
     "delete_success": "削除が成功しました。",
     "delete_failure": "削除に失敗しました。",
+    "delete_your_self": "自分を削除することはできません。",
     "validation_error": "送信前にエラーを修正してください。",
     "user_exists": "ユーザー名はすでにシステムに存在します。",
     "user_not_found": "ユーザー名はシステムに存在しません。"

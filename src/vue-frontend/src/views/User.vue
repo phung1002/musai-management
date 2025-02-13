@@ -4,15 +4,11 @@ import { useI18n } from "vue-i18n";
 import { deleteUser, getAllUsers } from "@/api/user";
 import { IUser } from "@/types/type";
 import UserForm from "@/components/user/UserForm.vue";
-import { useUserStore } from "@/store/userStore";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { showSnackbar } from "@/composables/useSnackbar";
 
-const isConfirmDialogVisible = ref(false);
-const userStore = useUserStore();
+const isConfirmDialogVisible = ref(false)
 const formatRole = (role: string) => role.toLowerCase();
-
-// i18n: to translate
 const { t } = useI18n();
 
 // Headers of table
@@ -73,8 +69,13 @@ const handleDeleteUser = async () => {
     await deleteUser(selectedUser.value.id);
     showSnackbar("delete_success", "success");
     fetchUsers();
-  } catch (error) {
+  } catch (error: any) {
+    if(error.status == 403) {
+      showSnackbar("delete_your_self", "error");
+    }else{
     showSnackbar("delete_failure", "error");
+
+    }
   } finally {
     isConfirmDialogVisible.value = false;
   }

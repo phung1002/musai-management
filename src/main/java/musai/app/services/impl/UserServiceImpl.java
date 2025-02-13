@@ -4,22 +4,24 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.UserRequestDTO;
 import musai.app.DTO.response.UserResponseDTO;
 import musai.app.exception.BadRequestException;
+import musai.app.exception.ForbiddenException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.ERole;
 import musai.app.models.Role;
 import musai.app.models.User;
 import musai.app.repositories.RoleRepository;
 import musai.app.repositories.UserRepository;
+import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.UserService;
 
 @Service
@@ -47,7 +49,7 @@ public class UserServiceImpl implements UserService {
 						userResponseDTO.getEmail(),
 						userResponseDTO.getRoles().stream().map(role -> role.getName().name())
 								.collect(Collectors.toSet()),
-						userResponseDTO.getFullName(), userResponseDTO.getFullNameFufigana(),
+						userResponseDTO.getFullName(), userResponseDTO.getFullNameFurigana(),
 						userResponseDTO.getBirthday(), userResponseDTO.getDepartment(), userResponseDTO.getWorkPlace(),
 						userResponseDTO.getJoinDate(), userResponseDTO.getGender()))
 				.collect(Collectors.toList());
@@ -72,9 +74,11 @@ public class UserServiceImpl implements UserService {
 		// Create new user's account
 		User user = new User(userRequestDTO.getUsername(), userRequestDTO.getEmail(),
 				encoder.encode(userRequestDTO.getPassword()), userRequestDTO.getFullName(),
-				userRequestDTO.getFullNameFufigana(), userRequestDTO.getBirthday(), userRequestDTO.getDepartment(),
+				userRequestDTO.getFullNameFurigana(), userRequestDTO.getBirthday(), userRequestDTO.getDepartment(),
 				userRequestDTO.getWorkPlace(), userRequestDTO.getJoinDate(), userRequestDTO.getGender());
 
+		System.out.println(userRequestDTO);
+		System.out.println(user);
 		Set<String> strRoles = userRequestDTO.getRoles();
 		Set<Role> roles = new HashSet<>();
 
@@ -138,6 +142,8 @@ public class UserServiceImpl implements UserService {
 		existingUser.setUsername(userRequestDTO.getUsername());
 		existingUser.setEmail(userRequestDTO.getEmail());
 		existingUser.setFullName(userRequestDTO.getFullName());
+		existingUser.setFullNameFurigana(userRequestDTO.getFullNameFurigana());
+		existingUser.setBirthday(userRequestDTO.getBirthday());
 		existingUser.setDepartment(userRequestDTO.getDepartment());
 		existingUser.setWorkPlace(userRequestDTO.getWorkPlace());
 		existingUser.setJoinDate(userRequestDTO.getJoinDate());
@@ -188,13 +194,20 @@ public class UserServiceImpl implements UserService {
 	 * @return MessageResponse update success/ fail
 	 */
 	@Override
-	public MessageResponse deleteUser(Long userId) {
+	public MessageResponse deleteUser(Long userId, UserDetailsImpl principal) {
+		if (isDeletingSelf(userId, principal)) {
+			throw new ForbiddenException("Can not delete your self");
+		}
 		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
 				.orElseThrow(() -> new NotFoundException("User not exist."));
 
 		existingUser.setDeletedAt(LocalDateTime.now());
 		userRepository.save(existingUser); // Update deleted_at
 		return new MessageResponse("User just deleted.");
+	}
+
+	private boolean isDeletingSelf(Long id, UserDetailsImpl principal) {
+		return id.equals(Long.valueOf(principal.getId()));
 	}
 
 	/**
@@ -213,7 +226,7 @@ public class UserServiceImpl implements UserService {
 
 		return new UserResponseDTO(existingUser.getId(), existingUser.getUsername(), existingUser.getEmail(),
 				existingUser.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),
-				existingUser.getFullName(), existingUser.getFullNameFufigana(), existingUser.getBirthday(),
+				existingUser.getFullName(), existingUser.getFullNameFurigana(), existingUser.getBirthday(),
 				existingUser.getDepartment(), existingUser.getWorkPlace(), existingUser.getJoinDate(),
 				existingUser.getGender());
 
@@ -227,7 +240,7 @@ public class UserServiceImpl implements UserService {
 				.filter(user -> user.getUsername().toLowerCase().contains(keyword.toLowerCase()))
 				.map(user -> new UserResponseDTO(user.getId(), user.getUsername(), user.getEmail(),
 						user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),
-						user.getFullName(), user.getFullNameFufigana(), user.getBirthday(), user.getDepartment(),
+						user.getFullName(), user.getFullNameFurigana(), user.getBirthday(), user.getDepartment(),
 						user.getWorkPlace(), user.getJoinDate(), user.getGender()
 
 				)).collect(Collectors.toList());
