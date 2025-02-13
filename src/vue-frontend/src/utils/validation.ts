@@ -15,7 +15,7 @@ export const userValidator = (t: Function) => ({
   halfSize: (value: string) => {
     const halfSizeRegex = /^[\x20-\x7E]+$/;
     if (!halfSizeRegex.test(value)) {
-      return t('validation.halfsize');
+      return t('validation.half_size');
     }
     return true;
   },
