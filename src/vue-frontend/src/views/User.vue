@@ -38,9 +38,14 @@ const openCreateDialog = () => {
   isEdit.value = false;
   showDialog.value = true;
 };
-const selectedUserId = ref<number | null>(null);
-const openConfirmDialog = (id: number) => {
-  selectedUserId.value = id;
+const openUpdateDialog = (user: IUser) => {
+  isEdit.value = true;
+  showDialog.value = true;
+  selectedUser.value = user;
+};
+const selectedUser = ref<IUser | undefined>(undefined);
+const openConfirmDialog = (user: IUser) => {
+  selectedUser.value = user;
   isConfirmDialogVisible.value = true;
 };
 // Get list user from api API
@@ -62,10 +67,10 @@ const fetchUsers = async () => {
 };
 
 const handleDeleteUser = async () => {
-  if (selectedUserId.value === null) return;
+  if (!selectedUser.value?.id) return;
 
   try {
-    await deleteUser(selectedUserId.value);
+    await deleteUser(selectedUser.value.id);
     showSnackbar("delete_success", "success");
     fetchUsers();
   } catch (error) {
@@ -161,7 +166,7 @@ onMounted(() => {
                     icon
                     variant="plain"
                     class="action-btn"
-                    @click="onEdit(item)"
+                    @click="openUpdateDialog(item)"
                   >
                     <VIcon color="blue">mdi-pencil</VIcon>
                   </VBtn>
@@ -169,7 +174,7 @@ onMounted(() => {
                     icon
                     variant="plain"
                     class="action-btn"
-                    @click="openConfirmDialog(item.id)"
+                    @click="openConfirmDialog(item)"
                   >
                     <VIcon color="red">mdi-delete</VIcon>
                   </VBtn>
@@ -185,6 +190,7 @@ onMounted(() => {
   <VDialog v-model="showDialog" width="auto" persistent>
     <UserForm
       :isEdit="isEdit"
+      :user="selectedUser"
       @form:cancel="showDialog = false"
       @refetch-data="fetchUsers"
     />

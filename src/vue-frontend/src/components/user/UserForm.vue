@@ -19,9 +19,9 @@ const { t } = useI18n();
 const submiting = ref(false);
 const validator = useValidator(t);
 const formRef = ref(null);
-const props = defineProps<{ user?: IUser; isEdit: boolean }>();
 const activeTab = ref("account");
 const emit = defineEmits(["form:cancel"]);
+const props = defineProps<{ user?: IUser; isEdit: boolean }>();
 
 const formModel = reactive<IUser>(
   props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser }
@@ -50,6 +50,8 @@ const translatedGenders = computed(() =>
 );
 
 const handleSubmit = async () => {
+  console.log(formModel);
+
   const isValid = await formRef.value?.validate(); // Lấy giá trị trả về từ validate()
   if (!isValid.valid) {
     showSnackbar("validation_error", "error");
