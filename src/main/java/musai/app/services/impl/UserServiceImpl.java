@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public List<UserResponseDTO> getAllUsers() {
-		List<UserResponseDTO> lstUser = userRepository.findAll().stream()
+		List<UserResponseDTO> lstUser = userRepository.findAllByDeletedAtIsNull().stream()
 				.map(userResponseDTO -> new UserResponseDTO(userResponseDTO.getId(), userResponseDTO.getUsername(),
 						userResponseDTO.getEmail(),
 						userResponseDTO.getRoles().stream().map(role -> role.getName().name())
@@ -62,11 +62,11 @@ public class UserServiceImpl implements UserService {
 	 */
 	public MessageResponse addUser(UserRequestDTO userRequestDTO) {
 		if (userRepository.existsByUsername(userRequestDTO.getUsername())) {
-			throw new BadRequestException("Error: Username is already taken!");
+			throw new BadRequestException("Username is already taken!");
 		}
 
 		if (userRepository.existsByEmail(userRequestDTO.getEmail())) {
-			throw new BadRequestException("Error: Email is already in use!");
+			throw new BadRequestException("Email is already in use!");
 		}
 
 		// Create new user's account
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
 		if (strRoles == null) {
 			Role memberRole = roleRepository.findByName(ERole.MEMBER)
-					.orElseThrow(() -> new BadRequestException("Error: Role is not found."));
+					.orElseThrow(() -> new BadRequestException("Role is not found."));
 			roles.add(memberRole);
 		} else {
 			strRoles.forEach(role -> {
@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService {
 				try {
 					enumRole = ERole.valueOf(role); // String to ERole
 				} catch (IllegalArgumentException e) {
-					throw new BadRequestException("Error: Invalid role specified.");
+					throw new BadRequestException("Invalid role specified.");
 				}
 
 				switch (enumRole) {
@@ -120,22 +120,18 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO) {
 		// Find User by ID
-		User existingUser = userRepository.findById(userId)
-				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
-		// Check user deleted
-		if (existingUser.getDeletedAt() != null) {
-			throw new NotFoundException("Error: User not exist.");
-		}
+		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
+				.orElseThrow(() -> new NotFoundException("User not exist."));
 
 		// Check user name or email exist (unless belong to current user)
 		if (!existingUser.getUsername().equals(userRequestDTO.getUsername())
 				&& userRepository.existsByUsername(userRequestDTO.getUsername())) {
-			throw new BadRequestException("Error: Username is already taken!");
+			throw new BadRequestException("Username is already taken!");
 		}
 
 		if (!existingUser.getEmail().equals(userRequestDTO.getEmail())
 				&& userRepository.existsByEmail(userRequestDTO.getEmail())) {
-			throw new BadRequestException("Error: Email is already in use!");
+			throw new BadRequestException("Email is already in use!");
 		}
 
 		// update information of user
@@ -161,7 +157,7 @@ public class UserServiceImpl implements UserService {
 				try {
 					enumRole = ERole.valueOf(role); // String to ERole
 				} catch (IllegalArgumentException e) {
-					throw new BadRequestException("Error: Invalid role specified.");
+					throw new BadRequestException("Invalid role specified.");
 				}
 				switch (enumRole) {
 				case ADMIN:
@@ -193,12 +189,9 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public MessageResponse deleteUser(Long userId) {
-		User existingUser = userRepository.findById(userId)
-				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
+		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
+				.orElseThrow(() -> new NotFoundException("User not exist."));
 
-		if (existingUser.getDeletedAt() != null) {
-			throw new NotFoundException("Error: User not exist.");
-		}
 		existingUser.setDeletedAt(LocalDateTime.now());
 		userRepository.save(existingUser); // Update deleted_at
 		return new MessageResponse("User just deleted.");
@@ -209,19 +202,14 @@ public class UserServiceImpl implements UserService {
 	 */
 	private Role getRoleByName(ERole roleName) {
 		return roleRepository.findByName(roleName)
-				.orElseThrow(() -> new BadRequestException("Error: Role " + roleName + " is not found."));
+				.orElseThrow(() -> new BadRequestException("Role " + roleName + " is not found."));
 	}
 
 	// get detail
 	@Override
 	public UserResponseDTO detailUser(Long userId) {
-		User existingUser = userRepository.findById(userId)
-				.orElseThrow(() -> new NotFoundException("Error: User not exist."));
-
-		// Check user deleted
-		if (existingUser.getDeletedAt() != null) {
-			throw new NotFoundException("Error: User not exist.");
-		}
+		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
+				.orElseThrow(() -> new NotFoundException("User not exist."));
 
 		return new UserResponseDTO(existingUser.getId(), existingUser.getUsername(), existingUser.getEmail(),
 				existingUser.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),
@@ -235,7 +223,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<UserResponseDTO> searchUser(String keyword) {
 
-		List<UserResponseDTO> filteredUser = userRepository.findAll().stream()
+		List<UserResponseDTO> filteredUser = userRepository.findAllByDeletedAtIsNull().stream()
 				.filter(user -> user.getUsername().toLowerCase().contains(keyword.toLowerCase()))
 				.map(user -> new UserResponseDTO(user.getId(), user.getUsername(), user.getEmail(),
 						user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),
