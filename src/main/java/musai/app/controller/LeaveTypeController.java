@@ -63,7 +63,7 @@ public class LeaveTypeController {
 
 	// Create API list
 	@GetMapping("/list")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+//	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getAllLeaveTypes() {
 
 		List<LeaveTypeResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypes();

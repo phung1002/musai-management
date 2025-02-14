@@ -1,42 +1,90 @@
-<!-- 書類提出 画面　-->
+<!-- 休暇管理 画面 -->
 <script setup lang="ts">
-import { ref, reactive } from "vue";
-import UploadForm from "@/components/form/UploadForm.vue";
+import { ref, reactive, onMounted } from "vue";
+import LeaveForm from "@/components/form/LeaveForm.vue";
+import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useI18n } from "vue-i18n";
+import { ILeaveTypes } from "@/types/type";
+import { deleteLeave, getLeaves } from "@/api/leave";
 const { t } = useI18n();
-const applyFrom = ref(false);
+const addLeaves = ref(false);
 const isDialogVisible = ref(false);
-const editForm = ref(false);
-
-// // テーブル　ヘッダー
+const editLeave = ref(false);
+const isDeleting = ref(false); // 削除中の状態管理
+const errorMessage = ref(""); // エラーメッセージ管理
+const selectedId = ref<number | null>(null); // 削除する休暇ID
+// テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  { title: t("title"), key: "title" },
-  { title: t("submit_date"), key: "title" },
+  // { title: t("id"), key: "id" },
+  // { title: t("parent_id"), key: "parentId" },
+  { title: t("name"), key: "name" },
   { title: t("action"), key: "action" },
 ]);
+// Status
+const leaves = ref<ILeaveTypes[]>([]);
+const isLoading = ref(false);
+const isError = ref(false);
+
+// 休暇リスト取得　API呼び出し
+const fetchLeaveType = async () => {
+  isLoading.value = true;
+  isError.value = false;
+
+  try {
+    const response = await getLeaves(); // API呼び出
+    console.log("response", response);
+    leaves.value = response.map((leave: ILeaveTypes) => ({
+      ...leave,
+    }));
+  } catch (error) {
+    isError.value = true;
+    console.error("Error fetching leaves:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 const handleCreateItem = () => {
-  applyFrom.value = true;
+  addLeaves.value = true;
 };
 const handleDeleteItem = (id: number) => {
+  selectedId.value = id;
   isDialogVisible.value = true;
   console.log("delete", id);
 };
 const handleEditItem = (id: number) => {
-  editForm.value = true;
+  editLeave.value = true;
   console.log("edit", id);
 };
-const onDeleted = () => {
-  console.log("削除されました");
+const onDeleted = async () => {
+  // ここに処理を追加
+  if (selectedId.value === null) return;
+
+  isDeleting.value = true;
+  errorMessage.value = "";
+  console.log(selectedId.value);
+  try {
+    await deleteLeave(selectedId.value);
+    console.log(`休暇ID ${selectedId.value} を削除しました`);
+    alert("削除が完了しました！");
+    isDialogVisible.value = false;
+    selectedId.value = null;
+    // ここで削除後のリスト更新処理を入れる
+  } catch (error) {
+    errorMessage.value = "削除に失敗しました";
+  } finally {
+    isDeleting.value = false;
+  }
+
   // ここに処理を追加
 };
-
-const pagination = reactive({
-  page: 1,
-  pageSize: 10,
+// コンポーネントがマウントされたときAPI呼び出し修理実行
+onMounted(() => {
+  fetchLeaveType();
 });
 </script>
+
 <template>
   <VRow>
     <VCol cols="12">
@@ -44,16 +92,16 @@ const pagination = reactive({
         <VCard flat elevation="0">
           <VToolbar tag="div">
             <VToolbarTitle
-              ><VIcon icon="mdi-folder-upload" />
-              {{ t("submit_document") }}
+              ><VIcon icon="mdi-calendar-star-outline" />
+              {{ t("leave_management") }}
             </VToolbarTitle>
             <!-- アップロード　ボタン-->
             <VCardActions>
               <VSpacer />
               <VBtn color="primary" @click="handleCreateItem" variant="elevated"
-                ><v-icon icon="mdi-plus" start></v-icon>{{ t("upload") }}
-                <VDialog v-model="applyFrom" width="auto" eager>
-                  <UploadForm @form:cancel="applyFrom = false" />
+                ><v-icon icon="mdi-plus" start></v-icon>{{ t("add") }}
+                <VDialog v-model="addLeaves" width="auto" eager>
+                  <LeaveForm @form:cancel="addLeaves = false" />
                 </VDialog>
               </VBtn>
             </VCardActions>
@@ -64,9 +112,11 @@ const pagination = reactive({
             <VDataTable
               :items-per-page-text="t('items_per_page')"
               :headers="headers"
+              :items="leaves"
+              v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->
-              <template v-slot:item.no="{ index }">
+              <template v-slot:item.number="{ index }">
                 {{ index + 1 }}
               </template>
               <!-- アクション　設定  -->
@@ -79,13 +129,13 @@ const pagination = reactive({
                     @click="handleEditItem"
                   >
                     <VIcon color="blue">mdi-pencil</VIcon>
-                    <VDialog v-model="editForm" width="auto" eager> </VDialog>
+                    <VDialog v-model="editLeave" width="auto" eager> </VDialog>
                   </VBtn>
                   <VBtn
                     icon
                     variant="plain"
                     class="action-btn"
-                    @click="handleDeleteItem"
+                    @click="handleDeleteItem(item.id)"
                   >
                     <VIcon color="red">mdi-delete</VIcon>
                     <VDialog v-model="isDialogVisible" width="auto" eager>

@@ -42,3 +42,8 @@ export interface IUser {
   joinDate: string | null;
   gender: string;
 }
+export interface ILeaveTypes {
+  id: number;
+  name: string;
+  parentId: number | null;
+}
