@@ -33,15 +33,13 @@ public class LeaveTypeController {
 	public LeaveTypeController(LeaveTypeService LeaveTypeService) {
 		this.leaveTypeService = LeaveTypeService;
 	}
-	
+
 	// add a new paid leave request
 	@PostMapping("/add")
 	public ResponseEntity<?> addLeaveType(@RequestBody LeaveTypeRequestDTO request) {
 
-		// Call the service layer to process the update
 		MessageResponse addResponse = leaveTypeService.createAddLeaveType(request);
 
-		// Return the response with HTTP status
 		return new ResponseEntity<>(addResponse, HttpStatus.CREATED);
 	}
 
@@ -49,10 +47,8 @@ public class LeaveTypeController {
 	@PutMapping("/update/{id}")
 	public ResponseEntity<?> updateLeaveType(@PathVariable Long id, @RequestBody LeaveTypeRequestDTO request) {
 
-		// Call the service layer to process the update
 		MessageResponse updateResponse = leaveTypeService.updateLeaveType(id, request);
 
-		// Return the response with HTTP status
 		return new ResponseEntity<>(updateResponse, HttpStatus.OK);
 	}
 
@@ -60,11 +56,9 @@ public class LeaveTypeController {
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<?> deleteLeaveType(@PathVariable Long id) {
 
-		// Call the service layer to process the update
 		MessageResponse deleteResponse = leaveTypeService.deleteLeaveType(id);
 
 		return new ResponseEntity<>(deleteResponse, HttpStatus.OK);
-
 	}
 
 	// Create API list
@@ -72,22 +66,18 @@ public class LeaveTypeController {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getAllLeaveTypes() {
 
-		// Call the service layer
 		List<LeaveTypeResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypes();
 
-		// Return the list with HTTP status
 		return new ResponseEntity<>(leaveTypes, HttpStatus.OK);
 	}
-	
-	// Create API list
+
+	// Create API list tree
 	@GetMapping("/tree")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getAllLeaveTypeTree() {
 
-		// Call the service layer
 		List<LeaveTypeChildrenResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypeTree();
 
-		// Return the list with HTTP status
 		return new ResponseEntity<>(leaveTypes, HttpStatus.OK);
 	}
 
@@ -95,14 +85,12 @@ public class LeaveTypeController {
 	@GetMapping("/detail/{id}")
 	public ResponseEntity<?> getLeaveTypeDetail(@PathVariable Long id) {
 
-		// Call the service layer
 		LeaveTypeParentResponseDTO getLeaveTypeDetail = leaveTypeService.getLeaveTypeDetail(id);
 
-		// Return the list with HTTP status
 		return new ResponseEntity<>(getLeaveTypeDetail, HttpStatus.OK);
 	}
 
-	// @GetMapping("/search")
+	// Get search
 	@GetMapping("/search")
 	public List<LeaveTypeChildrenResponseDTO> searchLeaveTypes(@RequestParam String keyword) {
 		// Call the searchLeaveType method from the service layer and return the result

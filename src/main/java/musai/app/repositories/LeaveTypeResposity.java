@@ -15,15 +15,13 @@ public interface LeaveTypeResposity extends JpaRepository<LeaveType, Long> {
 
 	Optional<LeaveType> findById(Long id);
 
-	// Fetch by ID where deleted_at is NULL
 	Optional<LeaveType> findByIdAndDeletedAtIsNull(Long id);
 	
 	LeaveType findByName(String name);
 
 	List<LeaveType> findAllByDeletedAtIsNull(); 
 	
-	// Excluding Soft-Deleted Records
-	// List<LeaveType> findByNameContainingIgnoreCase(String name);	
+	List<LeaveType> findByParentIdAndDeletedAtIsNull(Long parentId); 
 	
 }
  
