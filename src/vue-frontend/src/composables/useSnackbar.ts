@@ -1,25 +1,19 @@
 import { ref } from 'vue';
 
-interface Snackbar {
-  isColorSnackbarVisible: boolean;
-  message: string | Record<string, string[]>;
-  color: 'error' | 'success' | 'info' | 'warning';
-}
-
-const snackbar = ref<Snackbar>({
+const snackbar = ref({
   isColorSnackbarVisible: false,
-  message: '',
-  color: 'error',
+  message: '' as string | Record<string, string[]>,
+  color: 'error'
 });
 
-export const useSnackbar = () => ({
-  snackbar,
-  showSnackbar(message: string, color: Snackbar['color'] = 'error') {
-    snackbar.value.isColorSnackbarVisible = true;
-    snackbar.value.message = message;
-    snackbar.value.color = color;
-  },
-  closeSnackbar() {
-    snackbar.value.isColorSnackbarVisible = false;
-  },
-});
+const showSnackbar = (messages: (string | string[]) | string, color: string = 'error') => {
+  snackbar.value.message = Array.isArray(messages) ? { default: messages } : messages;
+  snackbar.value.color = color;
+  snackbar.value.isColorSnackbarVisible = true;
+};
+
+const closeSnackbar = () => {
+  snackbar.value.isColorSnackbarVisible = false;
+};
+
+export { snackbar, showSnackbar, closeSnackbar };

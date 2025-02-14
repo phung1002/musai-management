@@ -3,8 +3,10 @@ package musai.app.DTO.request;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import musai.app.validation.ValidationGroups;
 
@@ -21,7 +23,6 @@ public class UserRequestDTO {
 	private String email;
 
 	@NotBlank(groups = ValidationGroups.CreateUser.class, message = "Password cannot be blank")
-	@Size(min = 6, max = 40, message = "Username must be between 6 and 40 characters")
 //	@Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,40}$", message = "Password must be between 6 and 40 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character")
 	private String password;
 
@@ -30,7 +31,7 @@ public class UserRequestDTO {
 
 	private String fullName;
 
-	private String fullNameFufigana;
+	private String fullNameFurigana;
 
 	private LocalDateTime birthday;
 

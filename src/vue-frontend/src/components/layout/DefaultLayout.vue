@@ -3,10 +3,9 @@
 import { RouterView, useRoute } from 'vue-router';
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import AppToolbar from '@/components/layout/AppToolbar.vue';
-import { useSnackbar } from '@/composables/useSnackbar';
+import { snackbar } from '@/composables/useSnackbar';
 import SnackBar from '@/components/common/SnackBar.vue';
 
-const { snackbar } = useSnackbar();
 const route = useRoute();
 </script>
 

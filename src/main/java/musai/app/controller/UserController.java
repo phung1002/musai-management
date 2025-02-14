@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.UserRequestDTO;
 import musai.app.DTO.response.UserResponseDTO;
+import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.UserService;
 import musai.app.validation.ValidationGroups;
 
@@ -74,9 +76,8 @@ public class UserController {
 	 * @return ResponseEntity
 	 */
 	@DeleteMapping("/delete/{id}")
-	@PreAuthorize("#id != principal.id")
-	public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-		MessageResponse response = userService.deleteUser(id);
+	public ResponseEntity<?> deleteUser(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl principal) {
+		MessageResponse response = userService.deleteUser(id, principal);
 		return ResponseEntity.ok(response);
 	}
 

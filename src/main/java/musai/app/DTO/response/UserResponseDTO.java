@@ -21,7 +21,7 @@ public class UserResponseDTO {
 
 	private String fullName;
 
-	private String fullNameFufigana;
+	private String fullNameFurigana;
 
 	private LocalDateTime birthday;
 

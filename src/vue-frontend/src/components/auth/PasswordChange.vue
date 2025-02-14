@@ -8,14 +8,13 @@ import { IUser } from '@/types/type';
 import ConfimDialogView from '@/components/common/ConfimDialog.vue';
 import { changePassword } from '@/api/auth';
 import SnackBar from '@/components/common/SnackBar.vue';
-import { useSnackbar } from '@/composables/useSnackbar';
-import { userValidator } from '@/utils/validation';
+import { showSnackbar } from '@/composables/useSnackbar';
+import { useValidator } from '@/utils/validation';
 import { formRules, defaultUser } from '../../configs/userFormConfig';
 // タイトルを日本語に変更用
 const { t } = useI18n();
 
-const { showSnackbar } = useSnackbar();
-const validator = userValidator(t);
+const validator = useValidator(t);
 const props = defineProps<{ user?: IUser, isEdit: boolean }>();
 const formModel = reactive<IUser>(
   props.isEdit ? { ...defaultUser, ...props.user } :
@@ -26,9 +25,9 @@ const formRulesConfig = formRules(validator, formModel);
 const formValid = ref(false);
 
 // フォームデータ
-const password = ref("");
-const newPassword = ref("");
-const confirmPassword = ref("");
+const password = ref('');
+const newPassword = ref('');
+const confirmPassword = ref('');
 
 // ローディング状態 & メッセージ
 const loading = ref(false);
@@ -102,7 +101,7 @@ const onSubmit = async () => {
           </VCol>
           <VCol cols="12" md="6">
             <VTextField v-model="confirmPassword" id="confirm-password" :placeholder="t('new_password_confirm')"
-              :rules="formRulesConfig.confirmPassword" type="password" />
+              :rules="[validator.checkEqual(newPassword)]" type="password" />
           </VCol>
         </VRow>
       </VForm>

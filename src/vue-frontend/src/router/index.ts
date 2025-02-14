@@ -4,8 +4,8 @@ import { validate } from "@/api/auth";
 import LoginVue from "@/components/auth/Login.vue";
 import DefaultLayoutVue from "@/components/layout/DefaultLayout.vue";
 import NotFoundVue from "@/components/auth/NotFound.vue";
-import UserVue from "@/views/lists/User.vue";
-import LeaveRequestVue from "@/views/lists/LeaveRequest.vue";
+import UserVue from "@/views/User.vue";
+import LeaveRequestVue from "@/views/LeaveRequest.vue";
 import { ERole } from "@/constants/role";
 import LeaveManagementViewVue from "@/views/LeaveManagementView.vue";
 import UserLeaveManagementViewVue from "@/views/UserLeaveManagementView.vue";
@@ -26,7 +26,7 @@ const routes = {
   meta: {
     requiresAuth: true,
   },
-  redirect: "/main",
+  redirect: "/calendar",
   component: DefaultLayoutVue,
   children: [
     {

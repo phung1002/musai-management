@@ -40,6 +40,11 @@
   "admin": "admin",
   "manager": "management",
   "member": "member",
+  "roles": {
+    "ADMIN": "admin",
+    "MANAGER": "management",
+    "MEMBER": "member"
+  },
   "leave_type": "leave type",
   "paid_leave": "paid leave",
   "public_leave": "public leave",
@@ -72,18 +77,23 @@
   "required": "required",
   "invalid_range": "selected day does not match",
   "create_user": "create user",
+  "update_user": "update user",
   "male": "male",
   "female": "female",
   "account": "account",
   "detail_information": "detail information",
   "message": {
+    "list_failure": "Failed to fetch data. Please try again.",
     "add_success": "addition successful!",
     "add_failure": "addition failed.",
-    "update_success": "update successful!",
-    "update_failure": "update failed.",
+    "update_success": "updation successful!",
+    "update_failure": "updation failed.",
     "delete_success": "deletion successful!",
     "delete_failure": "deletion failed.",
-    "validation_error": "please correct the highlighted errors before submitting."
+    "delete_your_self": "you cannot delete yourself.",
+    "validation_error": "please correct the highlighted errors before submitting.",
+    "user_exists": "The username already exists in the system.",
+    "user_not_found": "The username does not exist in the system."
   },
   "validation": {
     "required_input": "this field is required",
