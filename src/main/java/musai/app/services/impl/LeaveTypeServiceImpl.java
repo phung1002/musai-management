@@ -18,7 +18,6 @@ import musai.app.exception.NotFoundException;
 import musai.app.models.LeaveType;
 import musai.app.repositories.LeaveTypeResposity;
 import musai.app.services.LeaveTypeService;
-
 @Service
 public class LeaveTypeServiceImpl implements LeaveTypeService {
 	private final LeaveTypeResposity leaveTypeResposity;
@@ -27,67 +26,59 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 		this.leaveTypeResposity = leaveTypeRepository;
 	}
 
+	// add
 	@Override
 	public MessageResponse createAddLeaveType(LeaveTypeRequestDTO leaveTypeDTO) {
 
 		if (leaveTypeResposity.existsByName(leaveTypeDTO.getName())) {
 			throw new BadRequestException("Error: Name is already taken!");
 		}
-
 		LeaveType parent = findParent(leaveTypeDTO.getParentId());
-
-		// Create new LeaveType
 		LeaveType leaveType = new LeaveType(leaveTypeDTO.getName(), parent);
-
 		leaveTypeResposity.save(leaveType);
-
 		return new MessageResponse("Add Leave Type successfully!");
 	}
 
+	// update
 	@Override
 	public MessageResponse updateLeaveType(Long id, LeaveTypeRequestDTO leaveTypeDTO) {
 
-		// Fetch the existing LeaveType
 		LeaveType existingLeaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(id)
 				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
 		if (!leaveTypeDTO.getName().equals(existingLeaveType.getName())) {
 			if (leaveTypeResposity.existsByName(leaveTypeDTO.getName())) {
 				throw new BadRequestException("Error: Name is already taken!");
 			}
-			// Update fields of the LeaveType
 			existingLeaveType.setName(leaveTypeDTO.getName());
 		}
-		// check parent
 		if (leaveTypeDTO.getParentId() == id) {
 			throw new BadRequestException("Error: Itself can not be parent");
 		}
 		LeaveType parent = findParent(leaveTypeDTO.getParentId());
-
 		existingLeaveType.setParent(parent);
-
-		// Save the updated LeaveType to the database
 		leaveTypeResposity.save(existingLeaveType);
-
 		return new MessageResponse("Leave type updated successfully!");
 	}
 
+	// delete
 	@Override
 	public MessageResponse deleteLeaveType(Long id) throws NoResultException {
 
-		// Fetch the existing LeaveType
 		LeaveType existingLeaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(id)
 				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
 
-		if (existingLeaveType.getChildren() != null) {
+		List<LeaveType> childrenTypes = leaveTypeResposity.findByParentIdAndDeletedAtIsNull(id);
+
+		if (!childrenTypes.isEmpty()) {
 			throw new BadRequestException("Error: LeaveType had children can't be delete");
 		}
-		existingLeaveType.setDeletedAt(LocalDateTime.now());
-		// Save Delete to database
-		leaveTypeResposity.save(existingLeaveType);
 
+		existingLeaveType.setDeletedAt(LocalDateTime.now());
+		leaveTypeResposity.save(existingLeaveType);
 		return new MessageResponse("Paid leave with ID " + id + " was soft deleted");
 	}
 
+	// get List
 	@Override
 	public List<LeaveTypeResponseDTO> getAllLeaveTypes() {
 
@@ -99,6 +90,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 				.collect(Collectors.toList());
 	}
 
+	// Create API list tree
 	@Override
 	public List<LeaveTypeChildrenResponseDTO> getAllLeaveTypeTree() {
 		List<LeaveType> leaveTypes = leaveTypeResposity.findAll(); // includes deleted and not-deleted
@@ -117,6 +109,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 		return children.stream().filter(activeLeaveTypes::contains).toList();
 	}
 
+	// get Detail
 	@Override
 	public LeaveTypeParentResponseDTO getLeaveTypeDetail(Long id) {
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(id)
@@ -130,6 +123,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 		return new LeaveTypeParentResponseDTO(leaveType.getId(), leaveType.getName(), parentId);
 	}
 
+	// get Search
 	@Override
 	public List<LeaveTypeChildrenResponseDTO> searchLeaveType(String keyword) {
 

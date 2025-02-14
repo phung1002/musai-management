@@ -1,18 +1,18 @@
 package musai.app.DTO.request;
 
-import java.util.List;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import musai.app.models.LeaveType;
 
 @Data
 public class LeaveTypeRequestDTO {
 	private String name;
-	private Long parentId; // Store only parent ID
+	private Long parent_id; // Store only parent ID
 
 	public LeaveTypeRequestDTO(String name, Long parentId) {
 		this.name = name;
-		this.parentId = parentId;
+		this.parent_id = parentId;
+	}
+	
+	public Long getParentId() {
+		return parent_id;
 	}
 }
