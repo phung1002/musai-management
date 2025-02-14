@@ -7,7 +7,6 @@ export interface IAccessToken {
   expire_in: number;
 }
 
-
 export interface ILeaveRequestList {
   data: ILeaveRequest;
 }
@@ -16,7 +15,7 @@ export interface IUserResp {
   data: ILeaveRequest[];
 }
 
-export type confrimStatus = 'pending' | 'accepted';
+export type confrimStatus = "pending" | "accepted";
 
 export interface ILeaveRequest {
   userid: number;
@@ -40,6 +39,6 @@ export interface IUser {
   roles: string[];
   department: string;
   workPlace: string;
-  joinDate:  string | null;
+  joinDate: string | null;
   gender: string;
 }

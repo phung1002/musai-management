@@ -56,7 +56,7 @@ const fetchUsers = async () => {
     }));
   } catch (error) {
     isError.value = true;
-    showSnackbar("list_failure", "error");
+    // showSnackbar("list_failure", "error");
   } finally {
     isLoading.value = false;
   }
@@ -155,7 +155,7 @@ onMounted(() => {
                     variant="elevated"
                     text-color="white"
                   >
-                    {{ t(role) }}
+                    {{ t(`roles.${role}`) }}
                   </VChip>
                 </VChipGroup>
               </template>

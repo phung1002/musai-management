@@ -25,8 +25,8 @@ axiosInstance.interceptors.response.use(
       // Delete token from cookie
       // document.cookie = "access_token=; Max-Age=0; path=/";
 
-      // Direct to not found page
-      await router.replace({ name: 'not-found', query: { to: router.currentRoute.value.fullPath } });
+      // Direct to login page
+      await router.replace({ name: 'login', query: { to: router.currentRoute.value.fullPath } });
     }
     return Promise.reject(error);
   }

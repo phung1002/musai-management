@@ -23,7 +23,6 @@ public class UserRequestDTO {
 	private String email;
 
 	@NotBlank(groups = ValidationGroups.CreateUser.class, message = "Password cannot be blank")
-	@Size(min = 6, max = 40, message = "Username must be between 6 and 40 characters")
 //	@Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,40}$", message = "Password must be between 6 and 40 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character")
 	private String password;
 

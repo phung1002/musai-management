@@ -9,7 +9,7 @@ import {
   formRules,
   genders,
 } from "../../configs/userFormConfig";
-import { createUser } from "@/api/user";
+import { createUser, updateUser } from "@/api/user";
 import { showSnackbar } from "@/composables/useSnackbar";
 
 const formatDate = (date: string | null) =>
@@ -28,7 +28,7 @@ const formModel = reactive<IUser>(
 );
 
 // Form validation rules
-const formRulesConfig = formRules(validator, formModel);
+const formRulesConfig = formRules(validator, props.isEdit);
 const confirmPassword = ref("");
 const formValid = ref(false);
 
@@ -36,15 +36,9 @@ const formValid = ref(false);
 const translatedRoles = computed(() =>
   roles.map((role) => ({
     ...role,
-    title: t(`${role.value}`),
+    title: t(`roles.${role.value}`),
   }))
 );
-// const formattedRoles = computed({
-//   get: () => formModel.roles,
-//   set: (newValues) => {
-//     formModel.roles = newValues;
-//   },
-// });
 
 // trans title of genders
 const translatedGenders = computed(() =>
@@ -86,20 +80,40 @@ const handleSubmit = async () => {
     joinDate: formatDate(formModel.joinDate),
   };
   submiting.value = true;
-  try {
-    await createUser(payload);
-    showSnackbar("add_success", "success");
-    emit("refetch-data");
-    handleCancel();
-  } catch (error: any) {
-    const errorMessage = ["add_failure"];
-    if (error.status === 400) {
-      console.log(error.status);
-      errorMessage.push("user_exists");
+  if (!props.isEdit) {
+    try {
+      await createUser(payload);
+      showSnackbar("add_success", "success");
+      emit("refetch-data");
+      handleCancel();
+    } catch (error: any) {
+      const errorMessage = ["add_failure"];
+      if (error.status === 400) {
+        console.log(error.status);
+        errorMessage.push("user_exists");
+      }
+      showSnackbar(errorMessage, "error");
+    } finally {
+      submiting.value = false;
     }
-    showSnackbar(errorMessage, "error");
-  } finally {
-    submiting.value = false;
+  } else {
+    try {
+      if (formModel.id == null) return;
+
+      await updateUser(formModel.id, payload);
+      showSnackbar("update_success", "success");
+      emit("refetch-data");
+      handleCancel();
+    } catch (error: any) {
+      const errorMessage = ["update_failure"];
+      if (error.status === 400) {
+        console.log(error.status);
+        errorMessage.push("user_exists");
+      }
+      showSnackbar(errorMessage, "error");
+    } finally {
+      submiting.value = false;
+    }
   }
 };
 
@@ -111,41 +125,31 @@ const resetForm = () => {
   if (formRef.value && formRef.value.resetValidation) {
     formRef.value.resetValidation();
   }
-
+  confirmPassword.value = "";
   formValid.value = false;
-  activeTab.value = "account"; // Reset to first tab
+  activeTab.value = "account";
 };
 const handleCancel = () => {
   emit("form-cancel");
   resetForm();
 };
 
-// watch(() => props.user, (newUser) => {
-//   if (props.isEdit) {
-//     Object.assign(formModel, newUser);
-//   }
-// }, { deep: true });
-
-// watch(props, () => {
-//   if (props.isEdit) {
-//     Object.assign(formModel, props.user);
-//   }
-// });
 </script>
 
 <template>
   <VCard width="940px">
     <VToolbar tag="div">
-      <VToolbarTitle>{{ t("create_user") }}</VToolbarTitle>
+      <VToolbarTitle v-if="!isEdit">{{ t("create_user") }}</VToolbarTitle>
+      <VToolbarTitle v-else>{{ t("update_user") }}</VToolbarTitle>
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
-    <VForm ref="formRef" v-model="formValid">
+    <VForm ref="formRef" v-model="formValid" lazy-validation="false">
       <VTabs v-model="activeTab" color="primary">
         <VTab value="account">{{ t("account") }}</VTab>
         <VTab value="security">{{ t("detail_information") }}</VTab>
       </VTabs>
       <VCardText>
-        <VWindow v-model="activeTab">
+        <VWindow v-model="activeTab" eager>
           <VWindowItem value="account">
             <VRow>
               <VCol cols="6">
@@ -207,7 +211,7 @@ const handleCancel = () => {
               </VCol>
             </VRow>
           </VWindowItem>
-          <VWindowItem value="security">
+          <VWindowItem value="security" eager>
             <VRow class="d-flex mb-3">
               <VCol cols="6">
                 <VLabel>{{ t("full_name") }}</VLabel>

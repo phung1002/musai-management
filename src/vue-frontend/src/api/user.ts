@@ -26,6 +26,20 @@ export async function createUser(params: IUser): Promise<void> {
     throw error;
   }
 }
+// call to api update user
+export async function updateUser(id: number, params: IUser): Promise<void> {
+  try {
+    await axiosIns.put(`/user/edit/${id}`, params);
+    console.log("Update user successfully");
+  } catch (error: any) {
+    if (error.response) {
+      console.error("Update user failed:", error.response.data);
+    } else {
+      console.error("Unexpected error:", error);
+    }
+    throw error;
+  }
+}
 
 // call to api delete user
 export async function deleteUser(id: number): Promise<void> {

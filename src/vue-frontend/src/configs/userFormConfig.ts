@@ -26,11 +26,13 @@ export const defaultUser: IUser = {
   gender: '',
 };
 
-export const formRules = (validator: any, formModel: IUser) => ({
+export const formRules = (validator: any, isEdit: boolean) => ({
   username: [validator.required, validator.halfSize, validator.checkLength(5, 20)],
   email: [validator.required, validator.halfSize, validator.checkLength(5, 30), validator.emailFormat],
-  password: [validator.required, validator.halfSize, validator.checkLength(6, 20)],
-  confirmPassword: [validator.checkEqual(formModel.password)],
+  password: isEdit
+  ? [(value: string) => (!value || validator.halfSize(value)) ,
+     (value: string) => (!value || validator.checkLength(6, 20)(value))]
+  : [validator.required, validator.halfSize, validator.checkLength(6, 20)],
   fullName: [validator.required, validator.checkLength(2, 50)],
   fullNameFurigana: [validator.required, validator.checkFurigana, validator.checkLength(2, 50)],
 });
