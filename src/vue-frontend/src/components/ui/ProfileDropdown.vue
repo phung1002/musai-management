@@ -4,6 +4,7 @@ import { useI18n } from "vue-i18n";
 import { reactive, ref } from "vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import ProfileDropdown from "@/components/auth/ProfileCard.vue";
+import { logout } from "@/api/auth";
 const isDialogVisible = ref(false);
 const showProfileView = ref(false);
 const { t } = useI18n();
@@ -20,8 +21,7 @@ const filters = reactive({
   gender: "",
 });
 const onConfirmed = () => {
-  console.log("許可されました");
-  // ここから処理
+  logout();
   router.push({
     path: "/login",
   });
@@ -76,7 +76,7 @@ const onConfirmed = () => {
       </div>
     </VSheet>
   </VMenu>
-  <VDialog v-model="isDialogVisible" width="auto" eager>
+  <VDialog v-model="isDialogVisible" width="auto">
     <ConfimDialogView
       :title="t('confirm')"
       :message="t('logout_confirm_message')"
@@ -85,7 +85,7 @@ const onConfirmed = () => {
       @confirmed="onConfirmed"
     />
   </VDialog>
-  <VDialog v-model="showProfileView" width="auto" eager>
+  <VDialog v-model="showProfileView" width="auto">
     <ProfileDropdown @form:cancel="showProfileView = false" />
   </VDialog>
 </template>

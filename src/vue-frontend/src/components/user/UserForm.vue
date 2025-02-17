@@ -330,7 +330,7 @@ const handleCancel = () => {
       }}</VBtn>
     </VCardActions>
   </VCard>
-  <VDialog v-model="isDialogVisible" width="auto" eager>
+  <VDialog v-model="isDialogVisible" width="auto">
     <ConfimDialogView
       :title="t('confirm')"
       :message="t('message.admin_change_their_password')"
