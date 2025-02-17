@@ -94,7 +94,8 @@
     "validation_error": "送信前にエラーを修正してください。",
     "user_exists": "ユーザー名はすでにシステムに存在します。",
     "user_not_found": "ユーザー名はシステムに存在しません。",
-    "admin_change_their_password": "自分のパスワードを変更する場合は、再ログインが必要です。"
+    "admin_change_their_password": "自分のパスワードを変更する場合は、再ログインが必要です。",
+    "cannot_remove_own_admin_role": "自身の管理者権限を削除することは許可されていません。"
   },
   "validation": {
     "required_input": "このフィールドは必須です。",

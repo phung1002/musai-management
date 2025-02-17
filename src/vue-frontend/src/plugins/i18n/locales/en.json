@@ -94,7 +94,8 @@
     "validation_error": "please correct the highlighted errors before submitting.",
     "user_exists": "The username already exists in the system.",
     "user_not_found": "The username does not exist in the system.",
-    "admin_change_their_password": "If you change your own password, you need to log in again."
+    "admin_change_their_password": "If you change your own password, you need to log in again.",
+    "cannot_remove_own_admin_role": "You are not allowed to remove your own ADMIN permissions."
   },
   "validation": {
     "required_input": "this field is required",
