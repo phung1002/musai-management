@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { deleteUser, getAllUsers } from "@/api/user";
+import { deleteUser, getAllUsers, searchUser } from "@/api/user";
 import { IUser } from "@/types/type";
 import UserForm from "@/components/user/UserForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
@@ -50,15 +50,19 @@ const fetchUsers = async () => {
   isError.value = false;
   try {
     const response = await getAllUsers();
-    users.value = response.map((user: IUser) => ({
-      ...user,
-      roles: user.roles.map(formatRole),
-    }));
+    loadUser(response);
   } catch (error) {
     isError.value = true;
   } finally {
     isLoading.value = false;
   }
+};
+
+const loadUser = (lst: any) => {
+  users.value = lst.map((user: IUser) => ({
+    ...user,
+    roles: user.roles.map(formatRole),
+  }));
 };
 
 const handleDeleteUser = async () => {
@@ -76,6 +80,21 @@ const handleDeleteUser = async () => {
     showSnackbar(errorMessage, "error");
   } finally {
     isConfirmDialogVisible.value = false;
+  }
+};
+const keyWord = ref("");
+const handleSearch = async () => {
+  if (keyWord.value == null){
+    fetchUsers();
+    return;
+  }
+  try {
+    const response = await searchUser(keyWord.value);
+    loadUser(response);
+  } catch (error) {
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -117,14 +136,17 @@ onMounted(() => {
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>
               <VTextField
+                v-model="keyWord"
                 :prepend-icon="'mdi-filter-variant'"
                 :placeholder="t('type_something')"
                 hide-details
                 clearable
                 variant="plain"
                 class="search"
+                @click:clear="handleSearch"
+                @keydown.enter="handleSearch"
               />
-              <VBtn icon density="comfortable">
+              <VBtn icon density="comfortable" @click="handleSearch">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
             </VToolbar>
@@ -136,6 +158,7 @@ onMounted(() => {
               :headers="headers"
               :items="users"
               :items-per-page-text="t('items_per_page')"
+              :no-data-text="t('no_records_found')"
               v-if="!isLoading && !isError"
             >
               <!-- Slot for 'no'  -->

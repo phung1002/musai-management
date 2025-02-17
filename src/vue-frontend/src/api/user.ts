@@ -65,3 +65,15 @@ export async function getProfile() {
   };
   return axiosIns.request<IAccessToken>(options);
 }
+
+
+// call to api search user
+export async function searchUser(key:string): Promise<IUser[]> {
+  try {
+    const response = await axiosIns.get<IUser[]>("/user/search", { params: { keyword: key } });
+    return response.data;
+  } catch (error) {
+    console.error("Search user failed:", error);
+    throw error;
+  }
+}
