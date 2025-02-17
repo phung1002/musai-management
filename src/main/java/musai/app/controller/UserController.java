@@ -25,6 +25,7 @@ import musai.app.validation.ValidationGroups;
 
 @RestController
 @RequestMapping("/api/user")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 	private final UserService userService;
 

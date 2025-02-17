@@ -55,18 +55,6 @@ export async function deleteUser(id: number): Promise<void> {
   }
 }
 
-export async function getProfile() {
-  const options = {
-    method: "GET",
-    url: `/user/profile`,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-  return axiosIns.request<IAccessToken>(options);
-}
-
-
 // call to api search user
 export async function searchUser(key:string): Promise<IUser[]> {
   try {

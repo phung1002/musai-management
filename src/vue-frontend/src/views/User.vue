@@ -39,7 +39,7 @@ const openUpdateDialog = (user: IUser) => {
   showDialog.value = true;
   selectedUser.value = user;
 };
-const selectedUser = ref<IUser | undefined>(undefined);
+const selectedUser = ref<IUser>({} as IUser);
 const openConfirmDialog = (user: IUser) => {
   selectedUser.value = user;
   isConfirmDialogVisible.value = true;
@@ -66,7 +66,7 @@ const loadUser = (lst: any) => {
 };
 
 const handleDeleteUser = async () => {
-  if (!selectedUser.value?.id) return;
+  if (!selectedUser.value.id) return;
 
   try {
     await deleteUser(selectedUser.value.id);

@@ -3,6 +3,7 @@ package musai.app.controller;
 import musai.app.DTO.JwtResponse;
 import musai.app.DTO.LoginRequest;
 import musai.app.DTO.MessageResponse;
+import musai.app.DTO.response.UserResponseDTO;
 import musai.app.security.jwt.JwtUtils;
 import musai.app.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,5 +53,11 @@ public class AuthenticationController {
     public ResponseEntity<?> validateUser(HttpServletRequest request) {
 		JwtResponse jwtResponse = authenticationService.validateUser(request);
         return ResponseEntity.ok(jwtResponse);
+    }
+
+	@GetMapping("/profile")
+    public ResponseEntity<?> profile(HttpServletRequest request) {
+		UserResponseDTO response = authenticationService.getProfile(request);
+        return ResponseEntity.ok(response);
     }
 }
