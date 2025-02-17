@@ -7,7 +7,7 @@ import UserForm from "@/components/user/UserForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { showSnackbar } from "@/composables/useSnackbar";
 
-const isConfirmDialogVisible = ref(false)
+const isConfirmDialogVisible = ref(false);
 const formatRole = (role: string) => role;
 const { t } = useI18n();
 
@@ -56,7 +56,6 @@ const fetchUsers = async () => {
     }));
   } catch (error) {
     isError.value = true;
-    // showSnackbar("list_failure", "error");
   } finally {
     isLoading.value = false;
   }
@@ -70,17 +69,15 @@ const handleDeleteUser = async () => {
     showSnackbar("delete_success", "success");
     fetchUsers();
   } catch (error: any) {
-    if(error.status == 403) {
-      showSnackbar("delete_your_self", "error");
-    }else{
-    showSnackbar("delete_failure", "error");
-
+    const errorMessage = ["delete_failure"];
+    if (error.status == 403) {
+      errorMessage.push("delete_your_self");
     }
+    showSnackbar(errorMessage, "error");
   } finally {
     isConfirmDialogVisible.value = false;
   }
 };
-
 
 // Call API when component is mounted
 onMounted(() => {
