@@ -216,7 +216,7 @@ onMounted(() => {
       @refetch-data="fetchUsers"
     />
   </VDialog>
-  <VDialog v-model="isConfirmDialogVisible" width="auto" eager>
+  <VDialog v-model="isConfirmDialogVisible" width="auto">
     <ConfimDialogView
       :title="t('confirm')"
       :message="t('delete_confirm_message')"

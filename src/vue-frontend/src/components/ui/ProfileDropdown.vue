@@ -76,7 +76,7 @@ const onConfirmed = () => {
       </div>
     </VSheet>
   </VMenu>
-  <VDialog v-model="isDialogVisible" width="auto" eager>
+  <VDialog v-model="isDialogVisible" width="auto">
     <ConfimDialogView
       :title="t('confirm')"
       :message="t('logout_confirm_message')"
@@ -85,7 +85,7 @@ const onConfirmed = () => {
       @confirmed="onConfirmed"
     />
   </VDialog>
-  <VDialog v-model="showProfileView" width="auto" eager>
+  <VDialog v-model="showProfileView" width="auto">
     <ProfileDropdown @form:cancel="showProfileView = false" />
   </VDialog>
 </template>
