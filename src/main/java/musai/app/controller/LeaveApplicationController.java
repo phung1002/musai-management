@@ -32,7 +32,6 @@ public class LeaveApplicationController {
 	/**
 	 * API member apply leave application
 	 */
-
 	@PreAuthorize("hasRole('MEMBER')")
 	@PostMapping("/leave-applications")
 	public ResponseEntity<?> applyLeave(@Validated @RequestBody LeaveApplicationRequestDTO request) {
@@ -43,7 +42,6 @@ public class LeaveApplicationController {
 	/**
 	 * API management answer leave application
 	 */
-
 	@PreAuthorize("hasRole('MANAGER')")
 	@PutMapping("leave-applications/respond-to-leave/{id}")
 	public ResponseEntity<?> respondToLeave(@PathVariable Long id,
@@ -51,6 +49,16 @@ public class LeaveApplicationController {
 			@AuthenticationPrincipal UserDetailsImpl principal) {
 	    String status = requestBody.get("status");
 		MessageResponse response = leaveApplicationService.respondToLeave(id, status, principal);
+		return ResponseEntity.ok(response);
+	}
+	
+	/**
+	 * API management answer leave application
+	 */
+	@PreAuthorize("hasRole('MEMBER')")
+	@PutMapping("leave-applications/cancel/{id}")
+	public ResponseEntity<?> cancelLeave(@PathVariable Long id) {
+		MessageResponse response = leaveApplicationService.cancelLeave(id);
 		return ResponseEntity.ok(response);
 	}
 

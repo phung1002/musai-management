@@ -63,32 +63,48 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	 */
 	@Override
 	public MessageResponse respondToLeave(Long id, String status, UserDetailsImpl principal) {
-	    LeaveApplication leaveApplication = leaveApplicationRepository.findById(id)
-	            .orElseThrow(() -> new NotFoundException("Leave application not found"));
+		LeaveApplication leaveApplication = leaveApplicationRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Leave application not found"));
 
-	    // Check status is valid
-	    if (!ELeaveStatus.isValidStatus(status)) {
-	        throw new BadRequestException("Invalid status");
-	    }
-	    ELeaveStatus eStatus = ELeaveStatus.valueOf(status.toUpperCase());
+		// Check status is valid
+		if (!ELeaveStatus.isValidStatus(status)) {
+			throw new BadRequestException("Invalid status");
+		}
+		ELeaveStatus eStatus = ELeaveStatus.valueOf(status.toUpperCase());
 
-	    // Can only be revoked if the status is 'approved'.	   
-	    if (status.equals(ELeaveStatus.REVOKED.name()) && !leaveApplication.getStatus().equals(ELeaveStatus.APPROVED.name())) {
-	        throw new BadRequestException("Can only be revoked if the status is 'approved'.");
-	    }
+		// Can only be revoked if the status is 'approved'.
+		if (status.equals(ELeaveStatus.REVOKED.name())
+				&& !leaveApplication.getStatus().equals(ELeaveStatus.APPROVED.name())) {
+			throw new BadRequestException("Can only be revoked if the status is 'approved'.");
+		}
 
-	    // Can only be revoked if the status is 'pending'.
-	    EnumSet<ELeaveStatus> updatableStatuses = EnumSet.of(ELeaveStatus.APPROVED, ELeaveStatus.REJECTED, ELeaveStatus.REQUESTED_CHANGE);
-	    if (updatableStatuses.contains(eStatus) && !leaveApplication.getStatus().equals(ELeaveStatus.PENDING.name())) {
-	        throw new BadRequestException("Can only be responded to if the status is 'pending'.");
-	    }
-	    leaveApplication.setStatus(status);
-	    leaveApplication.setRespondedBy(userRepository.findById(principal.getId()).orElse(null));
-	    leaveApplication.setRespondedAt(LocalDateTime.now());
+		// Can only be revoked if the status is 'pending'.
+		EnumSet<ELeaveStatus> updatableStatuses = EnumSet.of(ELeaveStatus.APPROVED, ELeaveStatus.REJECTED,
+				ELeaveStatus.REQUESTED_CHANGE);
+		if (updatableStatuses.contains(eStatus) && !leaveApplication.getStatus().equals(ELeaveStatus.PENDING.name())) {
+			throw new BadRequestException("Can only be responded to if the status is 'pending'.");
+		}
+		leaveApplication.setStatus(status);
+		leaveApplication.setRespondedBy(userRepository.findById(principal.getId()).orElse(null));
+		leaveApplication.setRespondedAt(LocalDateTime.now());
 
-	    leaveApplicationRepository.save(leaveApplication);
+		leaveApplicationRepository.save(leaveApplication);
 
-	    return new MessageResponse("Leave request " + status + " successfully.");
+		return new MessageResponse("Leave application is " + status + " now.");
+	}
+
+	@Override
+	public MessageResponse cancelLeave(Long id) {
+		LeaveApplication leaveApplication = leaveApplicationRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Leave application not found"));
+
+		// Can only be cancel if the status is 'pending'.
+		if (!leaveApplication.getStatus().equals(ELeaveStatus.PENDING.name())) {
+			throw new BadRequestException(" Can only be cancel if the status is 'pending'.");
+		}
+		leaveApplication.setStatus(ELeaveStatus.CANCELED.name());
+		leaveApplicationRepository.save(leaveApplication);
+		return new MessageResponse("Leave application is canceled");
 	}
 
 }

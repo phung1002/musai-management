@@ -1,7 +1,7 @@
 package musai.app.models;
 
 public enum ELeaveStatus {
-	PENDING, APPROVED, REJECTED, REQUESTED_CHANGE, REVOKED;
+	PENDING, APPROVED, REJECTED, REQUESTED_CHANGE, REVOKED, CANCELED;
 
 	public static boolean isValidStatus(String status) {
 		try {

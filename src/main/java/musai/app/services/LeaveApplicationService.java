@@ -7,4 +7,5 @@ import musai.app.security.services.UserDetailsImpl;
 public interface LeaveApplicationService {
 	MessageResponse applyLeave(LeaveApplicationRequestDTO request);
 	MessageResponse respondToLeave(Long id, String status, UserDetailsImpl principal);
+	MessageResponse cancelLeave(Long id);
 }
