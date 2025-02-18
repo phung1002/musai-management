@@ -43,7 +43,8 @@ export interface IUser {
   gender: string;
 }
 export interface ILeaveTypes {
-  id: number;
-  name: string;
-  parentId: number | null;
+  id: number; // 一意のID
+  name: string; // 休暇の名前
+  parentId?: number; // 親カテゴリのID（ルートカテゴリなら省略）
+  children?: ILeaveTypes[]; // 子カテゴリ（サブカテゴリー）
 }

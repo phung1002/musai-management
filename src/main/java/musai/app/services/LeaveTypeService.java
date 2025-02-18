@@ -16,7 +16,7 @@ public interface LeaveTypeService {
 
 	MessageResponse deleteLeaveType(Long id);
 
-	List<LeaveTypeResponseDTO> getAllLeaveTypes(); 
+	List<LeaveTypeParentResponseDTO> getAllLeaveTypes(); 
 	
 	List<LeaveTypeChildrenResponseDTO> getAllLeaveTypeTree(); 
 	

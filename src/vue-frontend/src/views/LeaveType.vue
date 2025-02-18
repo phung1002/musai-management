@@ -6,31 +6,30 @@ import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useI18n } from "vue-i18n";
 import { ILeaveTypes } from "@/types/type";
 import { deleteLeave, getLeaves } from "@/api/leave";
-const { t } = useI18n();
-const addLeaves = ref(false);
-const isDialogVisible = ref(false);
-const editLeave = ref(false);
-const isDeleting = ref(false); // 削除中の状態管理
+import { showSnackbar } from "@/composables/useSnackbar";
+
+const { t } = useI18n(); // 日本語にローカル変更用
+const addLeaves = ref(false); // 休暇追加・編集フォーム表示
+const isDialogVisible = ref(false); // 削除確認ダイアログ表示
 const errorMessage = ref(""); // エラーメッセージ管理
 const selectedId = ref<number | null>(null); // 削除する休暇ID
+const selectedLeave = ref<ILeaveTypes | undefined>(undefined); // 編集する休暇情報
+const isEdit = ref(false); // 編集モードかどうか
+const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
+const isLoading = ref(false); // ローディングフラグ
+const isError = ref(false); // エラーフラグ
 // テーブル　ヘッダー
 const headers = reactive([
-  { title: t("number"), key: "number" },
+  { title: t("number"), key: "number" }, // 表示番号
   // { title: t("id"), key: "id" },
   // { title: t("parent_id"), key: "parentId" },
-  { title: t("name"), key: "name" },
-  { title: t("action"), key: "action" },
+  { title: t("leave_name"), key: "name" }, // 休暇名
+  { title: t("action"), key: "action" }, // アクション
 ]);
-// Status
-const leaves = ref<ILeaveTypes[]>([]);
-const isLoading = ref(false);
-const isError = ref(false);
-
 // 休暇リスト取得　API呼び出し
 const fetchLeaveType = async () => {
   isLoading.value = true;
   isError.value = false;
-
   try {
     const response = await getLeaves(); // API呼び出
     console.log("response", response);
@@ -44,40 +43,49 @@ const fetchLeaveType = async () => {
     isLoading.value = false;
   }
 };
-
-const handleCreateItem = () => {
+// 新規作成
+const handleCreateItem = (leaveType: ILeaveTypes) => {
+  selectedLeave.value = leaveType; // 新規作成なのでリセット
+  console.log("新規作成");
+  console.log(isEdit.value);
   addLeaves.value = true;
+  isEdit.value = false;
 };
+// 編集
+const handleEditItem = (leave: ILeaveTypes) => {
+  selectedLeave.value = { ...leave }; // 選択データをセット
+  console.log("編集対象", selectedLeave.value);
+  addLeaves.value = true;
+  isEdit.value = true;
+  console.log(isEdit.value);
+};
+// 削除
 const handleDeleteItem = (id: number) => {
   selectedId.value = id;
   isDialogVisible.value = true;
   console.log("delete", id);
 };
-const handleEditItem = (id: number) => {
-  editLeave.value = true;
-  console.log("edit", id);
-};
+// 削除確認ダイアログのOKボタン押した際イベント
 const onDeleted = async () => {
   // ここに処理を追加
   if (selectedId.value === null) return;
-
-  isDeleting.value = true;
   errorMessage.value = "";
   console.log(selectedId.value);
   try {
     await deleteLeave(selectedId.value);
     console.log(`休暇ID ${selectedId.value} を削除しました`);
-    alert("削除が完了しました！");
-    isDialogVisible.value = false;
+    showSnackbar("delete_success", "success");
     selectedId.value = null;
-    // ここで削除後のリスト更新処理を入れる
-  } catch (error) {
-    errorMessage.value = "削除に失敗しました";
+    fetchLeaveType(); // リスト更新
+  } catch (error: any) {
+    if (error.status == 403) {
+      showSnackbar("delete_your_self", "error");
+    } else {
+      showSnackbar("delete_failure", "error");
+    }
   } finally {
-    isDeleting.value = false;
+    isDialogVisible.value = false;
   }
-
-  // ここに処理を追加
 };
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
@@ -100,9 +108,6 @@ onMounted(() => {
               <VSpacer />
               <VBtn color="primary" @click="handleCreateItem" variant="elevated"
                 ><v-icon icon="mdi-plus" start></v-icon>{{ t("add") }}
-                <VDialog v-model="addLeaves" width="auto" eager>
-                  <LeaveForm @form:cancel="addLeaves = false" />
-                </VDialog>
               </VBtn>
             </VCardActions>
           </VToolbar>
@@ -126,10 +131,9 @@ onMounted(() => {
                     icon
                     variant="plain"
                     class="action-btn"
-                    @click="handleEditItem"
+                    @click="handleEditItem(item)"
                   >
                     <VIcon color="blue">mdi-pencil</VIcon>
-                    <VDialog v-model="editLeave" width="auto" eager> </VDialog>
                   </VBtn>
                   <VBtn
                     icon
@@ -138,15 +142,6 @@ onMounted(() => {
                     @click="handleDeleteItem(item.id)"
                   >
                     <VIcon color="red">mdi-delete</VIcon>
-                    <VDialog v-model="isDialogVisible" width="auto" eager>
-                      <ConfimDialogView
-                        :title="t('confirm')"
-                        :message="t('delete_confirm_message')"
-                        :isVisible="isDialogVisible"
-                        @update:isVisible="isDialogVisible = $event"
-                        @confirmed="onDeleted"
-                      />
-                    </VDialog>
                   </VBtn>
                 </div>
               </template>
@@ -156,6 +151,25 @@ onMounted(() => {
       </VContainer>
     </VCol>
   </VRow>
+  <!-- 追加・修正確認 -->
+  <VDialog v-model="addLeaves" width="auto" persistent>
+    <LeaveForm
+      :isEdit="isEdit"
+      :leave="selectedLeave"
+      @form-cancel="addLeaves = false"
+      @refetch-data="fetchLeaveType"
+    />
+  </VDialog>
+  <!-- 削除確認 -->
+  <VDialog v-model="isDialogVisible" width="auto" eager>
+    <ConfimDialogView
+      :title="t('confirm')"
+      :message="t('delete_confirm_message')"
+      :isVisible="isDialogVisible"
+      @update:isVisible="isDialogVisible = $event"
+      @confirmed="onDeleted"
+    />
+  </VDialog>
 </template>
 
 <style scoped>

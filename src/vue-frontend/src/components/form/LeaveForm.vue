@@ -1,35 +1,41 @@
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
+import { ref, Ref, defineProps, onMounted, reactive, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { VTab } from "vuetify/lib/components/index.mjs";
-import { useLeaveTypesStore } from "@/store/leaveTypesStore";
-import { userValidator } from "@/utils/validation";
-import { useSnackbar } from "@/composables/useSnackbar";
-const { t } = useI18n();
-const leaveUserStore = useLeaveTypesStore();
+import { useValidator } from "@/utils/validation";
+import { ILeaveTypes } from "@/types/type";
+import { getLeavesTree } from "@/api/leave";
+import { showSnackbar } from "@/composables/useSnackbar";
+const { t } = useI18n(); // 日本語にローカル変更用
+const emit = defineEmits(["form-cancel", "refetch-data"]);
 const errors = ref<{ leave_type?: string; leave_name?: string }>({});
-const isDialogVisible = ref(false);
-const emit = defineEmits(["form:cancel"]);
-const validator = userValidator(t);
-const { showSnackbar } = useSnackbar();
-const formValid = ref(false);
-const filters = ref({
-  paid_leave: "",
-  public_leave: "",
-  special_occasions_leave: "",
-  special_day_leave: "",
-  leave_name: "",
-});
+const props = defineProps<{ leave?: ILeaveTypes; isEdit: boolean }>();
+const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
+const validator = useValidator(t); // バリデーション
+const isDialogVisible = ref(false); // 確認ダイアログ表示
+const isLoading = ref(false); // ローディングフラグ
+const isError = ref(false); // エラーフラグ
+const activeTab = ref("personal-info"); // タブの初期値
+// フォームのデータ
+// const formData = ref({
+//   // // paid_leave: "",
+//   // public_leave: "",
+//   // leave_name: "",
+// });
+const defaultLeave = {
+  id: 0,
+  name: "",
+};
+const formModel = reactive<ILeaveTypes>(
+  // isEdit が true の場合は props.leave を、false の場合は空のデフォルト値を使う
+  props.isEdit ? { ...defaultLeave, ...props.leave } : { ...defaultLeave }
+);
+
 // 入力初期化
 const handleResetFilter = () => {
-  filters.value = {
-    paid_leave: "",
-    public_leave: "",
-    special_occasions_leave: "",
-    special_day_leave: "",
-    leave_name: "",
-  };
+  formModel.name = "";
+  // formModel.public_leave
 };
 // エラーメッセージ初期化
 const resetErrors = () => {
@@ -39,50 +45,114 @@ const resetErrors = () => {
   };
 };
 const handleCancel = () => {
-  handleResetFilter(); // 入力をリセット
-  resetErrors(); // エラー��ッセージ初期化
-  emit("form:cancel");
+  handleResetFilter();
+  resetErrors();
+  emit("form-cancel");
 };
-const handleSubmit = async () => {
-  // エラーチェック
-
-  // if (Object.keys(errors.value).length > 0) {
-  //   showSnackbar('validation_error', 'error');
-  //   // 登録処理を中断する
-  //   return;
-  // } else if (Object.keys(errors.value).length < 0)
-  // return;
-  isDialogVisible.value = true;
-  // message.value = "";
-};
-const onConfirmed = () => {
-  console.log("許可されました");
-  // ここに処理を追加
-  // レスポンスOKになったら入力値初期化し、フォーム閉じろ
-  handleCancel(); //フォーム閉じる
-};
+// 各カテゴリーの items
+const paid_leave: Ref<{ title: string; value: string }[]> = ref([]);
+const public_leave: Ref<{ title: string; value: string }[]> = ref([]);
 // メイン休暇タブで分類
-const activeTab = ref("personal-info");
 const tabs = [
   { title: t("paid_leave"), icon: "mdi-gift-open", tab: "paid" },
   { title: t("public_leave"), icon: "mdi-pine-tree-box", tab: "public" },
 ];
-// 休暇区分情報取得
-const paid_leave = leaveUserStore.getPaidLeave;
-const public_leave = leaveUserStore.getPublicLeave;
-const special_day_leave = leaveUserStore.getSpecialDayLeave;
-const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave;
+// 休暇リスト取得　API呼び出し
+const fetchLeaveType = async () => {
+  isLoading.value = true;
+  isError.value = false;
+  try {
+    const response = await getLeavesTree();
+    leaves.value = response;
+
+    // カテゴリーごとに分類
+    categorizeLeaves(response);
+  } catch (error) {
+    isError.value = true;
+    console.error("Error fetching leaves:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+// 取得データをカテゴリーごとに分ける関数
+const categorizeLeaves = (data: ILeaveTypes[]) => {
+  data.forEach((leave) => {
+    if (leave.name === "有休") {
+      paid_leave.value =
+        leave.children?.map((child) => ({
+          title: child.name,
+          value: child.name.toUpperCase(),
+        })) || [];
+    }
+    if (leave.name === "公休") {
+      public_leave.value =
+        leave.children?.map((child) => ({
+          title: child.name,
+          value: child.name.toUpperCase(),
+        })) || [];
+    }
+  });
+};
+// コンポーネントがマウントされたときAPI呼び出し修理実行
+onMounted(() => {
+  fetchLeaveType();
+});
+// フォーム送信処理
+const handleSubmit = () => {
+  if (!props.isEdit) {
+    isDialogVisible.value = true;
+    console.log("新しいデータを登録します...");
+    // 登録処理を実行
+    // emit("form-cancel"); // フォームを閉じる
+  } else {
+    isDialogVisible.value = true;
+    console.log("データを更新します...");
+    // 更新処理を実行
+    // emit("form-cancel"); // フォームを閉じる
+  }
+};
+// 確認ダイアログで許可されたらイベント発火
+const onConfirmed = () => {
+  if (!props.isEdit) {
+    console.log("新しいデータを登録します...");
+    // 登録処理を実行
+    emit("form-cancel"); // フォームを閉じる
+  } else {
+    console.log("データを更新します...");
+    // 更新処理を実行
+    emit("form-cancel"); // フォームを閉じる
+  }
+};
+
+// const handleSubmit = async () => {
+//   // エラーチェック
+
+//   // if (Object.keys(errors.value).length > 0) {
+//   //   showSnackbar('validation_error', 'error');
+//   //   // 登録処理を中断する
+//   //   return;
+//   // } else if (Object.keys(errors.value).length < 0)
+//   // return;
+//   isDialogVisible.value = true;
+//   // message.value = "";
+// };
 </script>
 
 <template>
   <VCard class="leave_form">
     <VToolbar tag="div">
-      <VToolbarTitle>
+      <!-- 新規登録際タイトルの表示 -->
+      <VToolbarTitle v-if="!isEdit">
         <VIcon icon="mdi-lead-pencil" />{{ t("leave_request") }}
+      </VToolbarTitle>
+      <!-- 編集再タイトルの表示 -->
+      <VToolbarTitle v-else>
+        <VIcon icon="mdi-lead-pencil" />{{ t("update_leave") }}
       </VToolbarTitle>
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
-    <VForm VForm ref="formRef" @submit.prevent="() => {}">
+    <!-- 新規登録際表示 -->
+    <VForm VForm ref="formRef" @submit.prevent="() => {}" v-if="!isEdit">
       <v-container>
         <VTable>
           <VTabs v-model="activeTab" color="primary">
@@ -101,7 +171,7 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave;
                   <VRow>
                     <VCol :cols="4" class="dropdown-box">
                       <VTextField
-                        v-model="filters.leave_name"
+                        v-model="formModel.name"
                         input
                         type="text"
                         :label="t('leave_name')"
@@ -116,9 +186,11 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave;
                   <VRow>
                     <VCol :cols="4" class="dropdown-box">
                       <VAutocomplete
-                        v-model="filters.public_leave"
+                        v-model="formModel.name"
                         :items="public_leave"
                         :label="t('public_leave')"
+                        item-title="title"
+                        item-value="value"
                       />
                     </VCol>
                   </VRow>
@@ -127,7 +199,7 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave;
                   <VRow>
                     <VCol :cols="4" class="dropdown-box">
                       <VTextField
-                        v-model="filters.leave_name"
+                        v-model="formModel.name"
                         input
                         type="text"
                         :label="t('leave_name')"
@@ -137,11 +209,26 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave;
                   </VRow>
                 </VCardText>
               </VWindowItem>
-              <VDivider />
             </VWindow>
           </VCardText>
         </VTable>
         <VDivider />
+      </v-container>
+    </VForm>
+    <!-- 編集際表示 -->
+    <VForm VForm ref="formRef" @submit.prevent="() => {}" v-else>
+      <v-container>
+        <VRow>
+          <VCol :cols="4" class="dropdown-box">
+            <VTextField
+              v-model="formModel.name"
+              input
+              type="text"
+              :label="t('leave_name')"
+              :rules="[validator.required]"
+            />
+          </VCol>
+        </VRow>
       </v-container>
     </VForm>
     <VCardActions>
@@ -150,8 +237,8 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave;
         type="submit"
         variant="elevated"
         color="primary"
-        >{{ t("submit") }}</VBtn
-      >
+        >{{ isEdit ? t("update") : t("submit") }}
+      </VBtn>
       <VBtn @click="handleResetFilter" type="reset" variant="tonal">{{
         t("reset")
       }}</VBtn>
@@ -160,7 +247,11 @@ const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave;
     <VDialog v-model="isDialogVisible" width="auto" eager>
       <ConfimDialogView
         :title="t('confirm')"
-        :message="t('leave_apply_confirm_message')"
+        :message="
+          isEdit
+            ? t('leave_update_confirm_message')
+            : t('leave_apply_confirm_message')
+        "
         :isVisible="isDialogVisible"
         @update:isVisible="isDialogVisible = $event"
         @confirmed="onConfirmed"

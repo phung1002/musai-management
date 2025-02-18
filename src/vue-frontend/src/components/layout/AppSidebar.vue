@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import logoImg from '@/assets/images/logo.png';
-import { reactive, computed } from 'vue';
+import logoImg from "@/assets/images/logo.png";
+import { reactive, computed } from "vue";
 //import { useLocale } from 'vuetify';
-import { useI18n } from 'vue-i18n';
-import { useUserStore } from '@/store/userStore';
-import { ERole } from '@/constants/role';
+import { useI18n } from "vue-i18n";
+import { useUserStore } from "@/store/userStore";
+import { ERole } from "@/constants/role";
 
 const userStore = useUserStore();
 const filteredItems = computed(() => {
@@ -16,107 +16,107 @@ const filteredItems = computed(() => {
 const userRoles = computed(() => userStore.roles || []);
 const { t } = useI18n();
 const items = [
-  { type: 'divider' },
-  { type: 'subheader', title: t('admin'), roles: [ERole.ADMIN] },
+  { type: "divider" },
+  { type: "subheader", title: t("admin"), roles: [ERole.ADMIN] },
   {
-    title: t('user_management'),
+    title: t("user_management"),
     props: {
-      prependIcon: 'mdi-account-box-multiple-outline',
+      prependIcon: "mdi-account-box-multiple-outline",
       link: true,
-      to: '/admin/users',
+      to: "/admin/users",
       exact: false,
     },
-    value: '/admin/users',
+    value: "/admin/users",
     roles: [ERole.ADMIN],
   },
   {
-    title: t('leave_management'),
+    title: t("leave_management"),
     props: {
-      prependIcon: 'mdi-calendar-star-outline',
+      prependIcon: "mdi-calendar-star-outline",
       link: true,
-      to: '/admin/leave-management',
+      to: "/admin/leave-management",
       exact: false,
     },
-    value: '/admin/leave-management',
+    value: "/admin/leave-management",
     roles: [ERole.ADMIN],
   },
-  { type: 'divider' },
-  { type: 'subheader', title: t('manager'), roles: [ERole.MANAGER] },
+  { type: "divider" },
+  { type: "subheader", title: t("manager"), roles: [ERole.MANAGER] },
   {
-    title: t('user_leave_management'),
+    title: t("user_leave_management"),
     props: {
-      prependIcon: 'mdi-badge-account-horizontal-outline',
+      prependIcon: "mdi-badge-account-horizontal-outline",
       link: true,
-      to: '/manager/user-leave-management',
+      to: "/manager/user-leave-management",
       exact: true,
     },
-    value: '/manager/user-leave-management',
+    value: "/manager/user-leave-management",
     roles: [ERole.MANAGER],
   },
   {
-    title: t('request_confirm'),
+    title: t("request_confirm"),
     props: {
-      prependIcon: 'mdi-message-check-outline',
+      prependIcon: "mdi-message-check-outline",
       link: true,
-      to: '/manager/request-confirm',
+      to: "/manager/request-confirm",
       exact: true,
     },
-    value: '/manager/request-confirm',
+    value: "/manager/request-confirm",
     roles: [ERole.MANAGER],
   },
-  { type: 'divider' },
-  { type: 'subheader', title: t('member'), roles: [ERole.MEMBER] },
+  { type: "divider" },
+  { type: "subheader", title: t("member"), roles: [ERole.MEMBER] },
   {
-    title: t('leave_request'),
+    title: t("leave_request"),
     props: {
-      prependIcon: 'mdi-email-arrow-right-outline',
+      prependIcon: "mdi-email-arrow-right-outline",
       link: true,
-      to: '/member/leave-requests',
+      to: "/member/leave-requests",
       exact: true,
     },
-    value: '/member/leave-requests',
+    value: "/member/leave-requests",
     roles: [ERole.MEMBER],
   },
-  { type: 'divider' },
+  { type: "divider" },
   {
-    title: t('calendar'),
+    title: t("calendar"),
     props: {
-      prependIcon: 'mdi-calendar-month-outline',
+      prependIcon: "mdi-calendar-month-outline",
       link: true,
-      to: '/calendar',
+      to: "/calendar",
       exact: true,
     },
-    value: '/calendar',
-    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN]
+    value: "/calendar",
+    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN],
   },
   {
-    title: t('document'),
+    title: t("submit_document"),
     props: {
-      prependIcon: 'mdi-invoice-text-multiple-outline',
+      prependIcon: "mdi-invoice-text-multiple-outline",
       link: true,
-      to: '/document',
+      to: "/document",
       exact: true,
     },
-    value: '/document',
-    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN]
+    value: "/document",
+    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN],
   },
   {
-    title: t('change_password'),
+    title: t("change_password"),
     props: {
-      prependIcon: 'mdi-account-convert',
+      prependIcon: "mdi-account-convert",
       link: true,
-      to: '/change-password',
+      to: "/change-password",
       exact: true,
     },
-    value: '/change-password',
-    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN]
+    value: "/change-password",
+    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN],
   },
 ];
 
 const drawerProps = reactive({
   rail: false,
   railWidth: 256,
-  icon: 'mdi-arrow-left'
+  icon: "mdi-arrow-left",
 });
 
 const handleDrawerWidth = () => {
@@ -124,7 +124,10 @@ const handleDrawerWidth = () => {
   const railWidth = drawerProps.railWidth;
   drawerProps.rail = !rail;
   drawerProps.railWidth = railWidth == 64 ? 256 : 64;
-  drawerProps.icon = drawerProps.railWidth === 256 ? 'mdi-arrow-expand-left  ' : 'mdi-arrow-expand-right';
+  drawerProps.icon =
+    drawerProps.railWidth === 256
+      ? "mdi-arrow-expand-left  "
+      : "mdi-arrow-expand-right";
 };
 
 // const menus = computed(() => {
@@ -141,15 +144,39 @@ const handleDrawerWidth = () => {
 </script>
 
 <template>
-  <VNavigationDrawer :rail-width="drawerProps.railWidth" :rail="drawerProps.rail" :border="true" :elevation="1">
+  <VNavigationDrawer
+    :rail-width="drawerProps.railWidth"
+    :rail="drawerProps.rail"
+    :border="true"
+    :elevation="1"
+  >
     <VToolbar color="transparent">
-      <v-img :src="logoImg" alt="logo" contain class="logo py-2" :height="200"></v-img>
+      <v-img
+        :src="logoImg"
+        alt="logo"
+        contain
+        class="logo py-2"
+        :height="200"
+      ></v-img>
     </VToolbar>
     <div class="app-drawer__inner">
-      <VList :items="filteredItems" color="primary" class="menu-list" nav :slim="true" />
+      <VList
+        :items="filteredItems"
+        color="primary"
+        class="menu-list"
+        nav
+        :slim="true"
+      />
     </div>
-    <VBtn class="btn-collapse" rounded="lg" color="white" size="x-small" :icon="drawerProps.icon"
-      @click="handleDrawerWidth" :style="{ left: drawerProps.railWidth - 12 + 'px' }" />
+    <VBtn
+      class="btn-collapse"
+      rounded="lg"
+      color="white"
+      size="x-small"
+      :icon="drawerProps.icon"
+      @click="handleDrawerWidth"
+      :style="{ left: drawerProps.railWidth - 12 + 'px' }"
+    />
   </VNavigationDrawer>
 </template>
 
@@ -165,7 +192,7 @@ const handleDrawerWidth = () => {
     text-transform: uppercase;
   }
 
-  .v-list-item__prepend>.v-icon {
+  .v-list-item__prepend > .v-icon {
     margin-inline-end: 16px;
   }
 

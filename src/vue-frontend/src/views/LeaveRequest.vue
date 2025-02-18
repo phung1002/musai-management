@@ -1,11 +1,8 @@
 <!-- 休暇申請 画面-->
 <script setup lang="ts">
-import AppSidebar from "@/components/layout/AppSidebar.vue";
-import AppToolbar from "@/components/layout/AppToolbar.vue";
-// import LeaveRequstList from './lists/LeaveRequst.vue';
 import { ref, reactive, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import LeaveRequestFormVue from "@/components/form/LeaveRequestForm.vue";
+import LeaveRequestForm from "@/components/form/LeaveRequestForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { getRequstLists } from "@/api/requst";
 import { ILeaveRequest } from "@/types/type";
@@ -110,10 +107,10 @@ const onDeleted = () => {
               >
                 <VIcon>mdi-plus</VIcon>
                 <span class="text-lg font-medium ml-2">{{
-                  t("leave_applying")
+                  t("leave_request")
                 }}</span>
                 <VDialog v-model="applyFrom" width="auto" eager>
-                  <LeaveRequestFormVue @form:cancel="applyFrom = false" />
+                  <LeaveRequestForm @form:cancel="applyFrom = false" />
                 </VDialog>
               </VBtn>
             </VCardActions>

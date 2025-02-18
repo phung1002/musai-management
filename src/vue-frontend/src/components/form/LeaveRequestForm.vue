@@ -1,18 +1,21 @@
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
+import { Ref, ref, reactive, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { VTab } from "vuetify/lib/components/index.mjs";
 import { useLeaveTypesStore } from "@/store/leaveTypesStore";
+import { getLeavesTree } from "@/api/leave";
+import { ILeaveTypes } from "@/types/type";
 const isDialogVisible = ref(false);
+const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
 const { t } = useI18n();
-const leaveUserStore = useLeaveTypesStore();
+const isLoading = ref(false);
+const isError = ref(false);
 const emit = defineEmits(["form:cancel"]);
 const handleCancel = () => {
   handleResetFilter(); // 入力をリセット
   emit("form:cancel");
 };
-// // エラーメッセージデータの型定義
 interface Errors {
   leave_type: string;
   leave_duration_from: string;
@@ -56,6 +59,67 @@ const resetErrors = () => {
     leave_reason: "",
   };
 };
+// 各カテゴリーの items
+const paid_leave: Ref<{ title: string; value: string }[]> = ref([]);
+const public_leave: Ref<{ title: string; value: string }[]> = ref([]);
+const special_day_leave: Ref<{ title: string; value: string }[]> = ref([]);
+const special_occasions_leave: Ref<{ title: string; value: string }[]> = ref(
+  []
+);
+// 休暇リスト取得　API呼び出し
+const fetchLeaveType = async () => {
+  isLoading.value = true;
+  isError.value = false;
+  try {
+    const response = await getLeavesTree();
+    leaves.value = response;
+
+    // カテゴリーごとに分類
+    categorizeLeaves(response);
+  } catch (error) {
+    isError.value = true;
+    console.error("Error fetching leaves:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+// 取得データをカテゴリーごとに分ける関数
+const categorizeLeaves = (data: ILeaveTypes[]) => {
+  data.forEach((leave) => {
+    if (leave.name === "有休") {
+      paid_leave.value =
+        leave.children?.map((child) => ({
+          title: child.name,
+          value: child.name.toUpperCase(),
+        })) || [];
+    }
+    if (leave.name === "公休") {
+      public_leave.value =
+        leave.children?.map((child) => ({
+          title: child.name,
+          value: child.name.toUpperCase(),
+        })) || [];
+    }
+    if (leave.name === "特別休暇") {
+      special_day_leave.value =
+        leave.children?.map((child) => ({
+          title: child.name,
+          value: child.name.toUpperCase(),
+        })) || [];
+    }
+    if (leave.name === "慶弔休暇") {
+      special_occasions_leave.value =
+        leave.children?.map((child) => ({
+          title: child.name,
+          value: child.name.toUpperCase(),
+        })) || [];
+    }
+  });
+};
+// コンポーネントがマウントされたときAPI呼び出し修理実行
+onMounted(() => {
+  fetchLeaveType();
+});
 // 入力チェック　バリデーションを行う
 const handleSubmit = () => {
   resetErrors(); // フォーム送信前にエラーメッセージをリセット
@@ -126,18 +190,13 @@ const tabs = [
   { title: t("paid_leave"), icon: "mdi-gift-open", tab: "paid" },
   { title: t("public_leave"), icon: "mdi-pine-tree-box", tab: "public" },
 ];
-// 休暇区分情報取得
-const paid_leave = leaveUserStore.getPaidLeave;
-const public_leave = leaveUserStore.getPublicLeave;
-const special_day_leave = leaveUserStore.getSpecialDayLeave;
-const special_occasions_leave = leaveUserStore.getSpecialOccasionsLeave;
 </script>
 
 <template>
   <VCard class="leave_form">
     <VToolbar tag="div">
       <VToolbarTitle>
-        <VIcon icon="mdi-lead-pencil" />{{ t("leave_applying") }}
+        <VIcon icon="mdi-lead-pencil" />{{ t("leave_request") }}
       </VToolbarTitle>
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>

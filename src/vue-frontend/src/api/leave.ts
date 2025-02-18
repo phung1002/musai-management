@@ -26,3 +26,13 @@ export async function deleteLeave(id: number): Promise<void> {
     throw error;
   }
 }
+// 休暇タイプ取得API呼び出し
+export async function getLeavesTree(): Promise<ILeaveTypes[]> {
+  try {
+    const response = await axiosIns.get<ILeaveTypes[]>("/leave-types/tree");
+    return response.data;
+  } catch (error) {
+    console.error("List user failed:", error);
+    throw error;
+  }
+}
