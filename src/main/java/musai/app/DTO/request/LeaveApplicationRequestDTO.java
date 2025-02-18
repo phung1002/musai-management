@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class LeaveApplicationRequestDTO {
 	
-	@NotNull(message = "User ID is required")
+//	@NotNull(message = "User ID is required")
     private Long userId; 
 	
 	@NotNull(message = "Leave type ID is required")

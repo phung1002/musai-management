@@ -53,7 +53,7 @@ public class LeaveApplicationController {
 	}
 	
 	/**
-	 * API management answer leave application
+	 * API member cancel leave application
 	 */
 	@PreAuthorize("hasRole('MEMBER')")
 	@PutMapping("leave-applications/cancel/{id}")
@@ -62,4 +62,13 @@ public class LeaveApplicationController {
 		return ResponseEntity.ok(response);
 	}
 
+	/**
+	 * API member update leave application
+	 */
+	@PreAuthorize("hasRole('MEMBER')")
+	@PutMapping("leave-applications/update/{id}")
+	public ResponseEntity<?> updateLeaveApplication(@PathVariable Long id, @Validated @RequestBody LeaveApplicationRequestDTO request) {
+		MessageResponse response = leaveApplicationService.updateLeaveApplication(id, request);
+		return ResponseEntity.ok(response);
+	}	
 }

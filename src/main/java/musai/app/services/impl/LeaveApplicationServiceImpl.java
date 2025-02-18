@@ -107,4 +107,30 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		return new MessageResponse("Leave application is canceled");
 	}
 
+	@Override
+	public MessageResponse updateLeaveApplication(Long id, LeaveApplicationRequestDTO request) {
+		LeaveApplication leaveApplication = leaveApplicationRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("Leave application not found"));
+
+		// Can only be update if the status is 'pending'. ???????????????????????????????
+		System.out.println(leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE.name()));
+		if (!leaveApplication.getStatus().equals(ELeaveStatus.PENDING.name()) ||
+				!leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE.name())) {
+			throw new BadRequestException(" Can only be update if the status is PENDING or REQUESTED_CHANGE.");
+		}
+		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
+				.orElseThrow(() -> new NotFoundException("Leave type not exist"));
+
+		// check điều kiện: số ngày không vượt quá
+
+		leaveApplication.setLeaveType(leaveType);
+		leaveApplication.setStartDate(request.getStartDate());
+		leaveApplication.setEndDate(request.getEndDate());
+		leaveApplication.setReason(request.getReason());
+		leaveApplication.setStatus(ELeaveStatus.PENDING.name());
+		leaveApplicationRepository.save(leaveApplication);
+
+		return new MessageResponse("Leave application update success");
+	}
+
 }
