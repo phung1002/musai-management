@@ -2,12 +2,16 @@ package musai.app.services.impl;
 
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveApplicationRequestDTO;
+import musai.app.DTO.response.LeaveApplicationResponseDTO;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.ELeaveStatus;
@@ -36,6 +40,39 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	}
 
 	/**
+	 * Service get all leave applications
+	 */
+	@Override
+	public List<LeaveApplicationResponseDTO> getAllLeaveApplications() {
+		List<LeaveApplication> leaveApplications = leaveApplicationRepository.findAllByOrderByCreatedAtDesc();
+		if (leaveApplications.isEmpty()) {
+			throw new NotFoundException("No leave applications found.");
+		}
+
+		List<LeaveApplicationResponseDTO> responseDTOs = leaveApplications.stream().map(this::convertToDTO)
+				.collect(Collectors.toList());
+		return responseDTOs;
+	}
+
+	// Convert LeaveApplication to LeaveApplicationResponseDTO
+	private LeaveApplicationResponseDTO convertToDTO(LeaveApplication leaveApplication) {
+		return new LeaveApplicationResponseDTO(leaveApplication.getId(),
+				leaveApplication.getUser() != null ? leaveApplication.getUser().getFullName() : "Unknown",
+				leaveApplication.getLeaveType().getName() != null ? leaveApplication.getLeaveType().getName()
+						: "Unknown",
+				leaveApplication.getStartDate(), leaveApplication.getEndDate(), leaveApplication.getReason(),
+				leaveApplication.getStatus(), leaveApplication.getRespondedAt(),
+				Optional.ofNullable(leaveApplication.getRespondedBy()).map(User::getFullName).orElse(null),
+				leaveApplication.getCreatedAt());
+	}
+
+	@Override
+	public List<LeaveApplicationResponseDTO> getLeaveApplicationsForMember(UserDetailsImpl principal) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
 	 * Service appply leave application
 	 */
 	@Override
@@ -53,7 +90,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		leaveApplication.setStartDate(request.getStartDate());
 		leaveApplication.setEndDate(request.getEndDate());
 		leaveApplication.setReason(request.getReason());
-		leaveApplication.setStatus(ELeaveStatus.PENDING.name());
+		leaveApplication.setStatus(ELeaveStatus.PENDING);
 		leaveApplicationRepository.save(leaveApplication);
 		return new MessageResponse("Apply success");
 	}
@@ -84,7 +121,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		if (updatableStatuses.contains(eStatus) && !leaveApplication.getStatus().equals(ELeaveStatus.PENDING.name())) {
 			throw new BadRequestException("Can only be responded to if the status is 'pending'.");
 		}
-		leaveApplication.setStatus(status);
+		leaveApplication.setStatus(eStatus);
 		leaveApplication.setRespondedBy(userRepository.findById(principal.getId()).orElse(null));
 		leaveApplication.setRespondedAt(LocalDateTime.now());
 
@@ -99,10 +136,12 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 				.orElseThrow(() -> new NotFoundException("Leave application not found"));
 
 		// Can only be cancel if the status is 'pending'.
-		if (!leaveApplication.getStatus().equals(ELeaveStatus.PENDING.name())) {
+		if (!leaveApplication.getStatus().equals(ELeaveStatus.PENDING)) {
 			throw new BadRequestException(" Can only be cancel if the status is 'pending'.");
 		}
-		leaveApplication.setStatus(ELeaveStatus.CANCELED.name());
+		// update usedDays
+
+		leaveApplication.setStatus(ELeaveStatus.CANCELED);
 		leaveApplicationRepository.save(leaveApplication);
 		return new MessageResponse("Leave application is canceled");
 	}
@@ -112,10 +151,11 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		LeaveApplication leaveApplication = leaveApplicationRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Leave application not found"));
 
-		// Can only be update if the status is 'pending'. ???????????????????????????????
-		System.out.println(leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE.name()));
-		if (!leaveApplication.getStatus().equals(ELeaveStatus.PENDING.name()) ||
-				!leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE.name())) {
+		// Can only be update if the status is 'pending'.
+		// ???????????????????????????????
+		System.out.println(leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE));
+		if (!leaveApplication.getStatus().equals(ELeaveStatus.PENDING)
+				|| !leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE)) {
 			throw new BadRequestException(" Can only be update if the status is PENDING or REQUESTED_CHANGE.");
 		}
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
@@ -123,11 +163,13 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 
 		// check điều kiện: số ngày không vượt quá
 
+		// update usedDays
+
 		leaveApplication.setLeaveType(leaveType);
 		leaveApplication.setStartDate(request.getStartDate());
 		leaveApplication.setEndDate(request.getEndDate());
 		leaveApplication.setReason(request.getReason());
-		leaveApplication.setStatus(ELeaveStatus.PENDING.name());
+		leaveApplication.setStatus(ELeaveStatus.PENDING);
 		leaveApplicationRepository.save(leaveApplication);
 
 		return new MessageResponse("Leave application update success");
