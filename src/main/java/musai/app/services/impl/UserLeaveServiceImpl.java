@@ -15,7 +15,7 @@ import musai.app.services.UserLeaveService;
 
 @Service
 public class UserLeaveServiceImpl implements UserLeaveService {
-	
+
 	@Autowired
 	private UserLeaveRepository userLeaveRepository;
 	private UserRepository userRepository;
@@ -40,11 +40,17 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
 
 		UserLeave userLeave = new UserLeave();
-		
+
 		userLeave.setUser(existingUser);
 		userLeave.setLeaveType(leaveType);
 		userLeave.setTotalDays(userLeaveRequestDTO.getTotalDays());
-		userLeave.setUsedDays(userLeaveRequestDTO.getUsedDays());
+
+		if (userLeaveRequestDTO.getUsedDays() == null) {
+			userLeave.setUsedDays(0);
+		} else {
+			userLeave.setUsedDays(userLeaveRequestDTO.getUsedDays());
+		}
+
 		userLeave.setValidFrom(userLeaveRequestDTO.getValidFrom());
 		userLeave.setValidTo(userLeaveRequestDTO.getValidTo());
 
