@@ -1,16 +1,19 @@
 package musai.app.services.impl;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveApplicationRequestDTO;
 import musai.app.DTO.response.LeaveApplicationResponseDTO;
+import musai.app.DTO.response.UserLeaveResponseDTO;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.ELeaveStatus;
@@ -22,6 +25,7 @@ import musai.app.repositories.LeaveTypeResposity;
 import musai.app.repositories.UserRepository;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.LeaveApplicationService;
+import musai.app.services.UserLeaveService;
 
 @Service
 public class LeaveApplicationServiceImpl implements LeaveApplicationService {
@@ -30,12 +34,16 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	private UserRepository userRepository;
 	private LeaveTypeResposity leaveTypeResposity;
 
+	@Autowired
+	private UserLeaveService userLeaveService;
+
 	public LeaveApplicationServiceImpl(LeaveApplicationRepository leaveApplicationRepository,
-			UserRepository userRepository, LeaveTypeResposity leaveTypeResposity) {
+			UserRepository userRepository, LeaveTypeResposity leaveTypeResposity, UserLeaveService userLeaveService) {
 		super();
 		this.leaveApplicationRepository = leaveApplicationRepository;
 		this.userRepository = userRepository;
 		this.leaveTypeResposity = leaveTypeResposity;
+		this.userLeaveService = userLeaveService;
 	}
 
 	/**
@@ -88,12 +96,27 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	 */
 	@Override
 	public MessageResponse applyLeave(LeaveApplicationRequestDTO request, UserDetailsImpl principal) {
+
 		User user = userRepository.findByIdAndDeletedAtIsNull(principal.getId())
 				.orElseThrow(() -> new NotFoundException("User not exist."));
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("Leave type not exist"));
 
-		// check điều kiện: số ngày không vượt quá
+		// check condition: remainDays > requestDays
+		List<UserLeaveResponseDTO> userLeaves = userLeaveService.getUserLeaveForMember(request.getLeaveTypeId(),
+				principal);
+		int remainDays = userLeaves.stream()
+				.mapToInt(userLeave -> userLeave.getTotalDays() - userLeave.getUsedDays())
+				.sum();
+		int requestDays = (int) ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()) + 1;
+		
+		if(requestDays > remainDays) {
+			throw new BadRequestException("Requested days exceed the remaining days.");
+		}
+		
+		//update usedDays to UserLeave
+		
+		
 
 		LeaveApplication leaveApplication = new LeaveApplication();
 		leaveApplication.setUser(user);
