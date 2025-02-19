@@ -57,8 +57,8 @@ public class LeaveApplicationController {
 	 */
 	@PreAuthorize("hasRole('MEMBER')")
 	@PostMapping("/leave-applications")
-	public ResponseEntity<?> applyLeave(@Validated @RequestBody LeaveApplicationRequestDTO request) {
-		MessageResponse response = leaveApplicationService.applyLeave(request);
+	public ResponseEntity<?> applyLeave(@Validated @RequestBody LeaveApplicationRequestDTO request, @AuthenticationPrincipal UserDetailsImpl principal) {
+		MessageResponse response = leaveApplicationService.applyLeave(request, principal);
 		return ResponseEntity.ok(response);
 	}
 

@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -88,8 +87,8 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	 * Service appply leave application
 	 */
 	@Override
-	public MessageResponse applyLeave(LeaveApplicationRequestDTO request) {
-		User user = userRepository.findByIdAndDeletedAtIsNull(request.getUserId())
+	public MessageResponse applyLeave(LeaveApplicationRequestDTO request, UserDetailsImpl principal) {
+		User user = userRepository.findByIdAndDeletedAtIsNull(principal.getId())
 				.orElseThrow(() -> new NotFoundException("User not exist."));
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("Leave type not exist"));
@@ -122,15 +121,14 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		ELeaveStatus eStatus = ELeaveStatus.valueOf(status.toUpperCase());
 
 		// Can only be revoked if the status is 'approved'.
-		if (status.equals(ELeaveStatus.REVOKED.name())
-				&& !leaveApplication.getStatus().equals(ELeaveStatus.APPROVED.name())) {
+		if (status.equals(ELeaveStatus.REVOKED) && !leaveApplication.getStatus().equals(ELeaveStatus.APPROVED)) {
 			throw new BadRequestException("Can only be revoked if the status is 'approved'.");
 		}
 
 		// Can only be revoked if the status is 'pending'.
 		EnumSet<ELeaveStatus> updatableStatuses = EnumSet.of(ELeaveStatus.APPROVED, ELeaveStatus.REJECTED,
 				ELeaveStatus.REQUESTED_CHANGE);
-		if (updatableStatuses.contains(eStatus) && !leaveApplication.getStatus().equals(ELeaveStatus.PENDING.name())) {
+		if (updatableStatuses.contains(eStatus) && !leaveApplication.getStatus().equals(ELeaveStatus.PENDING)) {
 			throw new BadRequestException("Can only be responded to if the status is 'pending'.");
 		}
 		leaveApplication.setStatus(eStatus);
