@@ -12,4 +12,6 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 
 	List<LeaveApplication> findAllByOrderByCreatedAtDesc();
 
+	List<LeaveApplication> findByUserId(Long id);
+
 }

@@ -66,10 +66,22 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 				leaveApplication.getCreatedAt());
 	}
 
+	/**
+	 * Service get leave applications of user are logging in
+	 */
 	@Override
 	public List<LeaveApplicationResponseDTO> getLeaveApplicationsForMember(UserDetailsImpl principal) {
-		// TODO Auto-generated method stub
-		return null;
+		// Find leave application of user are logging in
+		List<LeaveApplication> leaveApplications = leaveApplicationRepository.findByUserId(principal.getId());
+
+		if (leaveApplications.isEmpty()) {
+			throw new NotFoundException("No leave applications found for this member.");
+		}
+
+		List<LeaveApplicationResponseDTO> responseDTOs = leaveApplications.stream().map(this::convertToDTO)
+				.collect(Collectors.toList());
+
+		return responseDTOs;
 	}
 
 	/**
