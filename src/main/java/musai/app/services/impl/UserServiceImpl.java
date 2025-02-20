@@ -77,8 +77,6 @@ public class UserServiceImpl implements UserService {
 				userRequestDTO.getFullNameFurigana(), userRequestDTO.getBirthday(), userRequestDTO.getDepartment(),
 				userRequestDTO.getWorkPlace(), userRequestDTO.getJoinDate(), userRequestDTO.getGender());
 
-		System.out.println(userRequestDTO);
-		System.out.println(user);
 		Set<String> strRoles = userRequestDTO.getRoles();
 		Set<Role> roles = new HashSet<>();
 
