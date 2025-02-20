@@ -7,7 +7,7 @@ import { useValidator } from "@/utils/validation";
 import { ILeaveTypes } from "@/types/type";
 import { getLeavesTree } from "@/api/leave";
 import { showSnackbar } from "@/composables/useSnackbar";
-const { t } = useI18n(); // 日本語にローカル変更用
+const { t } = useI18n(); //日本語にローカル変更用
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const errors = ref<{ leave_type?: string; leave_name?: string }>({});
 const props = defineProps<{ leave?: ILeaveTypes; isEdit: boolean }>();
@@ -77,14 +77,14 @@ const fetchLeaveType = async () => {
 // 取得データをカテゴリーごとに分ける関数
 const categorizeLeaves = (data: ILeaveTypes[]) => {
   data.forEach((leave) => {
-    if (leave.name === "有休") {
+    if (leave.id === 3) {
       paid_leave.value =
         leave.children?.map((child) => ({
           title: child.name,
           value: child.name.toUpperCase(),
         })) || [];
     }
-    if (leave.name === "公休") {
+    if (leave.id === 4) {
       public_leave.value =
         leave.children?.map((child) => ({
           title: child.name,
@@ -216,8 +216,19 @@ const onConfirmed = () => {
       </v-container>
     </VForm>
     <!-- 編集際表示 -->
-    <VForm VForm ref="formRef" @submit.prevent="() => {}" v-else>
+    <VForm VForm ref="formRef" V-if="isEdit" @submit.prevent="() => {}" v-else>
       <v-container>
+        <VRow v-if="formModel.parentId !== null">
+          <VCol :cols="4" class="dropdown-box">
+            <VTextField
+              v-model="formModel.parentId"
+              input
+              type="text"
+              :label="t('parent_id')"
+              :rules="[validator.required]"
+            />
+          </VCol>
+        </VRow>
         <VRow>
           <VCol :cols="4" class="dropdown-box">
             <VTextField

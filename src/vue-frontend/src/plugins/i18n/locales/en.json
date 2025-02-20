@@ -85,6 +85,7 @@
   "female": "female",
   "account": "account",
   "detail_information": "detail information",
+  "parent_id": "parent id",
   "message": {
     "list_failure": "Failed to fetch data. Please try again.",
     "add_success": "addition successful!",

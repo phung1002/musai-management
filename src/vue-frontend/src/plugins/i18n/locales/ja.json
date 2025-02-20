@@ -85,6 +85,7 @@
   "leave_name": "休暇名",
   "update_leave": "休暇編集",
   "update": "更新",
+  "parent_id": "親番号",
   "message": {
     "list_failure": "データの取得に失敗しました。もう一度お試しください。",
     "add_success": "新規作成が成功しました。",
