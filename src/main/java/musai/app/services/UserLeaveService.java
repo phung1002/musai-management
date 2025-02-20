@@ -16,5 +16,4 @@ public interface UserLeaveService {
 	
 	// Create new user leave
 	UserLeave createUserLeave(UserLeaveRequestDTO userLeaveRequestDTO);
-
 }

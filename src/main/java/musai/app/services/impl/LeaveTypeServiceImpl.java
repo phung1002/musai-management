@@ -18,6 +18,7 @@ import musai.app.exception.NotFoundException;
 import musai.app.models.LeaveType;
 import musai.app.repositories.LeaveTypeResposity;
 import musai.app.services.LeaveTypeService;
+
 @Service
 public class LeaveTypeServiceImpl implements LeaveTypeService {
 	private final LeaveTypeResposity leaveTypeResposity;
@@ -80,14 +81,15 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 
 	// get List
 	@Override
-	public List<LeaveTypeResponseDTO> getAllLeaveTypes() {
+	public List<LeaveTypeParentResponseDTO> getAllLeaveTypes() {
 
 		// Fetch all LeaveType entities from the repository
 		List<LeaveType> leaveTypes = leaveTypeResposity.findAllByDeletedAtIsNull();
 
 		// Map each LeaveType entity to LeaveTypeDTO
-		return leaveTypes.stream().map(leave -> new LeaveTypeResponseDTO(leave.getId(), leave.getName()))
-				.collect(Collectors.toList());
+		return leaveTypes.stream().map(leave -> new LeaveTypeParentResponseDTO(leave.getId(), leave.getName(),
+				leave.getParent() != null ? leave.getParent().getId() : null // Check if parent is null
+		)).collect(Collectors.toList());
 	}
 
 	// Create API list tree

@@ -7,12 +7,13 @@ import NotFoundVue from "@/components/auth/NotFound.vue";
 import UserVue from "@/views/User.vue";
 import LeaveRequestVue from "@/views/LeaveRequest.vue";
 import { ERole } from "@/constants/role";
-import LeaveManagementViewVue from "@/views/LeaveManagementView.vue";
+
 import UserLeaveManagementViewVue from "@/views/UserLeaveManagementView.vue";
 import RequestConfirmViewVue from "@/views/RequestConfirmView.vue";
 import PasswordChangeVue from "@/components/auth/PasswordChange.vue";
 import CalendarVue from "@/views/Calendar.vue";
 import DocumentVue from "@/views/Document.vue";
+import LeaveType from "@/views/LeaveType.vue";
 
 const publicRoutes = {
   path: "/login",
@@ -47,7 +48,7 @@ const routes = {
     {
       path: "/admin/leave-management",
       name: "admin-leave-management",
-      component: LeaveManagementViewVue,
+      component: LeaveType,
       meta: {
         requiresAuth: true,
         requiredRoles: [ERole.ADMIN],

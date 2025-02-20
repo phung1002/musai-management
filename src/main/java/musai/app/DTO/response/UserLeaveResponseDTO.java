@@ -1,7 +1,6 @@
 package musai.app.DTO.response;
 
 import java.time.LocalDate;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,5 +14,4 @@ public class UserLeaveResponseDTO {
     private Integer usedDays;
     private LocalDate validFrom;
     private LocalDate validTo;
-
 }

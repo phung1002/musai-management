@@ -1,19 +1,31 @@
 <script setup lang="ts">
 import { VCalendar } from "vuetify/labs/VCalendar";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 </script>
 
 <template>
-  <VCard class="my-6 mx-6">
-    <VCalendar
-      :model-value="new Date()"
-      :highlight-dates="[new Date()]"
-    >
-    </VCalendar>
-  </VCard>
+  <VRow>
+    <VCol cols="12">
+      <VContainer class="app-container">
+        <VCard flat elevation="0">
+          <VToolbar tag="div">
+            <VToolbarTitle
+              ><VIcon icon="mdi-calendar-month-outline" />
+              {{ t("calendar") }}
+            </VToolbarTitle>
+          </VToolbar>
+          <VDivider />
+          <VCalendar :model-value="new Date()" :highlight-dates="[new Date()]">
+          </VCalendar>
+        </VCard>
+      </VContainer>
+    </VCol>
+  </VRow>
 </template>
 
 <style>
-.v-calendar-weekly__day-label .bg-primary{
+.v-calendar-weekly__day-label .bg-primary {
   background-color: inherit !important;
   color: #000 !important;
 }
@@ -22,5 +34,4 @@ import { VCalendar } from "vuetify/labs/VCalendar";
   color: white !important;
   border-radius: 50% !important;
 }
-
 </style>
