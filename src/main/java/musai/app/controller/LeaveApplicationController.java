@@ -80,8 +80,8 @@ public class LeaveApplicationController {
 	 */
 	@PreAuthorize("hasRole('MEMBER')")
 	@PutMapping("leave-applications/cancel/{id}")
-	public ResponseEntity<?> cancelLeave(@PathVariable Long id) {
-		MessageResponse response = leaveApplicationService.cancelLeave(id);
+	public ResponseEntity<?> cancelLeave(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl principal) {
+		MessageResponse response = leaveApplicationService.cancelLeave(id, principal);
 		return ResponseEntity.ok(response);
 	}
 

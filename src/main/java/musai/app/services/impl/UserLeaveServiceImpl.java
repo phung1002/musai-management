@@ -3,11 +3,13 @@ package musai.app.services.impl;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.UserLeaveRequestDTO;
 import musai.app.DTO.response.UserLeaveResponseDTO;
 import musai.app.exception.NotFoundException;
@@ -49,13 +51,14 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		List<UserLeave> userLeaves = userLeaveRepository.findByUserId(principal.getId()).stream()
 				.filter(userLeave -> !userLeave.getValidFrom().isAfter(today) 
 						&& !userLeave.getValidTo().isBefore(today)
-						&& (userLeave.getTotalDays() - userLeave.getUsedDays() > 0)
+//						&& (userLeave.getTotalDays() - userLeave.getUsedDays() > 0)
 						&& (leaveTypeId == null || userLeave.getLeaveType().getId().equals(leaveTypeId)))
 				.sorted(Comparator.comparing(UserLeave::getValidTo))
 				.collect(Collectors.toList());
 
 		List<UserLeaveResponseDTO> responseDTO = userLeaves.stream().map(this::convertToDTO)
 				.collect(Collectors.toList());
+		System.err.println(responseDTO);
 		return responseDTO;
 	}
 
@@ -63,6 +66,14 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		return new UserLeaveResponseDTO(userLeave.getId(), userLeave.getUser().getFullName(),
 				userLeave.getLeaveType().getName(), userLeave.getTotalDays(), userLeave.getUsedDays(),
 				userLeave.getValidFrom(), userLeave.getValidTo());
+	}
+	
+
+	@Override
+	public MessageResponse updateUsedDays(Long id, int usedDay) {
+		UserLeave userLeave = userLeaveRepository.findById(id).orElseThrow(() -> new NotFoundException("User Leave not found"));
+		userLeave.setUsedDays(usedDay);
+		return new MessageResponse("User Leave update usedDays successful.");
 	}
 
 	// Create new leave user_leaves
