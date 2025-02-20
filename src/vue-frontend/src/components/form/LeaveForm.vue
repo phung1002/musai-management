@@ -5,7 +5,7 @@ import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { VTab } from "vuetify/lib/components/index.mjs";
 import { useValidator } from "@/utils/validation";
 import { ILeaveTypes } from "@/types/type";
-import { getLeavesTree } from "@/api/leave";
+import { getLeavesTree, addLeave, updateLeave } from "@/api/leave";
 import { showSnackbar } from "@/composables/useSnackbar";
 const { t } = useI18n(); //日本語にローカル変更用
 const emit = defineEmits(["form-cancel", "refetch-data"]);
@@ -16,26 +16,52 @@ const validator = useValidator(t); // バリデーション
 const isDialogVisible = ref(false); // 確認ダイアログ表示
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
-const activeTab = ref("personal-info"); // タブの初期値
-// フォームのデータ
-// const formData = ref({
-//   // // paid_leave: "",
-//   // public_leave: "",
-//   // leave_name: "",
-// });
+const activeTab = ref("paid"); // タブの初期値
+// デフォルト値
 const defaultLeave = {
   id: 0,
   name: "",
+  parentId: 0,
+  children: [],
 };
-const formModel = reactive<ILeaveTypes>(
-  // isEdit が true の場合は props.leave を、false の場合は空のデフォルト値を使う
-  props.isEdit ? { ...defaultLeave, ...props.leave } : { ...defaultLeave }
-);
-
+// 各カテゴリーの items
+const public_leave_selected: Ref<{ id: number; name: string }> = ref({
+  id: 0,
+  name: "",
+});
+const paid_leave: Ref<{ id: number; name: string }[]> = ref([]);
+const public_leave: Ref<{ id: number; name: string }[]> = ref([]);
+// メイン休暇タブで分類
+const tabs = [
+  { title: t("paid_leave"), icon: "mdi-gift-open", tab: "paid" },
+  { title: t("public_leave"), icon: "mdi-pine-tree-box", tab: "public" },
+];
+// フォームデータの初期化
+const formModel = reactive<ILeaveTypes>({ ...defaultLeave });
+onMounted(() => {
+  if (props.isEdit && props.leave) {
+    Object.assign(formModel, props.leave);
+  }
+});
+// タブ変更時に `parentId` を設定
+watch(activeTab, (newTab) => {
+  formModel.parentId = newTab === "paid" ? 3 : 4;
+});
+// フォームモデルの変更を監視
+// watch(() => formModel.public_leave, (newValue) => {
+//   if (newValue === "特別休暇") {
+//     formModel.parent_id = 7;
+//   } else if (newValue === "慶弔休暇") {
+//     formModel.parent_id = 8;
+//   } else {
+//     formModel.parent_id = 0; // または null に設定
+//   }
+// });
+// });
 // 入力初期化
 const handleResetFilter = () => {
   formModel.name = "";
-  // formModel.public_leave
+  formModel.parentId = 0;
 };
 // エラーメッセージ初期化
 const resetErrors = () => {
@@ -49,14 +75,7 @@ const handleCancel = () => {
   resetErrors();
   emit("form-cancel");
 };
-// 各カテゴリーの items
-const paid_leave: Ref<{ title: string; value: string }[]> = ref([]);
-const public_leave: Ref<{ title: string; value: string }[]> = ref([]);
-// メイン休暇タブで分類
-const tabs = [
-  { title: t("paid_leave"), icon: "mdi-gift-open", tab: "paid" },
-  { title: t("public_leave"), icon: "mdi-pine-tree-box", tab: "public" },
-];
+
 // 休暇リスト取得　API呼び出し
 const fetchLeaveType = async () => {
   isLoading.value = true;
@@ -64,7 +83,6 @@ const fetchLeaveType = async () => {
   try {
     const response = await getLeavesTree();
     leaves.value = response;
-
     // カテゴリーごとに分類
     categorizeLeaves(response);
   } catch (error) {
@@ -80,15 +98,15 @@ const categorizeLeaves = (data: ILeaveTypes[]) => {
     if (leave.id === 3) {
       paid_leave.value =
         leave.children?.map((child) => ({
-          title: child.name,
-          value: child.name.toUpperCase(),
+          id: child.id,
+          name: child.name,
         })) || [];
     }
     if (leave.id === 4) {
       public_leave.value =
         leave.children?.map((child) => ({
-          title: child.name,
-          value: child.name.toUpperCase(),
+          id: child.id,
+          name: child.name,
         })) || [];
     }
   });
@@ -98,30 +116,52 @@ onMounted(() => {
   fetchLeaveType();
 });
 // フォーム送信処理
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!props.isEdit) {
-    isDialogVisible.value = true;
+    formModel.parentId = activeTab.value === "paid" ? 3 : 4; // 新規登録時の親ID設定
     console.log("新しいデータを登録します...");
     // 登録処理を実行
-    // emit("form-cancel"); // フォームを閉じる
+    try {
+      // if create user
+      await addLeave(formModel);
+      showSnackbar("add_success", "success");
+      emit("refetch-data");
+      handleCancel();
+    } catch (error: any) {
+      const errorMessage = ["add_failure"];
+      if (error.status === 400) {
+        errorMessage.push("user_exists");
+      }
+      showSnackbar(errorMessage, "error");
+    } finally {
+      isDialogVisible.value = false;
+    }
   } else {
     isDialogVisible.value = true;
-    console.log("データを更新します...");
-    // 更新処理を実行
-    // emit("form-cancel"); // フォームを閉じる
+    console.log("データを更新しますか？...");
   }
 };
 // 確認ダイアログで許可されたらイベント発火
-const onConfirmed = () => {
-  if (!props.isEdit) {
-    console.log("新しいデータを登録します...");
-    // 登録処理を実行
-    emit("form-cancel"); // フォームを閉じる
-  } else {
-    console.log("データを更新します...");
-    // 更新処理を実行
-    emit("form-cancel"); // フォームを閉じる
+const onConfirmed = async () => {
+  console.log("データを更新します...");
+  try {
+    if (formModel.id == null) return;
+    await updateLeave(formModel.id, formModel);
+    showSnackbar("update_success", "success");
+    handleCancel();
+    emit("refetch-data");
+  } catch (error: any) {
+    const errorMessage = ["update_failure"];
+    if (error.status === 400) {
+      errorMessage.push("user_exists");
+    } else if (error.status == 403) {
+      errorMessage.push("cannot_remove_own_admin_role");
+    }
+    showSnackbar(errorMessage, "error");
+  } finally {
+    isDialogVisible.value = false;
   }
+  handleCancel(); // フォームを閉じる
 };
 
 // const handleSubmit = async () => {
@@ -169,7 +209,7 @@ const onConfirmed = () => {
               <VWindowItem value="paid">
                 <VCardText>
                   <VRow>
-                    <VCol :cols="4" class="dropdown-box">
+                    <VCol :cols="12" class="dropdown-box">
                       <VTextField
                         v-model="formModel.name"
                         input
@@ -184,20 +224,20 @@ const onConfirmed = () => {
               <VWindowItem value="public">
                 <VCardText>
                   <VRow>
-                    <VCol :cols="4" class="dropdown-box">
+                    <VCol :cols="12" class="dropdown-box">
                       <VAutocomplete
-                        v-model="formModel.name"
+                        v-model="public_leave_selected"
                         :items="public_leave"
                         :label="t('public_leave')"
-                        item-title="title"
-                        item-value="value"
+                        item-title="name"
+                        item-value="id"
                       />
                     </VCol>
                   </VRow>
                 </VCardText>
                 <VCardText>
                   <VRow>
-                    <VCol :cols="4" class="dropdown-box">
+                    <VCol :cols="12">
                       <VTextField
                         v-model="formModel.name"
                         input
@@ -219,7 +259,7 @@ const onConfirmed = () => {
     <VForm VForm ref="formRef" V-if="isEdit" @submit.prevent="() => {}" v-else>
       <v-container>
         <VRow v-if="formModel.parentId !== null">
-          <VCol :cols="4" class="dropdown-box">
+          <VCol :cols="12" class="dropdown-box">
             <VTextField
               v-model="formModel.parentId"
               input
@@ -230,7 +270,7 @@ const onConfirmed = () => {
           </VCol>
         </VRow>
         <VRow>
-          <VCol :cols="4" class="dropdown-box">
+          <VCol :cols="12">
             <VTextField
               v-model="formModel.name"
               input

@@ -5,7 +5,7 @@ import LeaveForm from "@/components/form/LeaveForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useI18n } from "vue-i18n";
 import { ILeaveTypes } from "@/types/type";
-import { deleteLeave, getLeaves } from "@/api/leave";
+import { deleteLeave, getLeaves, searchLeave } from "@/api/leave";
 import { showSnackbar } from "@/composables/useSnackbar";
 
 const { t } = useI18n(); // 日本語にローカル変更用
@@ -26,6 +26,12 @@ const headers = reactive([
   { title: t("leave_name"), key: "name" }, // 休暇名
   { title: t("action"), key: "action" }, // アクション
 ]);
+// 休暇リストをロード
+const loadLeave = (lst: any) => {
+  leaves.value = lst.map((leave: ILeaveTypes) => ({
+    ...leave,
+  }));
+};
 // 休暇リスト取得　API呼び出し
 const fetchLeaveType = async () => {
   isLoading.value = true;
@@ -33,9 +39,7 @@ const fetchLeaveType = async () => {
   try {
     const response = await getLeaves(); // API呼び出
     console.log("response", response);
-    leaves.value = response.map((leave: ILeaveTypes) => ({
-      ...leave,
-    }));
+    loadLeave(response); // リスト更新
   } catch (error) {
     isError.value = true;
     console.error("Error fetching leaves:", error);
@@ -50,6 +54,22 @@ const handleCreateItem = (leaveType: ILeaveTypes) => {
   console.log(isEdit.value);
   addLeaves.value = true;
   isEdit.value = false;
+};
+// 検索
+const keyWord = ref("");
+const handleSearch = async () => {
+  if (keyWord.value == null) {
+    fetchLeaveType();
+    return;
+  }
+  try {
+    const response = await searchLeave(keyWord.value);
+    loadLeave(response);
+  } catch (error) {
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
 };
 // 編集
 const handleEditItem = (leave: ILeaveTypes) => {
@@ -111,6 +131,26 @@ onMounted(() => {
               </VBtn>
             </VCardActions>
           </VToolbar>
+          <VDivider />
+          <!-- 検索バー -->
+          <VCardItem class="py-0">
+            <VToolbar tag="div" color="transparent" flat>
+              <VTextField
+                v-model="keyWord"
+                :prepend-icon="'mdi-filter-variant'"
+                :placeholder="t('type_something')"
+                hide-details
+                clearable
+                variant="plain"
+                class="search"
+                @click:clear="handleSearch"
+                @keydown.enter="handleSearch"
+              />
+              <VBtn icon density="comfortable" @click="handleSearch">
+                <VIcon>mdi-magnify</VIcon>
+              </VBtn>
+            </VToolbar>
+          </VCardItem>
           <VDivider />
           <!-- 申請情報　表示 -->
           <VCardItem>
