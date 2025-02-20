@@ -13,6 +13,4 @@ public interface UserLeaveRepository extends JpaRepository<UserLeave, Long> {
     
     List<UserLeave> findByLeaveTypeId(Long leaveTypeId);
     
-    // Find by ID with soft delete check
-    UserLeave findByIdAndDeletedAtIsNull(Long id);
 }
