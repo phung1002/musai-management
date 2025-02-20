@@ -17,6 +17,7 @@ export async function login(params: LoginParams): Promise<IAccessToken> {
 
     // update userStore
     userStore.setAuthenticated(true);
+    userStore.setId(data.id);
     userStore.setRoles(data.roles);
     userStore.setUsername(data.username);
     userStore.setFullName(data.fullName);
@@ -72,4 +73,14 @@ export const changePassword = async (payload: ChangePasswordPayload): Promise<vo
   } catch (error: any) {
     throw new Error(error.response?.data?.message || "パスワード変更に失敗しました");
   }
-};
+}
+
+//api get profile
+export async function profile() {
+  try {
+    const response = await axiosIns.get('/auth/profile', { timeout: 5000 });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}

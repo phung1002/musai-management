@@ -11,7 +11,8 @@
   "login_failed": "login failed!",
   "add": "add",
   "number": "no",
-  "type_something": "type something",
+  "type_something": "type something",  
+  "no_records_found": "No data available",
   "full_name": "full name",
   "full_name_furigana": "full name furigana",
   "birthday": "birthday",
@@ -83,6 +84,7 @@
   "update_user": "update user",
   "male": "male",
   "female": "female",
+  "undefined": "undefined",
   "account": "account",
   "detail_information": "detail information",
   "parent_id": "parent id",
@@ -97,7 +99,9 @@
     "delete_your_self": "you cannot delete yourself.",
     "validation_error": "please correct the highlighted errors before submitting.",
     "user_exists": "The username already exists in the system.",
-    "user_not_found": "The username does not exist in the system."
+    "user_not_found": "The username does not exist in the system.",
+    "admin_change_their_password": "If you change your own password, you need to log in again.",
+    "cannot_remove_own_admin_role": "You are not allowed to remove your own ADMIN permissions."
   },
   "validation": {
     "required_input": "this field is required",

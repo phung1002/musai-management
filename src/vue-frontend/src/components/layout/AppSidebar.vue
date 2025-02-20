@@ -16,8 +16,8 @@ const filteredItems = computed(() => {
 const userRoles = computed(() => userStore.roles || []);
 const { t } = useI18n();
 const items = [
-  { type: "divider" },
-  { type: "subheader", title: t("admin"), roles: [ERole.ADMIN] },
+  { type: 'divider', roles: [ERole.ADMIN] },
+  { type: 'subheader', ti
   {
     title: t("user_management"),
     props: {
@@ -40,8 +40,7 @@ const items = [
     value: "/admin/leave-management",
     roles: [ERole.ADMIN],
   },
-  { type: "divider" },
-  { type: "subheader", title: t("manager"), roles: [ERole.MANAGER] },
+  { type: 'subheader', title: t('manager'), roles: [ERole.MANAGER] },
   {
     title: t("user_leave_management"),
     props: {
@@ -64,7 +63,7 @@ const items = [
     value: "/manager/request-confirm",
     roles: [ERole.MANAGER],
   },
-  { type: "divider" },
+  { type: 'divider', roles: [ERole.MEMBER] },
   { type: "subheader", title: t("member"), roles: [ERole.MEMBER] },
   {
     title: t("leave_request"),
