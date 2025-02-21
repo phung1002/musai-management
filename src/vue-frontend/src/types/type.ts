@@ -7,17 +7,17 @@ export interface IAccessToken {
   expire_in: number;
 }
 
-export interface ILeaveRequestList {
-  data: ILeaveRequest;
+export interface ILeaveApplicationList {
+  data: ILeaveApplication;
 }
 
 export interface IUserResp {
-  data: ILeaveRequest[];
+  data: ILeaveApplication[];
 }
 
 export type confrimStatus = "pending" | "accepted";
 
-export interface ILeaveRequest {
+export interface ILeaveApplication {
   userid: number;
   username: string;
   leave_type: string;

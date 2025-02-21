@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n";
 import LeaveRequestForm from "@/components/form/LeaveRequestForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { getRequstLists } from "@/api/requst";
-import { ILeaveRequest } from "@/types/type";
+import { ILeaveApplication } from "@/types/type";
 
 // 日本語にローカル変更用
 const { t } = useI18n();
@@ -15,7 +15,7 @@ const applyFrom = ref(false);
 const editForm = ref(false);
 const loading = ref(true);
 
-const leaveRequest = ref<ILeaveRequest[]>([]);
+const leaveRequest = ref<ILeaveApplication[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
 
@@ -66,7 +66,7 @@ const fetchRequests = async () => {
   console.log(headers);
   try {
     const response = await getRequstLists(); //  API呼び出し
-    leaveRequest.value = response.map((LeaveRequestList: ILeaveRequest) => ({
+    leaveRequest.value = response.map((LeaveRequestList: ILeaveApplication) => ({
       ...LeaveRequestList,
     }));
   } catch (error) {
