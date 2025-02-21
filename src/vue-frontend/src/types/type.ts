@@ -15,17 +15,13 @@ export interface IUserResp {
   data: ILeaveApplication[];
 }
 
-export type confrimStatus = "pending" | "accepted";
-
 export interface ILeaveApplication {
-  userid: number;
-  username: string;
-  leave_type: string;
-  leave_duration_from: Date;
-  leave_duration_to: Date;
-  leave_reason: string;
-  status: confrimStatus;
-  access_token?: string;
+  id: number | null;
+  leaveTypeName: string;
+  startDate: Date;
+  endDate: Date;
+  reason: string;
+  status: string;
 }
 
 export interface IUser {

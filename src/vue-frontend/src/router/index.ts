@@ -73,8 +73,8 @@ const routes = {
       },
     },
     {
-      path: "/member/leave-requests",
-      name: "member-leave-requests",
+      path: "/member/leave-applications",
+      name: "member-leave-applications",
       component: LeaveApplicationVue,
       meta: {
         requiresAuth: true,

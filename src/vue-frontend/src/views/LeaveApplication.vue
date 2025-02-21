@@ -1,23 +1,37 @@
 <!-- 休暇申請 画面-->
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import LeaveRequestForm from "@/components/form/LeaveRequestForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import { getRequstLists } from "@/api/requst";
+import {
+  listLeaveApplicationForMember,
+  cancelApplication,
+} from "@/api/leaveApplication";
 import { ILeaveApplication } from "@/types/type";
+import { showSnackbar } from "@/composables/useSnackbar";
 
 // 日本語にローカル変更用
 const { t } = useI18n();
 const showFilter = ref(true);
-const isDialogVisible = ref(false);
 const applyFrom = ref(false);
 const editForm = ref(false);
 const loading = ref(true);
 
-const leaveRequest = ref<ILeaveApplication[]>([]);
+const leaveApplications = ref<ILeaveApplication[]>([]);
+const selectedLeaveApplication = ref<ILeaveApplication>(
+  {} as ILeaveApplication
+);
 const isLoading = ref(false);
 const isError = ref(false);
+const convertDate = (date: Date | null): string | null => {
+  if (date == null) return null;
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 const loadData = async () => {
   loading.value = true;
@@ -29,10 +43,6 @@ const handleApplyFilter = () => {
 };
 const handleCreateItem = () => {
   applyFrom.value = true;
-};
-const handleDeleteItem = (id: number) => {
-  isDialogVisible.value = true;
-  console.log("delete", id);
 };
 const handleEditItem = (id: number) => {
   editForm.value = true;
@@ -50,25 +60,29 @@ const pagination = reactive({
   page: 1,
   pageSize: 10,
 });
-// // テーブル　ヘッダー
+// テーブル　ヘッダー
 const headers = reactive([
-  { title: t("leave_type"), key: "leave_type" },
-  { title: t("leave_duration_from"), key: "leave_duration_from" },
-  { title: t("leave_duration_to"), key: "leave_duration_to" },
-  { title: t("leave_reason"), key: "leave_reason" },
+  { title: t("number"), key: "number" },
+  { title: t("leave_type"), key: "leaveTypeName" },
+  { title: t("leave_duration_from"), key: "startDate" },
+  { title: t("leave_duration_to"), key: "endDate" },
+  { title: t("leave_reason"), key: "reason" },
   { title: t("status"), key: "status" },
   { title: t("action"), key: "action" },
 ]);
 // GET申請リスト　API
-const fetchRequests = async () => {
+const fetchLeaveApplications = async () => {
   isLoading.value = true;
   isError.value = false;
   console.log(headers);
   try {
-    const response = await getRequstLists(); //  API呼び出し
-    leaveRequest.value = response.map((LeaveRequestList: ILeaveApplication) => ({
-      ...LeaveRequestList,
-    }));
+    const response = await listLeaveApplicationForMember(); //  API呼び出し
+    leaveApplications.value = response.map(
+      (LeaveRequestList: ILeaveApplication) => ({
+        ...LeaveRequestList,
+      })
+    );
+    console.log(leaveApplications);
   } catch (error) {
     isError.value = true;
   } finally {
@@ -77,11 +91,26 @@ const fetchRequests = async () => {
 };
 // Call API when component is mounted
 onMounted(() => {
-  fetchRequests();
+  fetchLeaveApplications();
 });
-const onDeleted = () => {
-  console.log("削除されました");
-  // ここに処理を追加
+
+const isConfirmDialogVisible = ref(false);
+
+const openConfirmCancelDialog = (leaveApplication: ILeaveApplication) => {
+  selectedLeaveApplication.value = leaveApplication;
+  isConfirmDialogVisible.value = true;
+};
+const handleCancel = async () => {
+  if (!selectedLeaveApplication.value.id) return;
+  try {
+    await cancelApplication(selectedLeaveApplication.value.id);
+    showSnackbar("delete_success", "success");
+    fetchLeaveApplications();
+  } catch (error: any) {
+    showSnackbar("cancel_only_pending", "error");
+  } finally {
+    isConfirmDialogVisible.value = false;
+  }
 };
 </script>
 
@@ -109,9 +138,6 @@ const onDeleted = () => {
                 <span class="text-lg font-medium ml-2">{{
                   t("leave_request")
                 }}</span>
-                <VDialog v-model="applyFrom" width="auto" eager>
-                  <LeaveRequestForm @form:cancel="applyFrom = false" />
-                </VDialog>
               </VBtn>
             </VCardActions>
           </VToolbar>
@@ -139,14 +165,29 @@ const onDeleted = () => {
           <VCardItem>
             <VDataTable
               :headers="headers"
-              :items="leaveRequest"
+              :items="leaveApplications"
               :items-per-page-text="t('items_per_page')"
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->
-              <template v-slot:item.no="{ index }">
+              <template v-slot:item.number="{ index }">
                 {{ index + 1 }}
               </template>
+              <!--   -->
+              <template v-slot:item.status="{ item }">
+                {{ t(`application_status.${item.status}`) }}
+              </template>
+
+              <!--   -->
+              <template v-slot:item.startDate="{ item }">
+                {{ convertDate(item.startDate) }}
+              </template>
+
+              <!--   -->
+              <template v-slot:item.endDate="{ item }">
+                {{ convertDate(item.endDate) }}
+              </template>
+
               <!-- アクション　設定  -->
               <template v-slot:item.action="{ item }">
                 <div class="action-buttons">
@@ -157,24 +198,14 @@ const onDeleted = () => {
                     @click="handleEditItem"
                   >
                     <VIcon color="blue">mdi-pencil</VIcon>
-                    <VDialog v-model="editForm" width="auto" eager> </VDialog>
                   </VBtn>
                   <VBtn
                     icon
                     variant="plain"
                     class="action-btn"
-                    @click="handleDeleteItem"
+                    @click="openConfirmCancelDialog(item)"
                   >
                     <VIcon color="red">mdi-delete</VIcon>
-                    <VDialog v-model="isDialogVisible" width="auto" eager>
-                      <ConfimDialogView
-                        :title="t('confirm')"
-                        :message="t('delete_confirm_message')"
-                        :isVisible="isDialogVisible"
-                        @update:isVisible="isDialogVisible = $event"
-                        @confirmed="onDeleted"
-                      />
-                    </VDialog>
                   </VBtn>
                 </div>
               </template>
@@ -184,8 +215,18 @@ const onDeleted = () => {
       </VContainer>
     </VCol>
   </VRow>
-  <!-- <LeaveRequstList /> -->
-  <RouterView />
+  <VDialog v-model="applyFrom" width="auto" eager>
+    <LeaveRequestForm @form:cancel="applyFrom = false" />
+  </VDialog>
+  <VDialog v-model="isConfirmDialogVisible" width="auto" eager>
+    <ConfimDialogView
+      :title="t('confirm')"
+      :message="t('delete_confirm_message')"
+      :isVisible="isConfirmDialogVisible"
+      @update:isVisible="isConfirmDialogVisible = $event"
+      @confirmed="handleCancel"
+    />
+  </VDialog>
 </template>
 
 <style scoped>
@@ -218,3 +259,4 @@ const onDeleted = () => {
   background-color: #f5f5f5;
 }
 </style>
+@/api/leaveApplication
