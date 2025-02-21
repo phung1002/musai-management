@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
-import LeaveRequestForm from "@/components/form/LeaveRequestForm.vue";
+import LeaveRequestForm from "@/components/form/LeaveApplicationForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import {
   listLeaveApplicationForMember,
@@ -259,4 +259,3 @@ const handleCancel = async () => {
   background-color: #f5f5f5;
 }
 </style>
-@/api/leaveApplication

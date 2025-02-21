@@ -6,12 +6,14 @@ import { VTab } from "vuetify/lib/components/index.mjs";
 import { useLeaveTypesStore } from "@/store/leaveTypesStore";
 import { getLeavesTree } from "@/api/leave";
 import { ILeaveTypes } from "@/types/type";
+import { useValidator } from "@/utils/validation";
 const isDialogVisible = ref(false);
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
 const { t } = useI18n();
 const isLoading = ref(false);
 const isError = ref(false);
 const emit = defineEmits(["form:cancel"]);
+const validator = useValidator(t);
 const handleCancel = () => {
   handleResetFilter(); // 入力をリセット
   emit("form:cancel");
@@ -201,7 +203,7 @@ const tabs = [
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
     <VForm @submit.prevent="() => {}">
-      <v-container>
+      <VContainer>
         <VTable>
           <VTabs v-model="activeTab" color="primary">
             <VTab v-for="item in tabs" :key="item.icon" :value="item.tab">
@@ -239,7 +241,7 @@ const tabs = [
                     </VCol>
                     <!-- 特別休暇選択場合　特別休暇リストのみ表示設定 -->
                     <VCol
-                      :cols="4"
+                      cols="4"
                       v-if="
                         filters.public_leave.valueOf() === 'SPECIAL_DAY_LEAVE'
                       "
@@ -273,73 +275,50 @@ const tabs = [
           </VCardText>
         </VTable>
         <VDivider />
-        <v-table>
-          <VDivider />
-          <thead>
-            <tr>
-              <th>
-                <label for="leave_duration_from">{{
-                  t("leave_duration_from")
-                }}</label>
-              </th>
-              <th>
+        <VTable>
+          <VCardText>
+            <VRow>
+              <VCol cols="3" class="d-flex align-center">
+                <VLabel class="mr-2">{{ t("leave_duration_from") }}</VLabel>
+              </VCol>
+              <VCol cols="9">
                 <VTextField
                   v-model="filters.leave_duration_from"
+                  :rules="[validator.required]"
                   input
                   type="date"
                 />
-                <span
-                  v-if="errors.leave_duration_from"
-                  class="error"
-                  style="color: red"
-                  >{{ errors.leave_duration_from }}</span
-                >
-              </th>
-            </tr>
-          </thead>
-          <VDivider />
-          <thead>
-            <tr>
-              <th>
-                <label for="leave_duration_to">{{
-                  t("leave_duration_to")
-                }}</label>
-              </th>
-              <th>
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="3" class="d-flex align-center">
+                <VLabel class="mr-2">{{ t("leave_duration_to") }}</VLabel>
+              </VCol>
+              <VCol cols="9">
                 <VTextField
                   v-model="filters.leave_duration_to"
+                  :rules="[validator.required]"
                   input
                   type="date"
                 />
-                <span
-                  v-if="errors.leave_duration_to"
-                  class="error"
-                  style="color: red"
-                  >{{ errors.leave_duration_to }}</span
-                >
-              </th>
-            </tr>
-          </thead>
-          <VDivider />
-          <thead>
-            <tr>
-              <th>
-                <label for="leave_reason">{{ t("leave_reason") }}</label>
-              </th>
-              <th>
-                <VTextField v-model="filters.leave_reason" input type="text" />
-                <span
-                  v-if="errors.leave_reason"
-                  class="error"
-                  style="color: red"
-                  >{{ errors.leave_reason }}</span
-                >
-              </th>
-            </tr>
-          </thead>
-        </v-table>
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="3" class="d-flex align-center">
+                <VLabel class="mr-2">{{ t("leave_reason") }}</VLabel>
+              </VCol>
+              <VCol cols="9">
+                <VTextField
+                  v-model="filters.leave_reason"
+                  :rules="[validator.required]"
+                  type="text"
+                />
+              </VCol>
+            </VRow>
+          </VCardText>
+        </VTable>
         <VDivider />
-      </v-container>
+      </VContainer>
     </VForm>
     <VCardActions>
       <VBtn
