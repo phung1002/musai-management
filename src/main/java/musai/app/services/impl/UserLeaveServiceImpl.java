@@ -79,7 +79,6 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		// userId
 		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getUserId())
 				.orElseThrow(() -> new NotFoundException("User not exist."));
-
 		// leaveTypeId
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
@@ -100,6 +99,29 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		userLeave.setValidTo(userLeaveRequestDTO.getValidTo());
 
 		return userLeaveRepository.save(userLeave);
+	}
+
+	// update user_leaves
+	public UserLeave editUserLeave(UserLeaveRequestDTO userLeaveRequestDTO) {
+		// Fetch exiting UserLeave
+		UserLeave existingUserLeave = userLeaveRepository.findById(userLeaveRequestDTO.getId())
+	            .orElseThrow(() -> new NotFoundException("UserLeave not found"));
+		// userId
+		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getUserId())
+				.orElseThrow(() -> new NotFoundException("User not exist."));
+		// leaveTypeId
+		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getLeaveTypeId())
+				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
+		
+		// update information of user
+		existingUserLeave.setUser(existingUser);
+		existingUserLeave.setLeaveType(leaveType);
+		existingUserLeave.setTotalDays(userLeaveRequestDTO.getTotalDays());
+		existingUserLeave.setUsedDays(userLeaveRequestDTO.getUsedDays());
+		existingUserLeave.setValidFrom(userLeaveRequestDTO.getValidFrom());
+		existingUserLeave.setValidTo(userLeaveRequestDTO.getValidTo());
+
+		return userLeaveRepository.save(existingUserLeave);
 	}
 
 }
