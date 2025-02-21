@@ -77,8 +77,6 @@ public class UserServiceImpl implements UserService {
 				userRequestDTO.getFullNameFurigana(), userRequestDTO.getBirthday(), userRequestDTO.getDepartment(),
 				userRequestDTO.getWorkPlace(), userRequestDTO.getJoinDate(), userRequestDTO.getGender());
 
-		System.out.println(userRequestDTO);
-		System.out.println(user);
 		Set<String> strRoles = userRequestDTO.getRoles();
 		Set<Role> roles = new HashSet<>();
 
@@ -122,7 +120,7 @@ public class UserServiceImpl implements UserService {
 	 * @return MessageResponse update success/ fail
 	 */
 	@Override
-	public MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO) {
+	public MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO, UserDetailsImpl principal) {
 		// Find User by ID
 		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
 				.orElseThrow(() -> new NotFoundException("User not exist."));
@@ -179,6 +177,9 @@ public class UserServiceImpl implements UserService {
 					break;
 				}
 			});
+			if (isUserModifyingSelf(userId, principal) && !roles.contains(getRoleByName(ERole.ADMIN))) {
+				throw new ForbiddenException("You are not allowed to remove your own ADMIN permissions.");
+			}
 			existingUser.setRoles(roles);
 		}
 		// Save change
@@ -195,7 +196,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public MessageResponse deleteUser(Long userId, UserDetailsImpl principal) {
-		if (isDeletingSelf(userId, principal)) {
+		if (isUserModifyingSelf(userId, principal)) {
 			throw new ForbiddenException("Can not delete your self");
 		}
 		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
@@ -206,7 +207,7 @@ public class UserServiceImpl implements UserService {
 		return new MessageResponse("User just deleted.");
 	}
 
-	private boolean isDeletingSelf(Long id, UserDetailsImpl principal) {
+	private boolean isUserModifyingSelf(Long id, UserDetailsImpl principal) {
 		return id.equals(Long.valueOf(principal.getId()));
 	}
 

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { deleteUser, getAllUsers } from "@/api/user";
+import { deleteUser, getAllUsers, searchUser } from "@/api/user";
 import { IUser } from "@/types/type";
 import UserForm from "@/components/user/UserForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { showSnackbar } from "@/composables/useSnackbar";
 
-const isConfirmDialogVisible = ref(false)
+const isConfirmDialogVisible = ref(false);
 const formatRole = (role: string) => role;
 const { t } = useI18n();
 
@@ -39,7 +39,7 @@ const openUpdateDialog = (user: IUser) => {
   showDialog.value = true;
   selectedUser.value = user;
 };
-const selectedUser = ref<IUser | undefined>(undefined);
+const selectedUser = ref<IUser>({} as IUser);
 const openConfirmDialog = (user: IUser) => {
   selectedUser.value = user;
   isConfirmDialogVisible.value = true;
@@ -50,37 +50,53 @@ const fetchUsers = async () => {
   isError.value = false;
   try {
     const response = await getAllUsers();
-    users.value = response.map((user: IUser) => ({
-      ...user,
-      roles: user.roles.map(formatRole),
-    }));
+    loadUser(response);
   } catch (error) {
     isError.value = true;
-    // showSnackbar("list_failure", "error");
   } finally {
     isLoading.value = false;
   }
 };
 
+const loadUser = (lst: any) => {
+  users.value = lst.map((user: IUser) => ({
+    ...user,
+    roles: user.roles.map(formatRole),
+  }));
+};
+
 const handleDeleteUser = async () => {
-  if (!selectedUser.value?.id) return;
+  if (!selectedUser.value.id) return;
 
   try {
     await deleteUser(selectedUser.value.id);
     showSnackbar("delete_success", "success");
     fetchUsers();
   } catch (error: any) {
-    if(error.status == 403) {
-      showSnackbar("delete_your_self", "error");
-    }else{
-    showSnackbar("delete_failure", "error");
-
+    const errorMessage = ["delete_failure"];
+    if (error.status == 403) {
+      errorMessage.push("delete_your_self");
     }
+    showSnackbar(errorMessage, "error");
   } finally {
     isConfirmDialogVisible.value = false;
   }
 };
-
+const keyWord = ref("");
+const handleSearch = async () => {
+  if (keyWord.value == null){
+    fetchUsers();
+    return;
+  }
+  try {
+    const response = await searchUser(keyWord.value);
+    loadUser(response);
+  } catch (error) {
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 // Call API when component is mounted
 onMounted(() => {
@@ -120,14 +136,17 @@ onMounted(() => {
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>
               <VTextField
+                v-model="keyWord"
                 :prepend-icon="'mdi-filter-variant'"
                 :placeholder="t('type_something')"
                 hide-details
                 clearable
                 variant="plain"
                 class="search"
+                @click:clear="handleSearch"
+                @keydown.enter="handleSearch"
               />
-              <VBtn icon density="comfortable">
+              <VBtn icon density="comfortable" @click="handleSearch">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
             </VToolbar>
@@ -139,6 +158,7 @@ onMounted(() => {
               :headers="headers"
               :items="users"
               :items-per-page-text="t('items_per_page')"
+              :no-data-text="t('no_records_found')"
               v-if="!isLoading && !isError"
             >
               <!-- Slot for 'no'  -->
@@ -196,7 +216,7 @@ onMounted(() => {
       @refetch-data="fetchUsers"
     />
   </VDialog>
-  <VDialog v-model="isConfirmDialogVisible" width="auto" eager>
+  <VDialog v-model="isConfirmDialogVisible" width="auto">
     <ConfimDialogView
       :title="t('confirm')"
       :message="t('delete_confirm_message')"

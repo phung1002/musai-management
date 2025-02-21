@@ -55,13 +55,13 @@ export async function deleteUser(id: number): Promise<void> {
   }
 }
 
-export async function getProfile() {
-  const options = {
-    method: "GET",
-    url: `/user/profile`,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-  return axiosIns.request<IAccessToken>(options);
+// call to api search user
+export async function searchUser(key:string): Promise<IUser[]> {
+  try {
+    const response = await axiosIns.get<IUser[]>("/user/search", { params: { keyword: key } });
+    return response.data;
+  } catch (error) {
+    console.error("Search user failed:", error);
+    throw error;
+  }
 }

@@ -11,7 +11,7 @@ public interface UserService {
 	
 	MessageResponse addUser(UserRequestDTO userRequestDTO);
 
-	MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO);
+	MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO, UserDetailsImpl principal);
 	
 	MessageResponse deleteUser(Long userId, UserDetailsImpl principal);
 	

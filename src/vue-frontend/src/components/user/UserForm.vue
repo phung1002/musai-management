@@ -11,7 +11,12 @@ import {
 } from "../../configs/userFormConfig";
 import { createUser, updateUser } from "@/api/user";
 import { showSnackbar } from "@/composables/useSnackbar";
+import ConfimDialogView from "@/components/common/ConfimDialog.vue";
+import { useUserStore } from "@/store/userStore";
+import { logout } from "@/api/auth";
+import router from "@/router";
 
+const userStore = useUserStore();
 const formatDate = (date: string | null) =>
   date ? new Date(date).toISOString() : null;
 
@@ -19,6 +24,7 @@ const { t } = useI18n();
 const submiting = ref(false);
 const validator = useValidator(t);
 const formRef = ref(null);
+const isDialogVisible = ref(false);
 const activeTab = ref("account");
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const props = defineProps<{ user?: IUser; isEdit: boolean }>();
@@ -68,7 +74,17 @@ const formattedJoinDate = computed({
   },
 });
 
-const handleSubmit = async () => {
+const isChangeYourPassword = async () => {
+  const toLogin = ref(false);
+  if (formModel.id == userStore.id && formModel.password.length > 0) {
+    isDialogVisible.value = true;
+    toLogin.value = true;
+  } else {
+    handleSubmit(toLogin.value);
+  }
+};
+
+const handleSubmit = async (toLogin: boolean) => {
   const isValid = await formRef.value?.validate();
   if (!isValid.valid) {
     showSnackbar("validation_error", "error");
@@ -82,6 +98,7 @@ const handleSubmit = async () => {
   submiting.value = true;
   if (!props.isEdit) {
     try {
+      // if create user
       await createUser(payload);
       showSnackbar("add_success", "success");
       emit("refetch-data");
@@ -89,7 +106,6 @@ const handleSubmit = async () => {
     } catch (error: any) {
       const errorMessage = ["add_failure"];
       if (error.status === 400) {
-        console.log(error.status);
         errorMessage.push("user_exists");
       }
       showSnackbar(errorMessage, "error");
@@ -98,17 +114,25 @@ const handleSubmit = async () => {
     }
   } else {
     try {
+      // if update user
       if (formModel.id == null) return;
-
       await updateUser(formModel.id, payload);
       showSnackbar("update_success", "success");
-      emit("refetch-data");
       handleCancel();
+      if (toLogin) {
+        logout();
+        router.push({
+          path: "/login",
+        });
+      } else {
+        emit("refetch-data");
+      }
     } catch (error: any) {
       const errorMessage = ["update_failure"];
       if (error.status === 400) {
-        console.log(error.status);
         errorMessage.push("user_exists");
+      } else if (error.status == 403) {
+        errorMessage.push("cannot_remove_own_admin_role");
       }
       showSnackbar(errorMessage, "error");
     } finally {
@@ -133,7 +157,6 @@ const handleCancel = () => {
   emit("form-cancel");
   resetForm();
 };
-
 </script>
 
 <template>
@@ -299,7 +322,7 @@ const handleCancel = () => {
         type="submit"
         variant="elevated"
         color="primary"
-        @click="handleSubmit()"
+        @click="isChangeYourPassword()"
         >{{ t("register") }}</VBtn
       >
       <VBtn type="reset" variant="tonal" @click="resetForm">{{
@@ -307,4 +330,13 @@ const handleCancel = () => {
       }}</VBtn>
     </VCardActions>
   </VCard>
+  <VDialog v-model="isDialogVisible" width="auto">
+    <ConfimDialogView
+      :title="t('confirm')"
+      :message="t('message.admin_change_their_password')"
+      :isVisible="isDialogVisible"
+      @update:isVisible="isDialogVisible = $event"
+      @confirmed="handleSubmit(true)"
+    />
+  </VDialog>
 </template>

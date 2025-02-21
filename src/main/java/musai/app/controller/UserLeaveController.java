@@ -1,12 +1,13 @@
 package musai.app.controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.UserLeaveRequestDTO;
 import musai.app.DTO.response.UserLeaveResponseDTO;
+import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.UserLeaveService;
 
 @RestController
@@ -28,6 +30,18 @@ public class UserLeaveController {
 		this.userLeaveService = userLeaveService;
 	}
 
+	/**
+	 * get list user leave for member
+	 * @param principal
+	 * @return
+	 */
+	@PreAuthorize("hasRole('MEMBER')")
+	@GetMapping("/member")
+	public ResponseEntity<?> getUserLeaveForMember(@AuthenticationPrincipal UserDetailsImpl principal){
+		List<UserLeaveResponseDTO> response = userLeaveService.getUserLeaveForMember(null, principal);
+		return ResponseEntity.ok(response);
+	}
+	
 	// add
 	@PostMapping("/add")
 	public ResponseEntity<?> createLeave(@RequestBody UserLeaveRequestDTO request) {

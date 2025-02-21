@@ -1,14 +1,11 @@
 <!-- 休暇申請 画面-->
 <script setup lang="ts">
-import AppSidebar from '@/components/layout/AppSidebar.vue';
-import AppToolbar from '@/components/layout/AppToolbar.vue';
-// import LeaveRequstList from './lists/LeaveRequst.vue';
-import { ref, reactive, onMounted } from 'vue';
-import { useI18n } from 'vue-i18n';
-import LeaveRequestFormVue from '@/components/leaveRequest/LeaveRequestForm.vue';
-import ConfimDialogView from '@/components/common/ConfimDialog.vue';
-import { getRequstLists } from '@/api/requst';
-import { ILeaveRequest } from '@/types/type';
+import { ref, reactive, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import LeaveRequestForm from "@/components/form/LeaveRequestForm.vue";
+import ConfimDialogView from "@/components/common/ConfimDialog.vue";
+import { getRequstLists } from "@/api/requst";
+import { ILeaveRequest } from "@/types/type";
 
 // 日本語にローカル変更用
 const { t } = useI18n();
@@ -35,32 +32,32 @@ const handleCreateItem = () => {
 };
 const handleDeleteItem = (id: number) => {
   isDialogVisible.value = true;
-  console.log('delete', id);
+  console.log("delete", id);
 };
 const handleEditItem = (id: number) => {
   editForm.value = true;
-  console.log('edit', id);
+  console.log("edit", id);
 };
 const handleClear = () => {
-  filters.role = '';
-  filters.status = '';
+  filters.role = "";
+  filters.status = "";
 };
 const filters = reactive({
-  role: '',
-  status: ''
+  role: "",
+  status: "",
 });
 const pagination = reactive({
   page: 1,
-  pageSize: 10
+  pageSize: 10,
 });
 // // テーブル　ヘッダー
 const headers = reactive([
-  { title: t('leave_type'), key: 'leave_type' },
-  { title: t('leave_duration_from'), key: 'leave_duration_from' },
-  { title: t('leave_duration_to'), key: 'leave_duration_to' },
-  { title: t('leave_reason'), key: 'leave_reason' },
-  { title: t('status'), key: 'status' },
-  { title: t('action'), key: 'action' }
+  { title: t("leave_type"), key: "leave_type" },
+  { title: t("leave_duration_from"), key: "leave_duration_from" },
+  { title: t("leave_duration_to"), key: "leave_duration_to" },
+  { title: t("leave_reason"), key: "leave_reason" },
+  { title: t("status"), key: "status" },
+  { title: t("action"), key: "action" },
 ]);
 // GET申請リスト　API
 const fetchRequests = async () => {
@@ -89,7 +86,6 @@ const onDeleted = () => {
 </script>
 
 <template>
-
   <VRow>
     <VCol cols="12">
       <VContainer class="app-container">
@@ -97,16 +93,24 @@ const onDeleted = () => {
           <VToolbar tag="div">
             <VToolbarTitle>
               <VIcon>mdi-email-arrow-right-outline</VIcon>
-              <span class="text-lg font-medium ml-2">{{ t('leave_request') }}</span>
+              <span class="text-lg font-medium ml-2">{{
+                t("leave_request")
+              }}</span>
             </VToolbarTitle>
             <!-- 申請入力フォーム　ボタン-->
             <VCardActions>
               <VSpacer />
-              <VBtn color="primary" variant="elevated" @click="handleCreateItem">
+              <VBtn
+                color="primary"
+                variant="elevated"
+                @click="handleCreateItem"
+              >
                 <VIcon>mdi-plus</VIcon>
-                <span class="text-lg font-medium ml-2">{{ t('leave_applying') }}</span>
+                <span class="text-lg font-medium ml-2">{{
+                  t("leave_request")
+                }}</span>
                 <VDialog v-model="applyFrom" width="auto" eager>
-                  <LeaveRequestFormVue @form:cancel="applyFrom = false" />
+                  <LeaveRequestForm @form:cancel="applyFrom = false" />
                 </VDialog>
               </VBtn>
             </VCardActions>
@@ -114,9 +118,17 @@ const onDeleted = () => {
           <!-- 検索バー -->
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>
-              <VTextField :prepend-icon="'mdi-filter-variant'" :placeholder="t('type_something')" hide-details clearable
-                variant="plain" class="search" @keyup.enter="handleApplyFilter"
-                @click:prepend="showFilter = !showFilter" @click:clear="handleClear" />
+              <VTextField
+                :prepend-icon="'mdi-filter-variant'"
+                :placeholder="t('type_something')"
+                hide-details
+                clearable
+                variant="plain"
+                class="search"
+                @keyup.enter="handleApplyFilter"
+                @click:prepend="showFilter = !showFilter"
+                @click:clear="handleClear"
+              />
               <VBtn icon @click="handleApplyFilter" density="comfortable">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
@@ -125,8 +137,12 @@ const onDeleted = () => {
           <VDivider />
           <!-- 申請情報　表示 -->
           <VCardItem>
-            <VDataTable :headers="headers" :items="leaveRequest" :items-per-page-text="t('items_per_page')"
-              v-if="!isLoading && !isError">
+            <VDataTable
+              :headers="headers"
+              :items="leaveRequest"
+              :items-per-page-text="t('items_per_page')"
+              v-if="!isLoading && !isError"
+            >
               <!-- 表示　番号設定  -->
               <template v-slot:item.no="{ index }">
                 {{ index + 1 }}
@@ -134,18 +150,30 @@ const onDeleted = () => {
               <!-- アクション　設定  -->
               <template v-slot:item.action="{ item }">
                 <div class="action-buttons">
-                  <VBtn icon variant="plain" class="action-btn" @click="handleEditItem">
+                  <VBtn
+                    icon
+                    variant="plain"
+                    class="action-btn"
+                    @click="handleEditItem"
+                  >
                     <VIcon color="blue">mdi-pencil</VIcon>
-                    <VDialog v-model="editForm" width="auto" eager>
-
-                    </VDialog>
+                    <VDialog v-model="editForm" width="auto" eager> </VDialog>
                   </VBtn>
-                  <VBtn icon variant="plain" class="action-btn" @click="handleDeleteItem">
+                  <VBtn
+                    icon
+                    variant="plain"
+                    class="action-btn"
+                    @click="handleDeleteItem"
+                  >
                     <VIcon color="red">mdi-delete</VIcon>
                     <VDialog v-model="isDialogVisible" width="auto" eager>
-                      <ConfimDialogView :title="t('confirm')" :message="t('delete_confirm_message')"
-                        :isVisible="isDialogVisible" @update:isVisible="isDialogVisible = $event"
-                        @confirmed="onDeleted" />
+                      <ConfimDialogView
+                        :title="t('confirm')"
+                        :message="t('delete_confirm_message')"
+                        :isVisible="isDialogVisible"
+                        @update:isVisible="isDialogVisible = $event"
+                        @confirmed="onDeleted"
+                      />
                     </VDialog>
                   </VBtn>
                 </div>

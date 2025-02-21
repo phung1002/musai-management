@@ -25,6 +25,7 @@ import musai.app.validation.ValidationGroups;
 
 @RestController
 @RequestMapping("/api/user")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 	private final UserService userService;
 
@@ -63,9 +64,9 @@ public class UserController {
 	 * @return ResponseEntity
 	 */
 	@PutMapping("/edit/{userId}")
-	public ResponseEntity<?> editUser(@PathVariable Long userId,
-			@Validated @RequestBody UserRequestDTO userRequestDTO) {
-		MessageResponse response = userService.editUser(userId, userRequestDTO);
+	public ResponseEntity<?> editUser(@PathVariable Long userId, @Validated @RequestBody UserRequestDTO userRequestDTO,
+			@AuthenticationPrincipal UserDetailsImpl principal) {
+		MessageResponse response = userService.editUser(userId, userRequestDTO, principal);
 		return ResponseEntity.ok(response);
 	}
 
@@ -83,19 +84,17 @@ public class UserController {
 
 	// Create User detail
 	@GetMapping("/detail/{id}")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getUserDetail(@PathVariable Long id) {
 		UserResponseDTO response = userService.detailUser(id);
 
 		return ResponseEntity.ok(response);
 
 	}
-	
+
 	// Search User
 	@GetMapping("/search")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public List<UserResponseDTO> searchUserResponse(@RequestParam String keyword){
-		
+	public List<UserResponseDTO> searchUserResponse(@RequestParam String keyword) {
+
 		return userService.searchUser(keyword);
 	}
 }
