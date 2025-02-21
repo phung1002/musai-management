@@ -17,51 +17,63 @@ const isDialogVisible = ref(false); // 確認ダイアログ表示
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 const activeTab = ref("paid"); // タブの初期値
+const formRef = ref(null);
+const formValid = ref(false);
 // デフォルト値
 const defaultLeave = {
-  id: 0,
+  id: null,
   name: "",
-  parentId: 0,
+  parentId: null,
   children: [],
 };
 // 各カテゴリーの items
-const public_leave_selected: Ref<{ id: number; name: string }> = ref({
-  id: 0,
-  name: "",
-});
-const paid_leave: Ref<{ id: number; name: string }[]> = ref([]);
-const public_leave: Ref<{ id: number; name: string }[]> = ref([]);
+const parentPublicLeave = ref(null);
+const paid_leave: Ref<ILeaveTypes> = ref(defaultLeave);
+const public_leave: Ref<ILeaveTypes> = ref(defaultLeave);
 // メイン休暇タブで分類
-const tabs = [
-  { title: t("paid_leave"), icon: "mdi-gift-open", tab: "paid" },
-  { title: t("public_leave"), icon: "mdi-pine-tree-box", tab: "public" },
-];
+const tabs = ref([
+  { title: "", icon: "mdi-gift-open", tab: "paid" },
+  { title: "", icon: "mdi-pine-tree-box", tab: "public" },
+]);
 // フォームデータの初期化
 const formModel = reactive<ILeaveTypes>({ ...defaultLeave });
 onMounted(() => {
   if (props.isEdit && props.leave) {
     Object.assign(formModel, props.leave);
   }
+  fetchLeaveType();
 });
+
 // タブ変更時に `parentId` を設定
-watch(activeTab, (newTab) => {
-  formModel.parentId = newTab === "paid" ? 3 : 4;
+watch(activeTab, (seletedTab) => {
+  setParentId(seletedTab);
 });
-// フォームモデルの変更を監視
-// watch(() => formModel.public_leave, (newValue) => {
-//   if (newValue === "特別休暇") {
-//     formModel.parent_id = 7;
-//   } else if (newValue === "慶弔休暇") {
-//     formModel.parent_id = 8;
-//   } else {
-//     formModel.parent_id = 0; // または null に設定
-//   }
-// });
-// });
+watch(parentPublicLeave, (item) => {
+  setParentId(activeTab.value);
+});
+
+const setParentId = (selectedTab: string) => {
+  if (selectedTab === "paid") {
+    formModel.parentId = paid_leave.value.id;
+  } else {
+    if (parentPublicLeave.value == undefined) {
+      formModel.parentId = public_leave.value.id;
+    } else formModel.parentId = parentPublicLeave.value;
+  }
+};
 // 入力初期化
-const handleResetFilter = () => {
-  formModel.name = "";
-  formModel.parentId = 0;
+const handleResetForm = () => {
+  Object.assign(
+    formModel,
+    props.isEdit ? { ...defaultLeave, ...props.leave } : { ...defaultLeave }
+  );
+  if (formRef.value && formRef.value.resetValidation) {
+    formRef.value.resetValidation();
+  }
+  formValid.value = false;
+  parentPublicLeave.value = null;
+  activeTab.value = "paid";
+
 };
 // エラーメッセージ初期化
 const resetErrors = () => {
@@ -71,7 +83,7 @@ const resetErrors = () => {
   };
 };
 const handleCancel = () => {
-  handleResetFilter();
+  handleResetForm();
   resetErrors();
   emit("form-cancel");
 };
@@ -82,9 +94,26 @@ const fetchLeaveType = async () => {
   isError.value = false;
   try {
     const response = await getLeavesTree();
+    if (!response || response.length < 2) {
+      throw new Error("Invalid leaves data");
+    }
     leaves.value = response;
+
+    paid_leave.value =
+      leaves.value.find((item) => item.name === t("paid_leave")) ||
+      defaultLeave;
+    public_leave.value =
+      leaves.value.find((item) => item !== paid_leave.value) || defaultLeave;
+
+    if (!paid_leave.value || !public_leave.value) {
+      throw new Error("Missing required leave types");
+    }
+
+    tabs.value[0].title = paid_leave.value.name;
+    tabs.value[1].title = public_leave.value.name;
+
     // カテゴリーごとに分類
-    categorizeLeaves(response);
+    // categorizeLeaves(response);
   } catch (error) {
     isError.value = true;
     console.error("Error fetching leaves:", error);
@@ -92,33 +121,12 @@ const fetchLeaveType = async () => {
     isLoading.value = false;
   }
 };
-// 取得データをカテゴリーごとに分ける関数
-const categorizeLeaves = (data: ILeaveTypes[]) => {
-  data.forEach((leave) => {
-    if (leave.id === 3) {
-      paid_leave.value =
-        leave.children?.map((child) => ({
-          id: child.id,
-          name: child.name,
-        })) || [];
-    }
-    if (leave.id === 4) {
-      public_leave.value =
-        leave.children?.map((child) => ({
-          id: child.id,
-          name: child.name,
-        })) || [];
-    }
-  });
-};
 // コンポーネントがマウントされたときAPI呼び出し修理実行
-onMounted(() => {
-  fetchLeaveType();
-});
 // フォーム送信処理
 const handleSubmit = async () => {
   if (!props.isEdit) {
-    formModel.parentId = activeTab.value === "paid" ? 3 : 4; // 新規登録時の親ID設定
+    setParentId(activeTab.value);
+
     console.log("新しいデータを登録します...");
     // 登録処理を実行
     try {
@@ -164,18 +172,6 @@ const onConfirmed = async () => {
   handleCancel(); // フォームを閉じる
 };
 
-// const handleSubmit = async () => {
-//   // エラーチェック
-
-//   // if (Object.keys(errors.value).length > 0) {
-//   //   showSnackbar('validation_error', 'error');
-//   //   // 登録処理を中断する
-//   //   return;
-//   // } else if (Object.keys(errors.value).length < 0)
-//   // return;
-//   isDialogVisible.value = true;
-//   // message.value = "";
-// };
 </script>
 
 <template>
@@ -192,7 +188,7 @@ const onConfirmed = async () => {
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
     <!-- 新規登録際表示 -->
-    <VForm VForm ref="formRef" @submit.prevent="() => {}" v-if="!isEdit">
+    <VForm ref="formRef" v-model="formValid" lazy-validation="false" @submit.prevent="() => {}" v-if="!isEdit">
       <v-container>
         <VTable>
           <VTabs v-model="activeTab" color="primary">
@@ -226,11 +222,12 @@ const onConfirmed = async () => {
                   <VRow>
                     <VCol :cols="12" class="dropdown-box">
                       <VAutocomplete
-                        v-model="public_leave_selected"
-                        :items="public_leave"
+                        v-model="parentPublicLeave"
+                        :items="public_leave.children"
                         :label="t('public_leave')"
                         item-title="name"
                         item-value="id"
+                        clearable
                       />
                     </VCol>
                   </VRow>
@@ -290,7 +287,7 @@ const onConfirmed = async () => {
         color="primary"
         >{{ isEdit ? t("update") : t("submit") }}
       </VBtn>
-      <VBtn @click="handleResetFilter" type="reset" variant="tonal">{{
+      <VBtn @click="handleResetForm" type="reset" variant="tonal">{{
         t("reset")
       }}</VBtn>
     </VCardActions>
