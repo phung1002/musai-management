@@ -14,6 +14,12 @@ public class LeaveTypeChildrenResponseDTO {
 
 	private String name;
 
-	private List<LeaveType> children;
+	private List<LeaveTypeChildrenResponseDTO> children;
+
+	public LeaveTypeChildrenResponseDTO(Long id, String name) {
+		super();
+		this.id = id;
+		this.name = name;
+	}
 
 }

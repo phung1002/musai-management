@@ -1,5 +1,6 @@
 package musai.app.DTO.request;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.FutureOrPresent;
@@ -17,12 +18,10 @@ public class LeaveApplicationRequestDTO {
     private Long leaveTypeId; 
 	
     @NotNull(message = "Start date is required")
-    @FutureOrPresent(message = "Start date must be today or in the future")
-    private LocalDateTime startDate; 
+    private LocalDate startDate; 
 
     @NotNull(message = "End date is required")
-    @FutureOrPresent(message = "End date must be today or in the future")
-    private LocalDateTime endDate; 
+    private LocalDate endDate; 
 
     @NotBlank(message = "Reason is required")
     private String reason;

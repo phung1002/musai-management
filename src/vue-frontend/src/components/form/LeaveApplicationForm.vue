@@ -1,73 +1,66 @@
 <script lang="ts" setup>
-import { Ref, ref, reactive, onMounted } from "vue";
+import { Ref, ref, reactive, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { VTab } from "vuetify/lib/components/index.mjs";
 import { useLeaveTypesStore } from "@/store/leaveTypesStore";
 import { getLeavesTree } from "@/api/leave";
-import { ILeaveTypes } from "@/types/type";
+import { applyLeaveApplication } from "@/api/leaveApplication";
+import { ILeaveTypes, ILeaveApplication } from "@/types/type";
 import { useValidator } from "@/utils/validation";
+import { showSnackbar } from "@/composables/useSnackbar";
+
 const isDialogVisible = ref(false);
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
 const { t } = useI18n();
 const isLoading = ref(false);
 const isError = ref(false);
-const emit = defineEmits(["form:cancel"]);
+const emit = defineEmits(["form:cancel", "refetch-data"]);
 const validator = useValidator(t);
-const handleCancel = () => {
-  handleResetFilter(); // 入力をリセット
-  emit("form:cancel");
-};
-interface Errors {
-  leave_type: string;
-  leave_duration_from: string;
-  leave_duration_to: string;
-  leave_reason: string;
-}
-// エラーメッセージ
-const errors = ref<Errors>({
-  leave_type: "",
-  leave_duration_from: "",
-  leave_duration_to: "",
-  leave_reason: "",
-});
+const formRef = ref(null);
+const formValid = ref(false);
+const props = defineProps<{
+  application?: ILeaveApplication;
+  isEdit: boolean;
+}>();
 
-// フォームデータ
-const filters = reactive({
-  paid_leave: "",
-  public_leave: "",
-  special_day_leave: "",
-  special_occasions_leave: "",
-  leave_duration_from: "",
-  leave_duration_to: "",
-  leave_reason: "",
-});
-// 入力初期化
-const handleResetFilter = () => {
-  filters.paid_leave = "";
-  filters.public_leave = "";
-  filters.special_day_leave = "";
-  filters.special_occasions_leave = "";
-  filters.leave_duration_from = "";
-  filters.leave_duration_to = "";
-  filters.leave_reason = "";
+const defaultApplication: ILeaveApplication = {
+  id: null,
+  leaveTypeId: null,
+  leaveTypeName: "",
+  startDate: null,
+  endDate: null,
+  reason: "",
+  status: "",
 };
-// エラーメッセージ初期化
-const resetErrors = () => {
-  errors.value = {
-    leave_type: "",
-    leave_duration_from: "",
-    leave_duration_to: "",
-    leave_reason: "",
-  };
-};
+const formModel = reactive<ILeaveApplication>(
+  props.isEdit
+    ? { ...defaultApplication, ...props.application }
+    : { ...defaultApplication }
+);
+// メイン休暇タブで分類
+const activeTab = ref("paid");
+const tabs = ref([
+  { title: "", icon: "mdi-gift-open", tab: "paid" },
+  { title: "", icon: "mdi-pine-tree-box", tab: "public" },
+]);
+
 // 各カテゴリーの items
-const paid_leave: Ref<{ title: string; value: string }[]> = ref([]);
-const public_leave: Ref<{ title: string; value: string }[]> = ref([]);
 const special_day_leave: Ref<{ title: string; value: string }[]> = ref([]);
 const special_occasions_leave: Ref<{ title: string; value: string }[]> = ref(
   []
 );
+const defaultLeave = {
+  id: null,
+  name: "",
+  parentId: null,
+  children: [],
+};
+const paidLeave: Ref<ILeaveTypes> = ref(defaultLeave);
+const publicLeave: Ref<ILeaveTypes> = ref(defaultLeave);
+const paidBox = ref(null);
+const publicBox = ref(null);
+const childBox = ref(null);
 // 休暇リスト取得　API呼び出し
 const fetchLeaveType = async () => {
   isLoading.value = true;
@@ -75,9 +68,18 @@ const fetchLeaveType = async () => {
   try {
     const response = await getLeavesTree();
     leaves.value = response;
-
     // カテゴリーごとに分類
-    categorizeLeaves(response);
+    paidLeave.value =
+      leaves.value.find((item) => item.name === t("paid_leave")) ||
+      defaultLeave;
+    publicLeave.value =
+      leaves.value.find((item) => item !== paidLeave.value) || defaultLeave;
+
+    if (!paidLeave.value || !publicLeave.value) {
+      throw new Error("Missing required leave types");
+    }
+    tabs.value[0].title = paidLeave.value.name;
+    tabs.value[1].title = publicLeave.value.name;
   } catch (error) {
     isError.value = true;
     console.error("Error fetching leaves:", error);
@@ -85,99 +87,55 @@ const fetchLeaveType = async () => {
     isLoading.value = false;
   }
 };
-// 取得データをカテゴリーごとに分ける関数
-const categorizeLeaves = (data: ILeaveTypes[]) => {
-  data.forEach((leave) => {
-    if (leave.name === "有休") {
-      paid_leave.value =
-        leave.children?.map((child) => ({
-          title: child.name,
-          value: child.name.toUpperCase(),
-        })) || [];
+const publicLeaveChilden: Ref<ILeaveTypes> = ref(defaultLeave);
+//when change value public leave in drop down box
+const onPublicLeaveChange = (newValue) => {
+  if (publicLeave.value.children) {
+    for (const child of publicLeave.value.children) {
+      if (child.id == newValue && child.children)
+        publicLeaveChilden.value = child;
     }
-    if (leave.name === "公休") {
-      public_leave.value =
-        leave.children?.map((child) => ({
-          title: child.name,
-          value: child.name.toUpperCase(),
-        })) || [];
-    }
-    if (leave.name === "特別休暇") {
-      special_day_leave.value =
-        leave.children?.map((child) => ({
-          title: child.name,
-          value: child.name.toUpperCase(),
-        })) || [];
-    }
-    if (leave.name === "慶弔休暇") {
-      special_occasions_leave.value =
-        leave.children?.map((child) => ({
-          title: child.name,
-          value: child.name.toUpperCase(),
-        })) || [];
-    }
-  });
+  }
+  childBox.value = null;
+  getLeaveTypeId();
 };
+const getLeaveTypeId = () => {
+  if (activeTab.value == "paid" && paidLeave.value.id) {
+    formModel.leaveTypeId = paidBox.value;
+  } else {
+    if (childBox.value == null || childBox.value == "") {
+      formModel.leaveTypeId = publicBox.value;
+    } else formModel.leaveTypeId = childBox.value;
+  }
+  console.log(formModel.leaveTypeId);
+};
+watch(activeTab, (newTab) => {
+  console.log("Tab mới:", newTab);
+  getLeaveTypeId();
+});
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
   fetchLeaveType();
 });
-// 入力チェック　バリデーションを行う
-const handleSubmit = () => {
-  resetErrors(); // フォーム送信前にエラーメッセージをリセット
-  let valid = true;
-
-  // leave_type のバリデーション
-  if (
-    filters.paid_leave.valueOf() === "" &&
-    filters.public_leave.valueOf() === ""
-  ) {
-    errors.value.leave_type = t("leave_type") + t("required");
-    valid = false;
-  } else if (
-    filters.public_leave.valueOf() !== "" &&
-    filters.special_occasions_leave.valueOf() === "" &&
-    filters.public_leave.valueOf() !== "" &&
-    filters.special_day_leave.valueOf() === ""
-  ) {
-    errors.value.leave_type = t("leave_type") + t("must_select_one_category");
-    valid = false;
+// validate and call api
+const submiting = ref(false);
+const handleSubmit = async () => {
+  const isValid = await formRef.value?.validate();
+  if (!isValid.valid) {
+    showSnackbar("validation_error", "error");
+    return;
   }
 
-  // leave_duration_from のバリデーション
-  if (filters.leave_duration_from.valueOf() === "") {
-    errors.value.leave_duration_from = t("leave_duration_from") + t("required");
-    valid = false;
-  } else if (
-    filters.leave_duration_from.valueOf() > filters.leave_duration_to.valueOf()
-  ) {
-    errors.value.leave_duration_to =
-      t("leave_duration_from") + t("invalid_range");
-    valid = false;
-  }
-
-  // leave_duration_to のバリデーション
-  if (filters.leave_duration_to.valueOf() === "") {
-    errors.value.leave_duration_to = t("leave_duration_to") + t("required");
-    valid = false;
-  } else if (
-    filters.leave_duration_from.valueOf() > filters.leave_duration_to.valueOf()
-  ) {
-    errors.value.leave_duration_to =
-      t("leave_duration_from") + t("invalid_range");
-    valid = false;
-  }
-
-  // 休暇　理由
-  if (filters.leave_reason.valueOf() === "") {
-    errors.value.leave_reason = t("leave_reason") + t("required");
-    valid = false;
-  }
-  // バリデーション通過後、フォームデータを送信
-  if (valid) {
-    // 確認ポップアップを表示
-    isDialogVisible.value = true;
-    console.log("確認ポップアップを表示");
+  submiting.value = true;
+  if (!props.isEdit) {
+    try {
+      await applyLeaveApplication(formModel);
+      showSnackbar("add_success", "success");
+      emit("refetch-data");
+      handleCancel();
+    } catch (error) {
+      showSnackbar("add_failure", "error");
+    }
   }
 };
 const onConfirmed = () => {
@@ -186,12 +144,28 @@ const onConfirmed = () => {
   // レスポンスOKになったら入力値初期化し、フォーム閉じろ
   handleCancel(); //フォーム閉じる
 };
-// メイン休暇タブで分類
-const activeTab = ref("personal-info");
-const tabs = [
-  { title: t("paid_leave"), icon: "mdi-gift-open", tab: "paid" },
-  { title: t("public_leave"), icon: "mdi-pine-tree-box", tab: "public" },
-];
+
+const resetForm = () => {
+  Object.assign(
+    formModel,
+    props.isEdit
+      ? { ...defaultApplication, ...props.application }
+      : { ...defaultApplication }
+  );
+  if (formRef.value && formRef.value.resetValidation) {
+    formRef.value.resetValidation();
+  }
+  paidBox.value = null;
+  publicBox.value = null;
+  childBox.value = null;
+  publicLeaveChilden.value = defaultLeave;
+  formValid.value = false;
+  activeTab.value = "paid";
+};
+const handleCancel = () => {
+  emit("form:cancel");
+  resetForm();
+};
 </script>
 
 <template>
@@ -202,7 +176,7 @@ const tabs = [
       </VToolbarTitle>
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
-    <VForm @submit.prevent="() => {}">
+    <VForm ref="formRef" v-model="formValid" @submit.prevent="() => {}">
       <VContainer>
         <VTable>
           <VTabs v-model="activeTab" color="primary">
@@ -213,17 +187,21 @@ const tabs = [
           </VTabs>
           <VCardText>
             <VWindow v-model="activeTab">
-              <span v-if="errors.leave_type" class="error" style="color: red">{{
-                errors.leave_type
-              }}</span>
               <VWindowItem value="paid">
                 <VCardText>
                   <VRow>
-                    <VCol :cols="4" class="dropdown-box">
+                    <VCol cols="4" class="dropdown-box">
                       <VAutocomplete
-                        v-model="filters.paid_leave"
-                        :items="paid_leave"
-                        :label="t('paid_leave')"
+                        v-model="paidBox"
+                        :items="paidLeave.children"
+                        :label="paidLeave.name"
+                        :rules="
+                          activeTab === 'paid' ? [validator.required] : []
+                        "
+                        item-title="name"
+                        item-value="id"
+                        clearable
+                        @update:modelValue="getLeaveTypeId"
                       />
                     </VCol>
                   </VRow>
@@ -232,40 +210,30 @@ const tabs = [
               <VWindowItem value="public">
                 <VCardText>
                   <VRow>
-                    <VCol :cols="4" class="dropdown-box">
+                    <VCol cols="4" class="dropdown-box">
                       <VAutocomplete
-                        v-model="filters.public_leave"
-                        :items="public_leave"
-                        :label="t('public_leave')"
+                        v-model="publicBox"
+                        :items="publicLeave.children"
+                        :label="publicLeave.name"
+                        :rules="
+                          activeTab === 'public' ? [validator.required] : []
+                        "
+                        item-title="name"
+                        item-value="id"
+                        clearable
+                        @update:modelValue="onPublicLeaveChange"
                       />
                     </VCol>
                     <!-- 特別休暇選択場合　特別休暇リストのみ表示設定 -->
-                    <VCol
-                      cols="4"
-                      v-if="
-                        filters.public_leave.valueOf() === 'SPECIAL_DAY_LEAVE'
-                      "
-                      class="dropdown-box"
-                    >
+                    <VCol cols="4" class="dropdown-box">
                       <VAutocomplete
-                        v-model="filters.special_day_leave"
-                        :items="special_day_leave"
-                        :label="t('special_day_leave')"
-                      />
-                    </VCol>
-                    <!-- 慶弔休暇選択場合　慶弔休暇リストのみ表示設定 -->
-                    <VCol
-                      :cols="4"
-                      v-if="
-                        filters.public_leave.valueOf() ===
-                        'SPECIAL_OCCASIONS_LEAVE'
-                      "
-                      class="dropdown-box"
-                    >
-                      <VAutocomplete
-                        v-model="filters.special_occasions_leave"
-                        :items="special_occasions_leave"
-                        :label="t('special_occasions_leave')"
+                        v-model="childBox"
+                        :items="publicLeaveChilden.children"
+                        :label="publicLeaveChilden.name"
+                        item-title="name"
+                        item-value="id"
+                        clearable
+                        @update:modelValue="getLeaveTypeId"
                       />
                     </VCol>
                   </VRow>
@@ -283,7 +251,7 @@ const tabs = [
               </VCol>
               <VCol cols="9">
                 <VTextField
-                  v-model="filters.leave_duration_from"
+                  v-model="formModel.startDate"
                   :rules="[validator.required]"
                   input
                   type="date"
@@ -296,7 +264,7 @@ const tabs = [
               </VCol>
               <VCol cols="9">
                 <VTextField
-                  v-model="filters.leave_duration_to"
+                  v-model="formModel.endDate"
                   :rules="[validator.required]"
                   input
                   type="date"
@@ -309,7 +277,7 @@ const tabs = [
               </VCol>
               <VCol cols="9">
                 <VTextField
-                  v-model="filters.leave_reason"
+                  v-model="formModel.reason"
                   :rules="[validator.required]"
                   type="text"
                 />
@@ -328,7 +296,7 @@ const tabs = [
         color="primary"
         >{{ t("submit") }}</VBtn
       >
-      <VBtn @click="handleResetFilter" type="reset" variant="tonal">{{
+      <VBtn @click="resetForm" type="reset" variant="tonal">{{
         t("reset")
       }}</VBtn>
     </VCardActions>

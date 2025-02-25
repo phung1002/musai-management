@@ -1,5 +1,6 @@
 package musai.app.DTO.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -12,8 +13,8 @@ public class LeaveApplicationResponseDTO {
     private Long id;
     private String userFullName;
     private String leaveTypeName;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String reason;
     private ELeaveStatus status;
     private LocalDateTime respondedAt;

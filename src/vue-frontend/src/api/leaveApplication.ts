@@ -24,3 +24,17 @@ export async function cancelApplication(id: number): Promise<void> {
     throw error;
   }
 }
+
+// call to api apply a leave application
+export async function applyLeaveApplication(params:ILeaveApplication): Promise<void> {
+  try {
+      await axiosIns.post("/leave-applications", params);
+    } catch (error: any) {
+      if (error.response) {
+        console.error("Apply failed:", error.response.data);
+      } else {
+        console.error("Unexpected error:", error);
+      }
+      throw error;
+    }
+}

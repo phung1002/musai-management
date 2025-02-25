@@ -1,6 +1,6 @@
 // validation.ts
 export const useValidator = (t: Function) => ({
-  required: (value: string) => (value && value.length ? true : t('validation.required_input')),
+  required: (value) => (value !== null && value !== undefined && value !== "" ? true : t("validation.required_input")),
 
   emailFormat: (value: string) =>
     (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || !value ? true : t('validation.email_format')),

@@ -18,6 +18,8 @@ const applyFrom = ref(false);
 const editForm = ref(false);
 const loading = ref(true);
 
+const isEdit = ref(false);
+const selectedApplication = ref<ILeaveApplication>({} as ILeaveApplication);
 const leaveApplications = ref<ILeaveApplication[]>([]);
 const selectedLeaveApplication = ref<ILeaveApplication>(
   {} as ILeaveApplication
@@ -74,7 +76,6 @@ const headers = reactive([
 const fetchLeaveApplications = async () => {
   isLoading.value = true;
   isError.value = false;
-  console.log(headers);
   try {
     const response = await listLeaveApplicationForMember(); //  API呼び出し
     leaveApplications.value = response.map(
@@ -82,7 +83,6 @@ const fetchLeaveApplications = async () => {
         ...LeaveRequestList,
       })
     );
-    console.log(leaveApplications);
   } catch (error) {
     isError.value = true;
   } finally {
@@ -216,7 +216,12 @@ const handleCancel = async () => {
     </VCol>
   </VRow>
   <VDialog v-model="applyFrom" width="auto" eager>
-    <LeaveRequestForm @form:cancel="applyFrom = false" />
+    <LeaveRequestForm
+      :isEdit="isEdit"
+      :user="selectedApplication"
+    @form:cancel="applyFrom = false"
+    @refetch-data="fetchLeaveApplications"
+     />
   </VDialog>
   <VDialog v-model="isConfirmDialogVisible" width="auto" eager>
     <ConfimDialogView
