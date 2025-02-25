@@ -1,13 +1,13 @@
 package musai.app.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.UserLeaveRequestDTO;
 import musai.app.DTO.response.UserLeaveResponseDTO;
+import musai.app.DTO.response.UserLeaveResponseDTO2;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.UserLeaveService;
 
@@ -59,13 +60,11 @@ public class UserLeaveController {
 	}
 	
 	// List All
-	@GetMapping("/list")
+	@GetMapping("/all")
 	public ResponseEntity<?> getAllUserLeaves() {
-		List<UserLeaveResponseDTO> userLeave = userLeaveService.getAllUserLeaves();
+		List<UserLeaveResponseDTO2> userLeave = userLeaveService.getAllUserLeaves();
 		
 		return ResponseEntity.ok(userLeave);
 		
 	}
-
-	
 }
