@@ -21,4 +21,7 @@ public interface UserLeaveService {
 	
 	List<UserLeaveResponseDTO2> getAllUserLeaves();
 
+	List<UserLeaveResponseDTO2> searchUserLeaves(String keyword);
+
+
 }

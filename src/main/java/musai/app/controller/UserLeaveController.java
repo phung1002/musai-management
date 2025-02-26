@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import musai.app.DTO.MessageResponse;
@@ -67,4 +68,10 @@ public class UserLeaveController {
 		return ResponseEntity.ok(userLeave);
 		
 	}
+	// Search
+	@GetMapping("/search")
+	public List<UserLeaveResponseDTO2> searchUserLeaves(@RequestParam String keyword) {
+		
+		return userLeaveService.searchUserLeaves(keyword);
 }
+	}

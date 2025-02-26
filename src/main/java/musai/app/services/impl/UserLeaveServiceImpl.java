@@ -158,6 +158,33 @@ public class UserLeaveServiceImpl implements UserLeaveService {
                 .validTo(userLeave.getValidTo())
                 .build();
 	}
+    
+  //Search
+    @Override
+    public List<UserLeaveResponseDTO2> searchUserLeaves(String keyword) {
+        LocalDate today = LocalDate.now();
+        
+        // First, find users matching the keyword
+        List<Long> matchingUserIds = userRepository.findAllByDeletedAtIsNull().stream()
+                .filter(user -> user.getUsername().toLowerCase().contains(keyword.toLowerCase()) 
+                        || (user.getFullName() != null && user.getFullName().toLowerCase().contains(keyword.toLowerCase())))
+                .map(User::getId)
+                .collect(Collectors.toList());
+        
+        // Then find all user leaves for these users
+        List<UserLeave> userLeaves = userLeaveRepository.findAll().stream()
+                .filter(userLeave -> 
+                        matchingUserIds.contains(userLeave.getUser().getId()) &&
+                        !userLeave.getValidFrom().isAfter(today) && 
+                        !userLeave.getValidTo().isBefore(today))
+                .sorted(Comparator.comparing(UserLeave::getValidTo))
+                .collect(Collectors.toList());
+        
+        // Convert to DTOs
+        return userLeaves.stream()
+                .map(this::convertToDTOAll)
+                .collect(Collectors.toList());
+    }
 }
 
 
