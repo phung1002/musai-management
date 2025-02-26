@@ -215,7 +215,7 @@ const handleCancel = async () => {
       </VContainer>
     </VCol>
   </VRow>
-  <VDialog v-model="applyFrom" width="auto" eager>
+  <VDialog v-model="applyFrom" width="auto">
     <LeaveRequestForm
       :isEdit="isEdit"
       :user="selectedApplication"
@@ -223,7 +223,7 @@ const handleCancel = async () => {
     @refetch-data="fetchLeaveApplications"
      />
   </VDialog>
-  <VDialog v-model="isConfirmDialogVisible" width="auto" eager>
+  <VDialog v-model="isConfirmDialogVisible" width="auto">
     <ConfimDialogView
       :title="t('confirm')"
       :message="t('delete_confirm_message')"

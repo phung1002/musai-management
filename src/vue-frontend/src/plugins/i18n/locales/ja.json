@@ -102,7 +102,8 @@
     "user_not_found": "ユーザー名はシステムに存在しません。",
     "admin_change_their_password": "自分のパスワードを変更する場合は、再ログインが必要です。",
     "cannot_remove_own_admin_role": "自身の管理者権限を削除することは許可されていません。",
-    "cancel_only_pending": " ステータスが「承認待ち」の休暇申請のみキャンセルできます。"
+    "cancel_only_pending": " ステータスが「承認待ち」の休暇申請のみキャンセルできます。",
+    "confirm_leave_application": "{n}日間の休暇を申請しますか？"
   },
   "validation": {
     "required_input": "このフィールドは必須です。",

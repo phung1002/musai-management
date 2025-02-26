@@ -45,11 +45,6 @@ const tabs = ref([
   { title: "", icon: "mdi-pine-tree-box", tab: "public" },
 ]);
 
-// 各カテゴリーの items
-const special_day_leave: Ref<{ title: string; value: string }[]> = ref([]);
-const special_occasions_leave: Ref<{ title: string; value: string }[]> = ref(
-  []
-);
 const defaultLeave = {
   id: null,
   name: "",
@@ -110,7 +105,6 @@ const getLeaveTypeId = () => {
   console.log(formModel.leaveTypeId);
 };
 watch(activeTab, (newTab) => {
-  console.log("Tab mới:", newTab);
   getLeaveTypeId();
 });
 // コンポーネントがマウントされたときAPI呼び出し修理実行
@@ -120,12 +114,6 @@ onMounted(() => {
 // validate and call api
 const submiting = ref(false);
 const handleSubmit = async () => {
-  const isValid = await formRef.value?.validate();
-  if (!isValid.valid) {
-    showSnackbar("validation_error", "error");
-    return;
-  }
-
   submiting.value = true;
   if (!props.isEdit) {
     try {
@@ -138,11 +126,36 @@ const handleSubmit = async () => {
     }
   }
 };
-const onConfirmed = () => {
-  console.log("許可されました");
-  // ここに処理を追加
-  // レスポンスOKになったら入力値初期化し、フォーム閉じろ
-  handleCancel(); //フォーム閉じる
+const parseDate = (dateString) => {
+  return dateString ? new Date(dateString + "T00:00:00") : null;
+};
+const calculateWorkingDays = (startDate, endDate) => {
+  let count = 0;
+  let currentDate = new Date(startDate);
+
+  while (currentDate <= endDate) {
+    const dayOfWeek = currentDate.getDay();
+
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      count++;
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  return count;
+};
+
+
+const messageConfirm = ref("")
+const onConfirm = async() => {
+  const isValid = await formRef.value?.validate();
+  if (!isValid.valid) {
+    showSnackbar("validation_error", "error");
+    return;
+  }
+  let requestDays = calculateWorkingDays(parseDate(formModel.startDate), parseDate(formModel.endDate));
+  messageConfirm.value = t('message.confirm_leave_application', requestDays);
+
+  isDialogVisible.value = true;
 };
 
 const resetForm = () => {
@@ -290,7 +303,7 @@ const handleCancel = () => {
     </VForm>
     <VCardActions>
       <VBtn
-        @click="handleSubmit"
+        @click="onConfirm"
         type="submit"
         variant="elevated"
         color="primary"
@@ -304,10 +317,10 @@ const handleCancel = () => {
     <VDialog v-model="isDialogVisible" width="auto" eager>
       <ConfimDialogView
         :title="t('confirm')"
-        :message="t('leave_apply_confirm_message')"
+        :message="messageConfirm"
         :isVisible="isDialogVisible"
         @update:isVisible="isDialogVisible = $event"
-        @confirmed="onConfirmed"
+        @confirmed="handleSubmit"
       />
     </VDialog>
   </VCard>

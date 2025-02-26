@@ -1,5 +1,6 @@
 package musai.app.services.impl;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
@@ -7,6 +8,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -109,7 +111,10 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 				principal);
 		int remainDays = userLeaves.stream().mapToInt(userLeave -> userLeave.getTotalDays() - userLeave.getUsedDays())
 				.sum();
-		int requestDays = (int) ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()) + 1;
+		int requestDays = (int) IntStream.rangeClosed(0, (int) ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()))
+		        .mapToObj(request.getStartDate()::plusDays)
+		        .filter(date -> date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY)
+		        .count();
 
 		if (requestDays > remainDays) {
 			throw new BadRequestException("Requested days exceed the remaining days.");
@@ -185,8 +190,11 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		if (!leaveApplication.getStatus().equals(ELeaveStatus.PENDING)) {
 			throw new BadRequestException(" Can only be cancel if the status is 'pending'.");
 		}
-		int cancelDays = (int) ChronoUnit.DAYS.between(leaveApplication.getStartDate(), leaveApplication.getEndDate()) + 1;
-		
+		int cancelDays = (int) IntStream.rangeClosed(0, (int) ChronoUnit.DAYS.between(leaveApplication.getStartDate(), leaveApplication.getEndDate()))
+		        .mapToObj(leaveApplication.getStartDate()::plusDays)
+		        .filter(date -> date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY)
+		        .count();
+
 		// Find user leave and update usedDays
 		List<UserLeaveResponseDTO> userLeaves = userLeaveService.getUserLeaveForMember(leaveApplication.getLeaveType().getId(), principal);
 		Collections.reverse(userLeaves);

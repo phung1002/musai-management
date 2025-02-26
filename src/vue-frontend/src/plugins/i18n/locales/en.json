@@ -102,7 +102,8 @@
     "user_not_found": "The username does not exist in the system.",
     "admin_change_their_password": "If you change your own password, you need to log in again.",
     "cannot_remove_own_admin_role": "You are not allowed to remove your own ADMIN permissions.",
-    "cancel_only_pending" : "You can only cancel a leave application with the status 'Pending.'"
+    "cancel_only_pending" : "You can only cancel a leave application with the status 'Pending.'",
+    "confirm_leave_application": "Do you want to apply for leave for {n} days?"
   },
   "validation": {
     "required_input": "this field is required",
