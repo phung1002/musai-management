@@ -98,6 +98,7 @@
     "delete_failure": "削除に失敗しました。",
     "delete_your_self": "自分を削除することはできません。",
     "validation_error": "送信前にエラーを修正してください。",
+    "half_day_date_must_match": "半休を選択する場合、開始日と終了日は同じである必要があります。",
     "user_exists": "ユーザー名はすでにシステムに存在します。",
     "user_not_found": "ユーザー名はシステムに存在しません。",
     "admin_change_their_password": "自分のパスワードを変更する場合は、再ログインが必要です。",

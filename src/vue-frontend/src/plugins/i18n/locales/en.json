@@ -98,6 +98,7 @@
     "delete_failure": "deletion failed.",
     "delete_your_self": "you cannot delete yourself.",
     "validation_error": "please correct the highlighted errors before submitting.",
+    "half_day_date_must_match": "When selecting half day, the start date and end date must be the same.",
     "user_exists": "The username already exists in the system.",
     "user_not_found": "The username does not exist in the system.",
     "admin_change_their_password": "If you change your own password, you need to log in again.",

@@ -106,6 +106,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("Leave type not exist"));
 
+		if (leaveType.getValue() == ELeaveValue.)
 		// check condition: remainDays > requestDays
 		List<UserLeaveResponseDTO> userLeaves = userLeaveService.getUserLeaveForMember(request.getLeaveTypeId(),
 				principal);

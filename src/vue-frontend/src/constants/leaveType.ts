@@ -1,0 +1,5 @@
+export enum ELeaveType {
+  HALF_DAY = 'HALF_DAY',
+  PAID_LEAVE = 'PAID_LEAVE',
+  PUBLIC_LEAVE = 'PUBLIC_LEAVE'
+}

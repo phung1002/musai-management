@@ -12,7 +12,6 @@ import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveTypeRequestDTO;
 import musai.app.DTO.response.LeaveTypeChildrenResponseDTO;
 import musai.app.DTO.response.LeaveTypeParentResponseDTO;
-import musai.app.DTO.response.LeaveTypeResponseDTO;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.LeaveType;
@@ -95,36 +94,27 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 	// Create API list tree
 	@Override
 	public List<LeaveTypeChildrenResponseDTO> getAllLeaveTypeTree() {
-	    List<LeaveType> leaveTypes = leaveTypeResposity.findAll();
+		List<LeaveType> leaveTypes = leaveTypeResposity.findAll();
 
-	    List<LeaveType> activeLeaveTypes = leaveTypes.stream()
-	            .filter(leave -> leave.getDeletedAt() == null)
-	            .toList();
+		List<LeaveType> activeLeaveTypes = leaveTypes.stream().filter(leave -> leave.getDeletedAt() == null).toList();
 
-	    return activeLeaveTypes.stream()
-	            .filter(leave -> leave.getParent() == null)
-	            .map(leave -> new LeaveTypeChildrenResponseDTO(
-	                    leave.getId(),
-	                    leave.getName(),
-	                    filterChildren(leave.getChildren(), activeLeaveTypes)
-	            ))
-	            .toList();
+		return activeLeaveTypes.stream().filter(leave -> leave.getParent() == null)
+				.map(leave -> new LeaveTypeChildrenResponseDTO(leave.getId(), leave.getName(), leave.getValue(),
+						filterChildren(leave.getChildren(), activeLeaveTypes)))
+				.toList();
 	}
 
-
-	private List<LeaveTypeChildrenResponseDTO> filterChildren(List<LeaveType> children, List<LeaveType> activeLeaveTypes) {
-	    if (children == null) {
-	        return new ArrayList<>();
-	    }
-	    return children.stream()
-	            .filter(activeLeaveTypes::contains) // Chỉ lấy các loại leave còn active
-	            .map(child -> new LeaveTypeChildrenResponseDTO(
-	                    child.getId(),
-	                    child.getName(),
-	                    filterChildren(child.getChildren(), activeLeaveTypes) // Đệ quy lấy con của con
-	            ))
-	            .toList();
+	private List<LeaveTypeChildrenResponseDTO> filterChildren(List<LeaveType> children,
+			List<LeaveType> activeLeaveTypes) {
+		if (children == null) {
+			return new ArrayList<>();
+		}
+		return children.stream().filter(activeLeaveTypes::contains)
+				.map(child -> new LeaveTypeChildrenResponseDTO(child.getId(), child.getName(), child.getValue(),
+						filterChildren(child.getChildren(), activeLeaveTypes)))
+				.toList();
 	}
+
 	// get Detail
 	@Override
 	public LeaveTypeParentResponseDTO getLeaveTypeDetail(Long id) {

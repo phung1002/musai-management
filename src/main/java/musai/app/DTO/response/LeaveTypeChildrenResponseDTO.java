@@ -13,6 +13,8 @@ public class LeaveTypeChildrenResponseDTO {
 	private Long id;
 
 	private String name;
+	
+	private String value;
 
 	private List<LeaveTypeChildrenResponseDTO> children;
 

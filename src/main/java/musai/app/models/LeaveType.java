@@ -30,7 +30,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "leave_types")
 public class LeaveType {
 
-
 	public LeaveType(String name, LeaveType parent) {
 		this.name = name;
 		this.parent = parent;
@@ -42,6 +41,9 @@ public class LeaveType {
 
 	@Column(name = "name") // Assuming name refers to the type of leave (e.g., Vacation, Sick Leave)
 	private String name;
+	
+	@Column(name = "value")
+    private String value; 
 	
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")

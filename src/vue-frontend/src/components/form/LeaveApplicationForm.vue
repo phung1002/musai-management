@@ -9,6 +9,7 @@ import { applyLeaveApplication } from "@/api/leaveApplication";
 import { ILeaveTypes, ILeaveApplication } from "@/types/type";
 import { useValidator } from "@/utils/validation";
 import { showSnackbar } from "@/composables/useSnackbar";
+import { ELeaveType } from "@/constants/leaveType";
 
 const isDialogVisible = ref(false);
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
@@ -39,16 +40,17 @@ const formModel = reactive<ILeaveApplication>(
     : { ...defaultApplication }
 );
 // メイン休暇タブで分類
-const activeTab = ref("paid");
+const activeTab = ref(ELeaveType.PAID_LEAVE);
 const tabs = ref([
-  { title: "", icon: "mdi-gift-open", tab: "paid" },
-  { title: "", icon: "mdi-pine-tree-box", tab: "public" },
+  { title: "", icon: "mdi-gift-open", tab: ELeaveType.PAID_LEAVE },
+  { title: "", icon: "mdi-pine-tree-box", tab: ELeaveType.PUBLIC_LEAVE },
 ]);
 
 const defaultLeave = {
   id: null,
   name: "",
   parentId: null,
+  value: "",
   children: [],
 };
 const paidLeave: Ref<ILeaveTypes> = ref(defaultLeave);
@@ -65,10 +67,11 @@ const fetchLeaveType = async () => {
     leaves.value = response;
     // カテゴリーごとに分類
     paidLeave.value =
-      leaves.value.find((item) => item.name === t("paid_leave")) ||
+      leaves.value.find((item) => item.value === ELeaveType.PAID_LEAVE) ||
       defaultLeave;
     publicLeave.value =
-      leaves.value.find((item) => item !== paidLeave.value) || defaultLeave;
+      leaves.value.find((item) => item.value === ELeaveType.PUBLIC_LEAVE) ||
+      defaultLeave;
 
     if (!paidLeave.value || !publicLeave.value) {
       throw new Error("Missing required leave types");
@@ -95,16 +98,15 @@ const onPublicLeaveChange = (newValue) => {
   getLeaveTypeId();
 };
 const getLeaveTypeId = () => {
-  if (activeTab.value == "paid" && paidLeave.value.id) {
+  if (activeTab.value == ELeaveType.PAID_LEAVE && paidLeave.value.id) {
     formModel.leaveTypeId = paidBox.value;
   } else {
     if (childBox.value == null || childBox.value == "") {
       formModel.leaveTypeId = publicBox.value;
     } else formModel.leaveTypeId = childBox.value;
   }
-  console.log(formModel.leaveTypeId);
 };
-watch(activeTab, (newTab) => {
+watch(activeTab, () => {
   getLeaveTypeId();
 });
 // コンポーネントがマウントされたときAPI呼び出し修理実行
@@ -143,17 +145,34 @@ const calculateWorkingDays = (startDate, endDate) => {
   }
   return count;
 };
-
-
-const messageConfirm = ref("")
-const onConfirm = async() => {
+const messageConfirm = ref("");
+const onConfirm = async () => {
+  let halfDayId: number | null = 0;
+  let requestDays = 0;
+  if (paidLeave.value.children) {
+    for (const child of paidLeave.value.children) {
+      if (child.value == ELeaveType.HALF_DAY) {
+        halfDayId = child.id;
+      }
+    }
+  }
+  if (halfDayId == paidBox.value) {
+    if (formModel.startDate != formModel.endDate) {
+      showSnackbar("half_day_date_must_match", "error");
+      return;
+    }
+    requestDays = 0.5;
+  } else
+    requestDays = calculateWorkingDays(
+      parseDate(formModel.startDate),
+      parseDate(formModel.endDate)
+    );
   const isValid = await formRef.value?.validate();
   if (!isValid.valid) {
     showSnackbar("validation_error", "error");
     return;
   }
-  let requestDays = calculateWorkingDays(parseDate(formModel.startDate), parseDate(formModel.endDate));
-  messageConfirm.value = t('message.confirm_leave_application', requestDays);
+  messageConfirm.value = t("message.confirm_leave_application", requestDays);
 
   isDialogVisible.value = true;
 };
@@ -173,8 +192,9 @@ const resetForm = () => {
   childBox.value = null;
   publicLeaveChilden.value = defaultLeave;
   formValid.value = false;
-  activeTab.value = "paid";
+  activeTab.value = ELeaveType.PAID_LEAVE;
 };
+
 const handleCancel = () => {
   emit("form:cancel");
   resetForm();
@@ -200,7 +220,7 @@ const handleCancel = () => {
           </VTabs>
           <VCardText>
             <VWindow v-model="activeTab">
-              <VWindowItem value="paid">
+              <VWindowItem :value="ELeaveType.PAID_LEAVE">
                 <VCardText>
                   <VRow>
                     <VCol cols="4" class="dropdown-box">
@@ -209,7 +229,9 @@ const handleCancel = () => {
                         :items="paidLeave.children"
                         :label="paidLeave.name"
                         :rules="
-                          activeTab === 'paid' ? [validator.required] : []
+                          activeTab === ELeaveType.PAID_LEAVE
+                            ? [validator.required]
+                            : []
                         "
                         item-title="name"
                         item-value="id"
@@ -220,7 +242,7 @@ const handleCancel = () => {
                   </VRow>
                 </VCardText>
               </VWindowItem>
-              <VWindowItem value="public">
+              <VWindowItem :value="ELeaveType.PUBLIC_LEAVE">
                 <VCardText>
                   <VRow>
                     <VCol cols="4" class="dropdown-box">
@@ -229,7 +251,9 @@ const handleCancel = () => {
                         :items="publicLeave.children"
                         :label="publicLeave.name"
                         :rules="
-                          activeTab === 'public' ? [validator.required] : []
+                          activeTab === ELeaveType.PUBLIC_LEAVE
+                            ? [validator.required]
+                            : []
                         "
                         item-title="name"
                         item-value="id"
@@ -238,11 +262,19 @@ const handleCancel = () => {
                       />
                     </VCol>
                     <!-- 特別休暇選択場合　特別休暇リストのみ表示設定 -->
-                    <VCol cols="4" class="dropdown-box">
+                    <VCol
+                      cols="4"
+                      class="dropdown-box"
+                      v-if="
+                        publicLeaveChilden.children &&
+                        publicLeaveChilden.children.length > 0
+                      "
+                    >
                       <VAutocomplete
                         v-model="childBox"
                         :items="publicLeaveChilden.children"
                         :label="publicLeaveChilden.name"
+                        :rules="[validator.required]"
                         item-title="name"
                         item-value="id"
                         clearable
