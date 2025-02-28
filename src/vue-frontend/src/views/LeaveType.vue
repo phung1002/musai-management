@@ -12,7 +12,7 @@ const { t } = useI18n(); // 日本語にローカル変更用
 const addLeaves = ref(false); // 休暇追加・編集フォーム表示
 const isDialogVisible = ref(false); // 削除確認ダイアログ表示
 const errorMessage = ref(""); // エラーメッセージ管理
-const selectedId = ref<number | null>(null); // 削除する休暇ID
+const selectedId = ref<ILeaveTypes>({} as ILeaveTypes);
 const selectedLeave = ref<ILeaveTypes | undefined>(undefined); // 編集する休暇情報
 const isEdit = ref(false); // 編集モードかどうか
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
@@ -21,8 +21,6 @@ const isError = ref(false); // エラーフラグ
 // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" }, // 表示番号
-  // { title: t("id"), key: "id" },
-  // { title: t("parent_id"), key: "parentId" },
   { title: t("leave_name"), key: "name" }, // 休暇名
   { title: t("action"), key: "action" }, // アクション
 ]);
@@ -77,25 +75,22 @@ const handleEditItem = (leave: ILeaveTypes) => {
   console.log("編集対象", selectedLeave.value);
   addLeaves.value = true;
   isEdit.value = true;
-  console.log(isEdit.value);
 };
 // 削除
-const handleDeleteItem = (id: number) => {
-  selectedId.value = id;
+const handleDeleteItem = (leave: ILeaveTypes) => {
+  selectedId.value = leave;
   isDialogVisible.value = true;
-  console.log("delete", id);
+  console.log("delete", leave);
 };
 // 削除確認ダイアログのOKボタン押した際イベント
 const onDeleted = async () => {
   // ここに処理を追加
-  if (selectedId.value === null) return;
+  if (!selectedId.value.id) return;
   errorMessage.value = "";
-  console.log(selectedId.value);
   try {
-    await deleteLeave(selectedId.value);
-    console.log(`休暇ID ${selectedId.value} を削除しました`);
+    await deleteLeave(selectedId.value.id);
+    console.log(`休暇ID ${selectedId.value.id} を削除しました`);
     showSnackbar("delete_success", "success");
-    selectedId.value = null;
     fetchLeaveType(); // リスト更新
   } catch (error: any) {
     if (error.status == 403) {
@@ -166,7 +161,7 @@ onMounted(() => {
               </template>
               <!-- アクション　設定  -->
               <template v-slot:item.action="{ item }">
-                <div class="action-buttons">
+                <div class="action-buttons" v-if="item.parentId != null">
                   <VBtn
                     icon
                     variant="plain"
@@ -179,7 +174,7 @@ onMounted(() => {
                     icon
                     variant="plain"
                     class="action-btn"
-                    @click="handleDeleteItem(item.id)"
+                    @click="handleDeleteItem(item)"
                   >
                     <VIcon color="red">mdi-delete</VIcon>
                   </VBtn>

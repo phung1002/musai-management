@@ -1,16 +1,18 @@
 <script lang="ts" setup>
-import { Ref, ref, reactive, onMounted } from "vue";
+import { Ref, ref, reactive, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { VTab } from "vuetify/lib/components/index.mjs";
 import { useLeaveTypesStore } from "@/store/leaveTypesStore";
 import { getLeavesTree } from "@/api/leave";
-import { ILeaveTypes } from "@/types/type";
+import { ILeaveTypes, ILeaveRequest } from "@/types/type";
 const isDialogVisible = ref(false);
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
+const leaveRequst = ref<ILeaveRequest[]>([]); // 休暇リスト
 const { t } = useI18n();
 const isLoading = ref(false);
 const isError = ref(false);
+const activeTab = ref("paid"); // タブの初期値
 const emit = defineEmits(["form:cancel"]);
 const handleCancel = () => {
   handleResetFilter(); // 入力をリセット
@@ -29,7 +31,16 @@ const errors = ref<Errors>({
   leave_duration_to: "",
   leave_reason: "",
 });
-
+// デフォルト値
+const defaultLeave = {
+  id: null,
+  name: "",
+  parentId: null,
+  children: [],
+  leave_duration_from: "",
+  leave_duration_to: "",
+  leave_reason: "",
+};
 // フォームデータ
 const filters = reactive({
   paid_leave: "",
@@ -60,61 +71,71 @@ const resetErrors = () => {
   };
 };
 // 各カテゴリーの items
-const paid_leave: Ref<{ title: string; value: string }[]> = ref([]);
-const public_leave: Ref<{ title: string; value: string }[]> = ref([]);
-const special_day_leave: Ref<{ title: string; value: string }[]> = ref([]);
-const special_occasions_leave: Ref<{ title: string; value: string }[]> = ref(
-  []
-);
+// const paid_leave: Ref<{ title: string; value: string }[]> = ref([]);
+// const public_leave: Ref<{ title: string; value: string }[]> = ref([]);
+// const special_day_leave: Ref<{ title: string; value: string }[]> = ref([]);
+// const special_occasions_leave: Ref<{ title: string; value: string }[]> = ref(
+//   []
+// );
+// 各カテゴリーの items
+const parentPublicLeave = ref(null);
+const paid_leave: Ref<ILeaveTypes> = ref(defaultLeave);
+const public_leave: Ref<ILeaveTypes> = ref(defaultLeave);
+// メイン休暇タブで分類
+const tabs = ref([
+  { title: "", icon: "mdi-gift-open", tab: "paid" },
+  { title: "", icon: "mdi-pine-tree-box", tab: "public" },
+]);
+// フォームデータの初期化
+const formModel = reactive<ILeaveTypes>({ ...defaultLeave });
+// タブ変更時に `parentId` を設定
+watch(activeTab, (seletedTab) => {
+  setParentId(seletedTab);
+});
+watch(parentPublicLeave, (item) => {
+  setParentId(activeTab.value);
+});
+// 親IDを設定
+const setParentId = (selectedTab: string) => {
+  if (selectedTab === "paid") {
+    formModel.parentId = paid_leave.value.id;
+  } else {
+    if (parentPublicLeave.value == undefined) {
+      formModel.parentId = public_leave.value.id;
+    } else formModel.parentId = parentPublicLeave.value;
+  }
+};
 // 休暇リスト取得　API呼び出し
 const fetchLeaveType = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
     const response = await getLeavesTree();
+    if (!response || response.length < 2) {
+      throw new Error("Invalid leaves data");
+    }
     leaves.value = response;
+    paid_leave.value =
+      leaves.value.find((item) => item.name === t("paid_leave")) ||
+      defaultLeave;
+    public_leave.value =
+      leaves.value.find((item) => item !== paid_leave.value) || defaultLeave;
+
+    if (!paid_leave.value || !public_leave.value) {
+      throw new Error("Missing required leave types");
+    }
+
+    tabs.value[0].title = paid_leave.value.name;
+    tabs.value[1].title = public_leave.value.name;
 
     // カテゴリーごとに分類
-    categorizeLeaves(response);
+    // categorizeLeaves(response);
   } catch (error) {
     isError.value = true;
     console.error("Error fetching leaves:", error);
   } finally {
     isLoading.value = false;
   }
-};
-// 取得データをカテゴリーごとに分ける関数
-const categorizeLeaves = (data: ILeaveTypes[]) => {
-  data.forEach((leave) => {
-    if (leave.name === "有休") {
-      paid_leave.value =
-        leave.children?.map((child) => ({
-          title: child.name,
-          value: child.name.toUpperCase(),
-        })) || [];
-    }
-    if (leave.name === "公休") {
-      public_leave.value =
-        leave.children?.map((child) => ({
-          title: child.name,
-          value: child.name.toUpperCase(),
-        })) || [];
-    }
-    if (leave.name === "特別休暇") {
-      special_day_leave.value =
-        leave.children?.map((child) => ({
-          title: child.name,
-          value: child.name.toUpperCase(),
-        })) || [];
-    }
-    if (leave.name === "慶弔休暇") {
-      special_occasions_leave.value =
-        leave.children?.map((child) => ({
-          title: child.name,
-          value: child.name.toUpperCase(),
-        })) || [];
-    }
-  });
 };
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
@@ -184,12 +205,6 @@ const onConfirmed = () => {
   // レスポンスOKになったら入力値初期化し、フォーム閉じろ
   handleCancel(); //フォーム閉じる
 };
-// メイン休暇タブで分類
-const activeTab = ref("personal-info");
-const tabs = [
-  { title: t("paid_leave"), icon: "mdi-gift-open", tab: "paid" },
-  { title: t("public_leave"), icon: "mdi-pine-tree-box", tab: "public" },
-];
 </script>
 
 <template>
@@ -219,9 +234,12 @@ const tabs = [
                   <VRow>
                     <VCol :cols="4" class="dropdown-box">
                       <VAutocomplete
-                        v-model="filters.paid_leave"
-                        :items="paid_leave"
+                        v-model="parentPublicLeave"
+                        :items="paid_leave.children"
                         :label="t('paid_leave')"
+                        item-title="name"
+                        item-value="id"
+                        clearable
                       />
                     </VCol>
                   </VRow>
@@ -232,38 +250,38 @@ const tabs = [
                   <VRow>
                     <VCol :cols="4" class="dropdown-box">
                       <VAutocomplete
-                        v-model="filters.public_leave"
-                        :items="public_leave"
+                        v-model="parentPublicLeave"
+                        :items="public_leave.children"
                         :label="t('public_leave')"
+                        item-title="name"
+                        item-value="id"
+                        clearable
                       />
                     </VCol>
                     <!-- 特別休暇選択場合　特別休暇リストのみ表示設定 -->
                     <VCol
                       :cols="4"
-                      v-if="
-                        filters.public_leave.valueOf() === 'SPECIAL_DAY_LEAVE'
-                      "
+                      v-if="filters.public_leave.valueOf() === '特別休暇'"
                       class="dropdown-box"
                     >
-                      <VAutocomplete
-                        v-model="filters.special_day_leave"
-                        :items="special_day_leave"
-                        :label="t('special_day_leave')"
+                      <VTextField
+                        v-model="formModel.name"
+                        input
+                        type="text"
+                        :label="t('leave_name')"
                       />
                     </VCol>
                     <!-- 慶弔休暇選択場合　慶弔休暇リストのみ表示設定 -->
                     <VCol
                       :cols="4"
-                      v-if="
-                        filters.public_leave.valueOf() ===
-                        'SPECIAL_OCCASIONS_LEAVE'
-                      "
+                      v-if="filters.public_leave.valueOf() === '慶弔休暇'"
                       class="dropdown-box"
                     >
-                      <VAutocomplete
-                        v-model="filters.special_occasions_leave"
-                        :items="special_occasions_leave"
-                        :label="t('special_occasions_leave')"
+                      <VTextField
+                        v-model="formModel.name"
+                        input
+                        type="text"
+                        :label="t('leave_name')"
                       />
                     </VCol>
                   </VRow>
