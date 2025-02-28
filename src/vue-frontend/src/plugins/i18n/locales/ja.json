@@ -45,7 +45,11 @@
     "MANAGER": "担当者",
     "MEMBER": "ユーザー"
   },
-  "leave_type": "休暇",
+  "leave_type": "休暇名",
+  "valid_leaves": "有効休暇日数",
+  "available_leaves": "残り休暇日数",
+  "used_leaves": "利用済み休暇日数",
+  "expired": "有効期限",
   "paid_leave": "有休",
   "public_leave": "公休",
   "full_day_leave": "全休",
@@ -88,6 +92,9 @@
   "update_leave": "休暇編集",
   "update": "更新",
   "parent_id": "親番号",
+  "title": "タイトル",
+  "submit_date": "提出日",
+  "employee_name": "社員名",
   "message": {
     "list_failure": "データの取得に失敗しました。もう一度お試しください。",
     "add_success": "新規作成が成功しました。",

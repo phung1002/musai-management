@@ -5,14 +5,14 @@ import LeaveForm from "@/components/form/LeaveForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useI18n } from "vue-i18n";
 import { ILeaveTypes } from "@/types/type";
-import { deleteLeave, getLeaves } from "@/api/leave";
+import { deleteLeave, getLeaves, searchLeave } from "@/api/leave";
 import { showSnackbar } from "@/composables/useSnackbar";
 
 const { t } = useI18n(); // 日本語にローカル変更用
 const addLeaves = ref(false); // 休暇追加・編集フォーム表示
 const isDialogVisible = ref(false); // 削除確認ダイアログ表示
 const errorMessage = ref(""); // エラーメッセージ管理
-const selectedId = ref<number | null>(null); // 削除する休暇ID
+const selectedId = ref<ILeaveTypes>({} as ILeaveTypes);
 const selectedLeave = ref<ILeaveTypes | undefined>(undefined); // 編集する休暇情報
 const isEdit = ref(false); // 編集モードかどうか
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
@@ -21,11 +21,15 @@ const isError = ref(false); // エラーフラグ
 // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" }, // 表示番号
-  // { title: t("id"), key: "id" },
-  // { title: t("parent_id"), key: "parentId" },
   { title: t("leave_name"), key: "name" }, // 休暇名
   { title: t("action"), key: "action" }, // アクション
 ]);
+// 休暇リストをロード
+const loadLeave = (lst: any) => {
+  leaves.value = lst.map((leave: ILeaveTypes) => ({
+    ...leave,
+  }));
+};
 // 休暇リスト取得　API呼び出し
 const fetchLeaveType = async () => {
   isLoading.value = true;
@@ -33,9 +37,7 @@ const fetchLeaveType = async () => {
   try {
     const response = await getLeaves(); // API呼び出
     console.log("response", response);
-    leaves.value = response.map((leave: ILeaveTypes) => ({
-      ...leave,
-    }));
+    loadLeave(response); // リスト更新
   } catch (error) {
     isError.value = true;
     console.error("Error fetching leaves:", error);
@@ -51,31 +53,44 @@ const handleCreateItem = (leaveType: ILeaveTypes) => {
   addLeaves.value = true;
   isEdit.value = false;
 };
+// 検索
+const keyWord = ref("");
+const handleSearch = async () => {
+  if (keyWord.value == null) {
+    fetchLeaveType();
+    return;
+  }
+  try {
+    const response = await searchLeave(keyWord.value);
+    loadLeave(response);
+  } catch (error) {
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
 // 編集
 const handleEditItem = (leave: ILeaveTypes) => {
   selectedLeave.value = { ...leave }; // 選択データをセット
   console.log("編集対象", selectedLeave.value);
   addLeaves.value = true;
   isEdit.value = true;
-  console.log(isEdit.value);
 };
 // 削除
-const handleDeleteItem = (id: number) => {
-  selectedId.value = id;
+const handleDeleteItem = (leave: ILeaveTypes) => {
+  selectedId.value = leave;
   isDialogVisible.value = true;
-  console.log("delete", id);
+  console.log("delete", leave);
 };
 // 削除確認ダイアログのOKボタン押した際イベント
 const onDeleted = async () => {
   // ここに処理を追加
-  if (selectedId.value === null) return;
+  if (!selectedId.value.id) return;
   errorMessage.value = "";
-  console.log(selectedId.value);
   try {
-    await deleteLeave(selectedId.value);
-    console.log(`休暇ID ${selectedId.value} を削除しました`);
+    await deleteLeave(selectedId.value.id);
+    console.log(`休暇ID ${selectedId.value.id} を削除しました`);
     showSnackbar("delete_success", "success");
-    selectedId.value = null;
     fetchLeaveType(); // リスト更新
   } catch (error: any) {
     if (error.status == 403) {
@@ -112,6 +127,26 @@ onMounted(() => {
             </VCardActions>
           </VToolbar>
           <VDivider />
+          <!-- 検索バー -->
+          <VCardItem class="py-0">
+            <VToolbar tag="div" color="transparent" flat>
+              <VTextField
+                v-model="keyWord"
+                :prepend-icon="'mdi-filter-variant'"
+                :placeholder="t('type_something')"
+                hide-details
+                clearable
+                variant="plain"
+                class="search"
+                @click:clear="handleSearch"
+                @keydown.enter="handleSearch"
+              />
+              <VBtn icon density="comfortable" @click="handleSearch">
+                <VIcon>mdi-magnify</VIcon>
+              </VBtn>
+            </VToolbar>
+          </VCardItem>
+          <VDivider />
           <!-- 申請情報　表示 -->
           <VCardItem>
             <VDataTable
@@ -126,7 +161,7 @@ onMounted(() => {
               </template>
               <!-- アクション　設定  -->
               <template v-slot:item.action="{ item }">
-                <div class="action-buttons">
+                <div class="action-buttons" v-if="item.parentId != null">
                   <VBtn
                     icon
                     variant="plain"
@@ -139,7 +174,7 @@ onMounted(() => {
                     icon
                     variant="plain"
                     class="action-btn"
-                    @click="handleDeleteItem(item.id)"
+                    @click="handleDeleteItem(item)"
                   >
                     <VIcon color="red">mdi-delete</VIcon>
                   </VBtn>
