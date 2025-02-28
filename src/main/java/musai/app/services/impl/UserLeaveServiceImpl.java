@@ -70,7 +70,7 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 	
 
 	@Override
-	public MessageResponse updateUsedDays(Long id, int usedDay) {
+	public MessageResponse updateUsedDays(Long id, double usedDay) {
 		UserLeave userLeave = userLeaveRepository.findById(id).orElseThrow(() 
 				-> new NotFoundException("User Leave not found"));
 		userLeave.setUsedDays(usedDay);
@@ -93,7 +93,7 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		userLeave.setTotalDays(userLeaveRequestDTO.getTotalDays());
 
 		if (userLeaveRequestDTO.getUsedDays() == null) {
-			userLeave.setUsedDays(0);
+			userLeave.setUsedDays(0.0);
 		} else {
 			userLeave.setUsedDays(userLeaveRequestDTO.getUsedDays());
 		}

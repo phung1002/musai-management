@@ -41,11 +41,11 @@ public class UserLeave {
     
     @Min(value = 0, message="Total days cannot be negative")
     @Column(name = "total_days")
-    private Integer totalDays;
+    private Double totalDays;
     
     @Min(value = 0, message="Use days cannot be negative")
     @Column(name = "used_days")
-    private Integer usedDays;
+    private Double usedDays;
     
     @JsonBackReference
     @Column(name = "valid_from")
@@ -71,10 +71,10 @@ public class UserLeave {
     private LocalDateTime deletedAt;
     
     // Constructor
-    public UserLeave(User userId, LeaveType leaveType, Integer totalDays) {
+    public UserLeave(User userId, LeaveType leaveType, Double totalDays) {
         this.user = userId;
         this.leaveType = leaveType;
         this.totalDays = totalDays;
-        this.usedDays = 0;  // Initialize with 0 used days
+        this.usedDays = 0.0;  // Initialize with 0 used days
     }
 }

@@ -107,9 +107,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		// check condition: remainDays > requestDays
 		List<UserLeaveResponseDTO> userLeaves = userLeaveService.getUserLeaveForMember(request.getLeaveTypeId(),
 				principal);
-		int remainDays = userLeaves.stream().mapToInt(userLeave -> userLeave.getTotalDays() - userLeave.getUsedDays())
+		double remainDays = userLeaves.stream().mapToDouble(userLeave -> userLeave.getTotalDays() - userLeave.getUsedDays())
 				.sum();
-		int requestDays = (int) ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()) + 1;
+		double requestDays = (double) ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()) + 1;
 
 		if (requestDays > remainDays) {
 			throw new BadRequestException("Requested days exceed the remaining days.");

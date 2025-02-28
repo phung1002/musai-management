@@ -15,8 +15,8 @@ public class UserLeaveResponseDTO2 {
     private String userName;
     private Long leaveTypeId;  
     private String leaveTypeName;
-    private Integer totalDays;
-    private Integer usedDays;
+    private Double totalDays;
+    private Double usedDays;
     private LocalDate validFrom;
     private LocalDate validTo;
 }
