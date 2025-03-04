@@ -35,10 +35,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	/**
 	 * Authenticate user and generate JWT token.
 	 *
@@ -53,13 +53,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		// Generate JWT token
 		String jwt = jwtUtils.generateJwtToken(authentication);
+		Cookie jwtCookie = jwtUtils.generateJwtCookie(jwt);
+		response.addCookie(jwtCookie);
 
 		// Get user details from authentication
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		validateUserAccount(userDetails);
-
-		// Set JWT token as an HttpOnly cookie
-		setJwtCookie(response, jwt);
 
 		// Build and return JWT response
 		return buildJwtResponse(userDetails, jwt);
@@ -100,8 +99,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		return buildJwtResponse(userDetails, jwt);
 	}
 
-	// Helper Methods
-
 	/**
 	 * Authenticate user credentials using AuthenticationManager.
 	 *
@@ -129,27 +126,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	/**
-	 * Set JWT token as an HttpOnly cookie in the response.
-	 *
-	 * @param response The HTTP response.
-	 * @param jwt      The JWT token.
-	 */
-	private void setJwtCookie(HttpServletResponse response, String jwt) {
-		Cookie cookie = new Cookie("access_token", jwt);
-		cookie.setHttpOnly(true); // Prevent JavaScript access
-		cookie.setSecure(true); // Ensure cookie is sent only over HTTPS
-		cookie.setPath("/"); // Available throughout the application
-		cookie.setMaxAge(jwtUtils.getJwtExpirationMs() / 1000); // Match JWT expiration time
-
-		// Add cookie to response
-		response.addCookie(cookie);
-
-		// Add SameSite attribute to Set-Cookie header
-		response.setHeader("Set-Cookie", "access_token=" + jwt + "; HttpOnly; Secure; Path=/; Max-Age="
-				+ (jwtUtils.getJwtExpirationMs() / 1000) + "; SameSite=Lax");
-	}
-
-	/**
 	 * Load user details by username.
 	 *
 	 * @param username The username.
@@ -174,40 +150,42 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
 				.collect(Collectors.toList());
 
-		return new JwtResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles, userDetails.getFullName());
+		return new JwtResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles,
+				userDetails.getFullName());
 	}
-	
+
 	/**
 	 * Get profile of user logging in
+	 * 
 	 * @param request
 	 * @return
 	 */
 	public UserResponseDTO getProfile(HttpServletRequest request) {
-	    // Get JWT from cookies
-	    String jwt = jwtUtils.getJwtFromCookies(request);
+		// Get JWT from cookies
+		String jwt = jwtUtils.getJwtFromCookies(request);
 
-	    if (jwt == null || !jwtUtils.validateJwtToken(jwt)) {
-	        throw new BadRequestException("Invalid or expired token.");
-	    }
-	    String username = jwtUtils.getUserNameFromJwtToken(jwt);
+		if (jwt == null || !jwtUtils.validateJwtToken(jwt)) {
+			throw new BadRequestException("Invalid or expired token.");
+		}
+		String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
-	    User user = userRepository.findByUsername(username)
+		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
-	    UserResponseDTO userResponseDTO = new UserResponseDTO();
-	    userResponseDTO.setUsername(user.getUsername());
-	    userResponseDTO.setFullName(user.getFullName());
-	    userResponseDTO.setFullNameFurigana(user.getFullNameFurigana());
-	    userResponseDTO.setEmail(user.getEmail());
-	    userResponseDTO.setGender(user.getGender());
-	    userResponseDTO.setJoinDate(user.getJoinDate());
-	    userResponseDTO.setBirthday(user.getBirthday());
-	    userResponseDTO.setDepartment(user.getDepartment());
-	    userResponseDTO.setWorkPlace(user.getWorkPlace());
-	    userResponseDTO.setRoles(user.getRoles().stream().map(role -> role.getName().name())
-				.collect(Collectors.toSet()));
+		UserResponseDTO userResponseDTO = new UserResponseDTO();
+		userResponseDTO.setUsername(user.getUsername());
+		userResponseDTO.setFullName(user.getFullName());
+		userResponseDTO.setFullNameFurigana(user.getFullNameFurigana());
+		userResponseDTO.setEmail(user.getEmail());
+		userResponseDTO.setGender(user.getGender());
+		userResponseDTO.setJoinDate(user.getJoinDate());
+		userResponseDTO.setBirthday(user.getBirthday());
+		userResponseDTO.setDepartment(user.getDepartment());
+		userResponseDTO.setWorkPlace(user.getWorkPlace());
+		userResponseDTO
+				.setRoles(user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()));
 
-	    return userResponseDTO;
+		return userResponseDTO;
 	}
 
 }

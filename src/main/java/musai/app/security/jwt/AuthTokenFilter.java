@@ -10,6 +10,8 @@ import musai.app.security.services.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -66,7 +68,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
 				// Set the authentication object in the security context
 				SecurityContextHolder.getContext().setAuthentication(authentication);
-			}
+			}else if (jwt != null) {
+                logger.warn("Invalid JWT token: {}", jwt);
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                response.setHeader(HttpHeaders.WWW_AUTHENTICATE, "Bearer error=\"invalid_token\"");
+                return;
+            }
 		} catch (Exception e) {
 			// Log any exceptions during the authentication process
 			logger.error("Cannot set user authentication: {}", e);

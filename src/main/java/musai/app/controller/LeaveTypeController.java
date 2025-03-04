@@ -23,7 +23,6 @@ import musai.app.DTO.response.LeaveTypeParentResponseDTO;
 import musai.app.DTO.response.LeaveTypeResponseDTO;
 import musai.app.services.LeaveTypeService;
 
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/leave-types")
 public class LeaveTypeController {
