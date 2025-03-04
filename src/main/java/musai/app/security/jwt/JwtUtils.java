@@ -15,6 +15,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import musai.app.security.services.UserDetailsImpl;
 
 /**
@@ -37,17 +38,13 @@ public class JwtUtils {
 
 	public String generateJwtToken(Authentication authentication) {
 		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-		
-		String roles = userPrincipal.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.joining(","));
-		
-		  return Jwts.builder().setSubject(userPrincipal.getUsername())
-	                .claim("roles", roles)
-	                .setIssuedAt(new Date())
-	                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-	                .signWith(key(), SignatureAlgorithm.HS256)
-	                .compact();
+
+		String roles = userPrincipal.getAuthorities().stream().map(item -> item.getAuthority())
+				.collect(Collectors.joining(","));
+
+		return Jwts.builder().setSubject(userPrincipal.getUsername()).claim("roles", roles).setIssuedAt(new Date())
+				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+				.signWith(key(), SignatureAlgorithm.HS256).compact();
 	}
 
 	private Key key() {
@@ -86,13 +83,4 @@ public class JwtUtils {
 		}
 		return false;
 	}
-	
-	 public Cookie generateJwtCookie(String jwt) {
-	        Cookie cookie = new Cookie("access_token", jwt);
-	        cookie.setHttpOnly(true);
-	        cookie.setSecure(true);
-	        cookie.setPath("/");
-	        cookie.setMaxAge(jwtExpirationMs / 1000);
-	        return cookie;
-	    }
 }

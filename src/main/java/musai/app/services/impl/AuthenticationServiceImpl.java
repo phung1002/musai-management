@@ -53,12 +53,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 		// Generate JWT token
 		String jwt = jwtUtils.generateJwtToken(authentication);
-		Cookie jwtCookie = jwtUtils.generateJwtCookie(jwt);
-		response.addCookie(jwtCookie);
 
 		// Get user details from authentication
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		validateUserAccount(userDetails);
+
+		// Set JWT cookie manually
+		setJwtCookie(response, jwt);
 
 		// Build and return JWT response
 		return buildJwtResponse(userDetails, jwt);
@@ -188,4 +189,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		return userResponseDTO;
 	}
 
+	private void setJwtCookie(HttpServletResponse response, String jwt) {
+		Cookie cookie = new Cookie("access_token", jwt);
+		cookie.setHttpOnly(true); // Prevent JavaScript access
+		cookie.setPath("/"); // Available throughout the application
+		cookie.setMaxAge(jwtUtils.getJwtExpirationMs() / 1000); // Match JWT expiration time
+
+		// Add cookie to response
+		response.addCookie(cookie);
+
+		// Add SameSite attribute to Set-Cookie header
+		response.setHeader("Set-Cookie", "access_token=" + jwt + "; HttpOnly; Path=/; Max-Age="
+				+ (jwtUtils.getJwtExpirationMs() / 1000) + "; SameSite=Lax");
+
+		// Set Secure to run in https
+//		response.setHeader("Set-Cookie", "access_token=" + jwt + "; HttpOnly; Secure; Path=/; Max-Age="
+//				+ (jwtUtils.getJwtExpirationMs() / 1000) + "; SameSite=Lax");
+	}
 }
