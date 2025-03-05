@@ -11,6 +11,7 @@ public class UserLeaveRequestDTO {
     private Long leaveTypeId;
     private Double totalDays;
     private Double usedDays;
+    private Double remainedDays;
     private LocalDate validFrom;
     private LocalDate validTo;
     
