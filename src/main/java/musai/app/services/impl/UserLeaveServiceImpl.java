@@ -51,7 +51,7 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		List<UserLeave> userLeaves = userLeaveRepository.findByUserId(principal.getId()).stream()
 				.filter(userLeave -> !userLeave.getValidFrom().isAfter(today) 
 						&& !userLeave.getValidTo().isBefore(today)
-//						&& (userLeave.getTotalDays() - userLeave.getUsedDays() > 0)
+						&& (userLeave.getTotalDays() - userLeave.getUsedDays() > 0)
 						&& (leaveTypeId == null || userLeave.getLeaveType().getId().equals(leaveTypeId)))
 				.sorted(Comparator.comparing(UserLeave::getValidTo))
 				.collect(Collectors.toList());
@@ -92,11 +92,8 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		userLeave.setLeaveType(leaveType);
 		userLeave.setTotalDays(userLeaveRequestDTO.getTotalDays());
 
-		if (userLeaveRequestDTO.getUsedDays() == null) {
-			userLeave.setUsedDays(0.0);
-		} else {
-			userLeave.setUsedDays(userLeaveRequestDTO.getUsedDays());
-		}
+		// calculate remainedDays
+		userLeave.setRemainedDays(userLeave.getTotalDays() - userLeave.getUsedDays());
 
 		userLeave.setValidFrom(userLeaveRequestDTO.getValidFrom());
 		userLeave.setValidTo(userLeaveRequestDTO.getValidTo());
@@ -121,6 +118,9 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		existingUserLeave.setLeaveType(leaveType);
 		existingUserLeave.setTotalDays(userLeaveRequestDTO.getTotalDays());
 		existingUserLeave.setUsedDays(userLeaveRequestDTO.getUsedDays());
+		
+		// recalculate remainedDays
+		existingUserLeave.setRemainedDays(userLeaveRequestDTO.getTotalDays() - userLeaveRequestDTO.getUsedDays());
 		existingUserLeave.setValidFrom(userLeaveRequestDTO.getValidFrom());
 		existingUserLeave.setValidTo(userLeaveRequestDTO.getValidTo());
 
