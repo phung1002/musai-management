@@ -123,8 +123,14 @@ const handleSubmit = async () => {
       showSnackbar("add_success", "success");
       emit("refetch-data");
       handleCancel();
-    } catch (error) {
-      showSnackbar("add_failure", "error");
+    } catch (error : any) {
+      const errorMessage = ["add_failure"];
+      if (error.status === 400) {
+        errorMessage.push("error_requested_days_exceed");
+      } else if (error.status == 404) {
+        errorMessage.push("error_leave_type_or_user_not_exist");
+      }
+      showSnackbar(errorMessage, "error");
     }
   }
 };

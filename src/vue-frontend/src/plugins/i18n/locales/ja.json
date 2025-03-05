@@ -111,7 +111,9 @@
     "admin_change_their_password": "自分のパスワードを変更する場合は、再ログインが必要です。",
     "cannot_remove_own_admin_role": "自身の管理者権限を削除することは許可されていません。",
     "cancel_only_pending": " ステータスが「承認待ち」の休暇申請のみキャンセルできます。",
-    "confirm_leave_application": "{n}日間の休暇を申請しますか？"
+    "confirm_leave_application": "{n}日間の休暇を申請しますか？",
+    "error_requested_days_exceed": "申請日数が残り日数を超えています。",
+    "error_leave_type_or_user_not_exist": "指定された休暇種類またはユーザーが見つかりません。"
   },
   "validation": {
     "required_input": "このフィールドは必須です。",
