@@ -7,14 +7,24 @@ export interface IAccessToken {
   expire_in: number;
 }
 
-export interface ILeaveRequestList {
-  data: ILeaveRequest;
+export interface ILeaveApplicationList {
+  data: ILeaveApplication;
 }
 
 export interface IUserResp {
-  data: ILeaveRequest[];
+  data: ILeaveApplication[];
 }
 
+
+export interface ILeaveApplication {
+  id: number | null;
+  leaveTypeId: number | null;
+  leaveTypeName: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  reason: string;
+  status: string;
+}
 export type confrimStatus = "pending" | "accepted";
 
 export interface ILeaveRequest {
@@ -45,6 +55,7 @@ export interface IUser {
 export interface ILeaveTypes {
   id: number | null; // 一意のID
   name: string; // 休暇の名前
+  value: string | null;
   // leave_type: string; // 休暇のタイプ
   parentId: number | null; // 親カテゴリのID（ルートカテゴリなら省略）
   children?: ILeaveTypes[]; // 子カテゴリ（サブカテゴリー）

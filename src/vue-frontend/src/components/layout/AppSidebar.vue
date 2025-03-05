@@ -70,10 +70,10 @@ const items = [
     props: {
       prependIcon: "mdi-email-arrow-right-outline",
       link: true,
-      to: "/member/leave-requests",
+      to: "/member/leave-applications",
       exact: true,
     },
-    value: "/member/leave-requests",
+    value: "/member/leave-applications",
     roles: [ERole.MEMBER],
   },
   { type: "divider" },

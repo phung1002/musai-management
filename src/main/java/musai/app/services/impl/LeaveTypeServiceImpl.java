@@ -12,7 +12,6 @@ import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveTypeRequestDTO;
 import musai.app.DTO.response.LeaveTypeChildrenResponseDTO;
 import musai.app.DTO.response.LeaveTypeParentResponseDTO;
-import musai.app.DTO.response.LeaveTypeResponseDTO;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.LeaveType;
@@ -35,7 +34,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 			throw new BadRequestException("Error: Name is already taken!");
 		}
 		LeaveType parent = findParent(leaveTypeDTO.getParentId());
-		LeaveType leaveType = new LeaveType(leaveTypeDTO.getName(), parent);
+		LeaveType leaveType = new LeaveType(leaveTypeDTO.getName(), parent, null);
 		leaveTypeResposity.save(leaveType);
 		return new MessageResponse("Add Leave Type successfully!");
 	}
@@ -95,20 +94,25 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 	// Create API list tree
 	@Override
 	public List<LeaveTypeChildrenResponseDTO> getAllLeaveTypeTree() {
-		List<LeaveType> leaveTypes = leaveTypeResposity.findAll(); // includes deleted and not-deleted
+		List<LeaveType> leaveTypes = leaveTypeResposity.findAll();
 
-		List<LeaveType> activeLeaveTypes = leaveTypes.stream().filter(leave -> leave.getDeletedAt() == null).toList(); // not
+		List<LeaveType> activeLeaveTypes = leaveTypes.stream().filter(leave -> leave.getDeletedAt() == null).toList();
 
 		return activeLeaveTypes.stream().filter(leave -> leave.getParent() == null)
-				.map(leave -> new LeaveTypeChildrenResponseDTO(leave.getId(), leave.getName(),
+				.map(leave -> new LeaveTypeChildrenResponseDTO(leave.getId(), leave.getName(), leave.getValue(),
 						filterChildren(leave.getChildren(), activeLeaveTypes)))
 				.toList();
 	}
 
-	private List<LeaveType> filterChildren(List<LeaveType> children, List<LeaveType> activeLeaveTypes) {
-		if (children == null)
+	private List<LeaveTypeChildrenResponseDTO> filterChildren(List<LeaveType> children,
+			List<LeaveType> activeLeaveTypes) {
+		if (children == null) {
 			return new ArrayList<>();
-		return children.stream().filter(activeLeaveTypes::contains).toList();
+		}
+		return children.stream().filter(activeLeaveTypes::contains)
+				.map(child -> new LeaveTypeChildrenResponseDTO(child.getId(), child.getName(), child.getValue(),
+						filterChildren(child.getChildren(), activeLeaveTypes)))
+				.toList();
 	}
 
 	// get Detail
@@ -131,7 +135,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 
 		List<LeaveTypeChildrenResponseDTO> filteredLeaves = leaveTypeResposity.findAll().stream()
 				.filter(leave -> leave.getName().toLowerCase().contains(keyword.toLowerCase()))
-				.map(leave -> new LeaveTypeChildrenResponseDTO(leave.getId(), leave.getName(), leave.getChildren()))
+				.map(leave -> new LeaveTypeChildrenResponseDTO(leave.getId(), leave.getName()))
 				.collect(Collectors.toList());
 
 		return filteredLeaves;

@@ -1,5 +1,6 @@
 package musai.app.models;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
@@ -41,10 +42,10 @@ public class LeaveApplication {
 	private LeaveType leaveType;
 
 	@Column(name = "start_date", nullable = false)
-	private LocalDateTime startDate;
+	private LocalDate startDate;
 
 	@Column(name = "end_date", nullable = false)
-	private LocalDateTime endDate;
+	private LocalDate endDate;
 
 	@Column(name = "reason", length = 500)
 	private String reason;

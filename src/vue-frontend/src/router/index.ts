@@ -5,7 +5,6 @@ import LoginVue from "@/components/auth/Login.vue";
 import DefaultLayoutVue from "@/components/layout/DefaultLayout.vue";
 import NotFoundVue from "@/components/auth/NotFound.vue";
 import UserVue from "@/views/User.vue";
-import LeaveRequestVue from "@/views/LeaveRequest.vue";
 import { ERole } from "@/constants/role";
 
 import UserLeaveManagementViewVue from "@/views/UserLeaveManagementView.vue";
@@ -14,6 +13,7 @@ import PasswordChangeVue from "@/components/auth/PasswordChange.vue";
 import CalendarVue from "@/views/Calendar.vue";
 import DocumentVue from "@/views/Document.vue";
 import LeaveType from "@/views/LeaveType.vue";
+import LeaveApplicationVue from "@/views/LeaveApplication.vue";
 
 const publicRoutes = {
   path: "/login",
@@ -73,9 +73,9 @@ const routes = {
       },
     },
     {
-      path: "/member/leave-requests",
-      name: "member-leave-requests",
-      component: LeaveRequestVue,
+      path: "/member/leave-applications",
+      name: "member-leave-applications",
+      component: LeaveApplicationVue,
       meta: {
         requiresAuth: true,
         requiredRoles: [ERole.MEMBER],

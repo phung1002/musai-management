@@ -60,7 +60,7 @@
   "leave_duration_to": "休暇終了日",
   "leave_reason": "休暇理由",
   "leave_apply_confirm_message": "提出してもよろしいですか？",
-  "leave_update_confirm_message":"更新してもよろしいですか？",
+  "leave_update_confirm_message": "更新してもよろしいですか？",
   "confirm": "確認！",
   "password_change_confirm_message": "パスワード変更してもよろしいですか？",
   "logout_confirm_message": "ログアウトしてもよろしいですか？",
@@ -105,10 +105,13 @@
     "delete_failure": "削除に失敗しました。",
     "delete_your_self": "自分を削除することはできません。",
     "validation_error": "送信前にエラーを修正してください。",
+    "half_day_date_must_match": "半休を選択する場合、開始日と終了日は同じである必要があります。",
     "user_exists": "ユーザー名はすでにシステムに存在します。",
     "user_not_found": "ユーザー名はシステムに存在しません。",
     "admin_change_their_password": "自分のパスワードを変更する場合は、再ログインが必要です。",
-    "cannot_remove_own_admin_role": "自身の管理者権限を削除することは許可されていません。"
+    "cannot_remove_own_admin_role": "自身の管理者権限を削除することは許可されていません。",
+    "cancel_only_pending": " ステータスが「承認待ち」の休暇申請のみキャンセルできます。",
+    "confirm_leave_application": "{n}日間の休暇を申請しますか？"
   },
   "validation": {
     "required_input": "このフィールドは必須です。",
@@ -118,5 +121,13 @@
     "password_format": "パスワードには大文字、小文字、数字が含まれている必要があります。",
     "furigana_format": "正しいふりがなの形式で入力してください。",
     "half_size": "半角文字のみを入力してください。"
+  },
+  "application_status": {
+    "PENDING": "承認待ち",
+    "APPROVED": "承認済み",
+    "REJECTED": "却下",
+    "CANCELED": "キャンセル済み",
+    "REQUESTED_CHANGE": "変更依頼",
+    "REVOKED": "取り消し"
   }
 }

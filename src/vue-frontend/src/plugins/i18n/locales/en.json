@@ -105,10 +105,13 @@
     "delete_failure": "deletion failed.",
     "delete_your_self": "you cannot delete yourself.",
     "validation_error": "please correct the highlighted errors before submitting.",
+    "half_day_date_must_match": "When selecting half day, the start date and end date must be the same.",
     "user_exists": "The username already exists in the system.",
     "user_not_found": "The username does not exist in the system.",
     "admin_change_their_password": "If you change your own password, you need to log in again.",
-    "cannot_remove_own_admin_role": "You are not allowed to remove your own ADMIN permissions."
+    "cannot_remove_own_admin_role": "You are not allowed to remove your own ADMIN permissions.",
+    "cancel_only_pending" : "You can only cancel a leave application with the status 'Pending.'",
+    "confirm_leave_application": "Do you want to apply for leave for {n} days?"
   },
   "validation": {
     "required_input": "this field is required",
@@ -118,5 +121,13 @@
     "password_format": "password must include uppercase, lowercase, and numbers.",
     "furigana_format": "please enter the furigana in the correct format.",
     "half_size": "please enter half-size characters only."
+  },
+  "application_status": {
+    "PENDING": "PENDING",
+    "APPROVED": "APPROVED",
+    "REJECTED": "REJECTED",
+    "CANCELED": "CANCELED",
+    "REQUESTED_CHANGE": "REQUESTED_CHANGE",
+    "REVOKED": "REVOKED"
   }
 }
