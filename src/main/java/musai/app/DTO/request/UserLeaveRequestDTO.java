@@ -6,10 +6,11 @@ import lombok.Data;
 
 @Data
 public class UserLeaveRequestDTO {
+	private Long Id;
     private Long userId;
     private Long leaveTypeId;
-    private Integer totalDays;
-    private Integer usedDays;
+    private Double totalDays;
+    private Double usedDays;
     private LocalDate validFrom;
     private LocalDate validTo;
     

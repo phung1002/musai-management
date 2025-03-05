@@ -43,12 +43,17 @@
   "leave_name": "leave name",
   "update_leave": "update leave",
   "update": "update",
+  "employee_name": "employee name",
   "roles": {
     "ADMIN": "admin",
     "MANAGER": "management",
     "MEMBER": "member"
   },
   "leave_type": "leave type",
+  "valid_leaves": "valid leaves",
+  "available_leaves": "available leaves",
+  "used_leaves": "used leaves",
+  "expired": "date of expiry",
   "paid_leave": "paid leave",
   "public_leave": "public leave",
   "full_day_leave": "full day leave",
@@ -88,6 +93,8 @@
   "account": "account",
   "detail_information": "detail information",
   "parent_id": "parent id",
+  "title": "title",
+  "submit_date": "submit date",
   "message": {
     "list_failure": "Failed to fetch data. Please try again.",
     "add_success": "addition successful!",

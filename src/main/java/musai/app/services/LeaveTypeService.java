@@ -21,7 +21,7 @@ public interface LeaveTypeService {
 	List<LeaveTypeChildrenResponseDTO> getAllLeaveTypeTree(); 
 	
 	LeaveTypeParentResponseDTO getLeaveTypeDetail(Long id);
-
+	
     List<LeaveTypeChildrenResponseDTO> searchLeaveType(String keyword);
 	
 }

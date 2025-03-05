@@ -3,6 +3,7 @@ package musai.app.models;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.UpdateTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -15,9 +16,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@SQLRestriction("deleted_at IS NULL")
 @Data
 @NoArgsConstructor
 @Entity
@@ -36,11 +39,13 @@ public class UserLeave {
     @JoinColumn(name = "leave_type_id")
     private LeaveType leaveType;
     
+    @Min(value = 0, message="Total days cannot be negative")
     @Column(name = "total_days")
-    private Integer totalDays;
+    private Double totalDays;
     
+    @Min(value = 0, message="Use days cannot be negative")
     @Column(name = "used_days")
-    private Integer usedDays;
+    private Double usedDays;
     
     @JsonBackReference
     @Column(name = "valid_from")
@@ -66,10 +71,10 @@ public class UserLeave {
     private LocalDateTime deletedAt;
     
     // Constructor
-    public UserLeave(User user, LeaveType leaveType, Integer totalDays) {
-        this.user = user;
+    public UserLeave(User userId, LeaveType leaveType, Double totalDays) {
+        this.user = userId;
         this.leaveType = leaveType;
         this.totalDays = totalDays;
-        this.usedDays = 0;  // Initialize with 0 used days
+        this.usedDays = 0.0;  // Initialize with 0 used days
     }
 }

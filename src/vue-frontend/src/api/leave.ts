@@ -1,5 +1,5 @@
 import axiosIns from "@/plugins/axios";
-import { ILeaveTypes } from "@/types/type";
+import { ILeaveTypes, IUserLeaves } from "@/types/type";
 
 // 休暇リスト取得API呼び出し
 export async function getLeaves(): Promise<ILeaveTypes[]> {
@@ -76,6 +76,18 @@ export async function searchLeave(key: string): Promise<ILeaveTypes[]> {
     return response.data;
   } catch (error) {
     console.error("Search leave failed:", error);
+    throw error;
+  }
+}
+// ユーザー休暇リスト取得
+export async function getUserLeaves(): Promise<IUserLeaves[]> {
+  try {
+    const response = await axiosIns.get<IUserLeaves[]>("/user-leaves/list");
+    console.log("response.data", response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error("List user failed:", error);
     throw error;
   }
 }

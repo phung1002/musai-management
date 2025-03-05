@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { reactive, ref } from "vue";
+import { ref, onMounted } from "vue";
+import { IUser } from "@/types/type";
+import { profile } from "@/api/auth";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import ProfileDropdown from "@/components/auth/ProfileCard.vue";
 import { logout } from "@/api/auth";
@@ -15,10 +17,24 @@ const handleSubmit = () => {
 const showProfile = () => {
   showProfileView.value = true;
 };
-const filters = reactive({
-  userid: "",
-  username: "",
-  gender: "",
+
+// APIからプロフィール情報取得
+const infor = ref<IUser>({} as IUser);
+const getProfile = async () => {
+  try {
+    const response = await profile();
+    if (!response || !response.data) {
+      console.log("No profile data received");
+      return;
+    }
+    infor.value = response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+// コンポーネントがマウントされたときAPI呼び出し修理実行
+onMounted(() => {
+  getProfile();
 });
 const onConfirmed = () => {
   logout();
@@ -40,7 +56,7 @@ const onConfirmed = () => {
       >
         <VBadge dot color="success" offset-x="0" offset-y="3">
           <!-- 性別　男性の場合写真表示設定 -->
-          <VAvatar size="35" v-if="filters.gender.valueOf() === 'male'">
+          <VAvatar size="35" v-if="infor.gender === 'male'">
             <img
               src="@\assets\images\users\avatar-4.png"
               height="35"
@@ -48,7 +64,7 @@ const onConfirmed = () => {
             />
           </VAvatar>
           <!-- 性別　女性の場合写真表示設定 -->
-          <VAvatar size="35" v-if="filters.gender.valueOf() === 'female'">
+          <VAvatar size="35" v-if="infor.gender === 'female'">
             <img
               src="@\assets\images\users\avatar-4.png"
               height="35"
@@ -56,7 +72,7 @@ const onConfirmed = () => {
             />
           </VAvatar>
           <!-- 性別　未登録の場合写真表示設定 -->
-          <VAvatar size="35" v-if="filters.gender.valueOf() === ''">
+          <VAvatar size="35" v-if="infor.gender === ''">
             <img src="@\assets\images\users\user.png" height="35" alt="user" />
           </VAvatar>
         </VBadge>

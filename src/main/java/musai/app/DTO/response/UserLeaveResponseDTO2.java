@@ -9,10 +9,11 @@ import lombok.Data;
 @Builder
 
 @AllArgsConstructor
-public class UserLeaveResponseDTO {
+public class UserLeaveResponseDTO2 {
 	private Long id;
-	//private Long userId;
-    private String userFullName;
+	private Long userId;
+    private String userName;
+    private Long leaveTypeId;  
     private String leaveTypeName;
     private Double totalDays;
     private Double usedDays;

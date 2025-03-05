@@ -106,13 +106,13 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("Leave type not exist"));
 
-		if (leaveType.getValue() == ELeaveValue.)
+		// if (leaveType.getValue() == ELeaveValue.)
 		// check condition: remainDays > requestDays
 		List<UserLeaveResponseDTO> userLeaves = userLeaveService.getUserLeaveForMember(request.getLeaveTypeId(),
 				principal);
-		int remainDays = userLeaves.stream().mapToInt(userLeave -> userLeave.getTotalDays() - userLeave.getUsedDays())
+		double remainDays = userLeaves.stream().mapToDouble(userLeave -> userLeave.getTotalDays() - userLeave.getUsedDays())
 				.sum();
-		int requestDays = (int) IntStream.rangeClosed(0, (int) ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()))
+		double requestDays = (double) IntStream.rangeClosed(0, (double) ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()))
 		        .mapToObj(request.getStartDate()::plusDays)
 		        .filter(date -> date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY)
 		        .count();

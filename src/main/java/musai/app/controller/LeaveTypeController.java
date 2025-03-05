@@ -23,7 +23,6 @@ import musai.app.DTO.response.LeaveTypeParentResponseDTO;
 import musai.app.DTO.response.LeaveTypeResponseDTO;
 import musai.app.services.LeaveTypeService;
 
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/leave-types")
 public class LeaveTypeController {
@@ -92,7 +91,7 @@ public class LeaveTypeController {
 	// Get search
 	@GetMapping("/search")
 	public List<LeaveTypeChildrenResponseDTO> searchLeaveTypes(@RequestParam String keyword) {
-		// Call the searchLeaveType method from the service layer and return the result
+		
 		return leaveTypeService.searchLeaveType(keyword);
 	}
 
