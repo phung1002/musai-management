@@ -4,6 +4,6 @@ public enum ELeaveValue {
 	PAID_LEAVE,
 	PUBLIC_LEAVE,
 	HALF_DAY,
-	ALL_DAY,
+	FULL_DAY,
 	SUMMER_DAY
 }

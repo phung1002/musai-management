@@ -30,9 +30,10 @@ import lombok.NoArgsConstructor;
 @Table(name = "leave_types")
 public class LeaveType {
 
-	public LeaveType(String name, LeaveType parent) {
+	public LeaveType(String name, LeaveType parent, String value) {
 		this.name = name;
 		this.parent = parent;
+		this.value = value;
 	}
 	
 	@Id

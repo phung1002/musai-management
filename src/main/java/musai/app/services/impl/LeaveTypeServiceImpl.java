@@ -34,7 +34,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 			throw new BadRequestException("Error: Name is already taken!");
 		}
 		LeaveType parent = findParent(leaveTypeDTO.getParentId());
-		LeaveType leaveType = new LeaveType(leaveTypeDTO.getName(), parent);
+		LeaveType leaveType = new LeaveType(leaveTypeDTO.getName(), parent, null);
 		leaveTypeResposity.save(leaveType);
 		return new MessageResponse("Add Leave Type successfully!");
 	}
