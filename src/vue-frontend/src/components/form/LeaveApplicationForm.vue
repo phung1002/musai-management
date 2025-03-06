@@ -124,12 +124,12 @@ const handleSubmit = async () => {
     // create
     try {
       await applyLeaveApplication(formModel);
-      showSnackbar("add_success", "success");
+      toast.success(t("message.add_success"));
       emit("refetch-data");
       handleCancel();
     } catch (error: any) {
       if (error.status === 400) {
-        errorMessage.push("error_requested_days_exceed");
+        toast.error(t("message.error_requested_days_exceed"));
       } else if (error.status == 404) {
         toast.error(t("message.error_leave_type_or_user_not_exist"));
       } else toast.error(t("message.add_failure"));
@@ -184,7 +184,7 @@ const onConfirm = async () => {
   }
   if (halfDayId == paidBox.value) {
     if (formModel.startDate != formModel.endDate) {
-      showSnackbar("half_day_date_must_match", "error");
+      toast.error(t("message.half_day_date_must_match"));
       return;
     }
     requestDays = 0.5;
@@ -195,7 +195,7 @@ const onConfirm = async () => {
     );
   const isValid = await formRef.value?.validate();
   if (!isValid.valid) {
-    showSnackbar("validation_error", "error");
+    toast.error(t("message.validation_error"));
     return;
   }
   messageConfirm.value = t("message.confirm_leave_application", requestDays);

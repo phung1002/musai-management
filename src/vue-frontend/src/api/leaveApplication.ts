@@ -38,3 +38,17 @@ export async function applyLeaveApplication(params:ILeaveApplication): Promise<v
       throw error;
     }
 }
+
+// call to api update leave application
+export async function updateApplication(id: number, params: ILeaveApplication): Promise<void> {
+  try {
+    await axiosIns.put(`/leave-applications/update/${id}`, params);
+  } catch (error: any) {
+    if (error.response) {
+      console.error("Update leave application failed:", error.response.data);
+    } else {
+      console.error("Unexpected error:", error);
+    }
+    throw error;
+  }
+}
