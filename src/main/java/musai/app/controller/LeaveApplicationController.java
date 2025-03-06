@@ -41,7 +41,7 @@ public class LeaveApplicationController {
 		List<LeaveApplicationResponseDTO> response = leaveApplicationService.getAllLeaveApplications();
 		return ResponseEntity.ok(response);
 	}
-	
+
 	/**
 	 * API member get their leave application
 	 */
@@ -51,13 +51,14 @@ public class LeaveApplicationController {
 		List<LeaveApplicationResponseDTO> response = leaveApplicationService.getLeaveApplicationsForMember(principal);
 		return ResponseEntity.ok(response);
 	}
-	
+
 	/**
 	 * API member apply leave application
 	 */
 	@PreAuthorize("hasRole('MEMBER')")
 	@PostMapping("/leave-applications")
-	public ResponseEntity<?> applyLeave(@Validated @RequestBody LeaveApplicationRequestDTO request, @AuthenticationPrincipal UserDetailsImpl principal) {
+	public ResponseEntity<?> applyLeave(@Validated @RequestBody LeaveApplicationRequestDTO request,
+			@AuthenticationPrincipal UserDetailsImpl principal) {
 		MessageResponse response = leaveApplicationService.applyLeave(request, principal);
 		return ResponseEntity.ok(response);
 	}
@@ -70,11 +71,11 @@ public class LeaveApplicationController {
 	public ResponseEntity<?> respondToLeave(@PathVariable Long id,
 			@Validated @RequestBody Map<String, String> requestBody,
 			@AuthenticationPrincipal UserDetailsImpl principal) {
-	    String status = requestBody.get("status");
+		String status = requestBody.get("status");
 		MessageResponse response = leaveApplicationService.respondToLeave(id, status, principal);
 		return ResponseEntity.ok(response);
 	}
-	
+
 	/**
 	 * API member cancel leave application
 	 */
@@ -90,8 +91,10 @@ public class LeaveApplicationController {
 	 */
 	@PreAuthorize("hasRole('MEMBER')")
 	@PutMapping("leave-applications/update/{id}")
-	public ResponseEntity<?> updateLeaveApplication(@PathVariable Long id, @Validated @RequestBody LeaveApplicationRequestDTO request) {
-		MessageResponse response = leaveApplicationService.updateLeaveApplication(id, request);
+	public ResponseEntity<?> updateLeaveApplication(@PathVariable Long id,
+			@Validated @RequestBody LeaveApplicationRequestDTO request,
+			@AuthenticationPrincipal UserDetailsImpl principal) {
+		MessageResponse response = leaveApplicationService.updateLeaveApplication(id, request, principal);
 		return ResponseEntity.ok(response);
-	}	
+	}
 }
