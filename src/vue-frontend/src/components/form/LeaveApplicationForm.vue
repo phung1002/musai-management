@@ -1,19 +1,22 @@
 <script lang="ts" setup>
 import { Ref, ref, reactive, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { VTab } from "vuetify/lib/components/index.mjs";
-import { useLeaveTypesStore } from "@/store/leaveTypesStore";
 import { getLeavesTree } from "@/api/leave";
-import { applyLeaveApplication } from "@/api/leaveApplication";
+import {
+  applyLeaveApplication,
+  updateApplication,
+} from "@/api/leaveApplication";
 import { ILeaveTypes, ILeaveApplication } from "@/types/type";
 import { useValidator } from "@/utils/validation";
-import { showSnackbar } from "@/composables/useSnackbar";
 import { ELeaveType } from "@/constants/leaveType";
 
 const isDialogVisible = ref(false);
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
 const { t } = useI18n();
+
 const isLoading = ref(false);
 const isError = ref(false);
 const emit = defineEmits(["form:cancel", "refetch-data"]);
@@ -118,19 +121,36 @@ const submiting = ref(false);
 const handleSubmit = async () => {
   submiting.value = true;
   if (!props.isEdit) {
+    // create
     try {
       await applyLeaveApplication(formModel);
       showSnackbar("add_success", "success");
       emit("refetch-data");
       handleCancel();
-    } catch (error : any) {
-      const errorMessage = ["add_failure"];
+    } catch (error: any) {
       if (error.status === 400) {
         errorMessage.push("error_requested_days_exceed");
       } else if (error.status == 404) {
-        errorMessage.push("error_leave_type_or_user_not_exist");
-      }
-      showSnackbar(errorMessage, "error");
+        toast.error(t("message.error_leave_type_or_user_not_exist"));
+      } else toast.error(t("message.add_failure"));
+    }
+  } else {
+    //update
+    try {
+      // if update user
+      if (formModel.id == null) return;
+      await updateApplication(formModel.id, formModel);
+      toast.success(t("message.update_success"));
+      handleCancel();
+      emit("refetch-data");
+    } catch (error: any) {
+      if (error.status === 400) {
+        toast.error(t("message.error_requested_days_exceed"));
+      } else if (error.status == 404) {
+        toast.error(t("message.error_leave_type_or_user_not_exist"));
+      } else toast.error(t("message.update_failure"));
+    } finally {
+      submiting.value = false;
     }
   }
 };

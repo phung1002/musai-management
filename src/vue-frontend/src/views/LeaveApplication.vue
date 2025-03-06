@@ -14,18 +14,14 @@ import { showSnackbar } from "@/composables/useSnackbar";
 // 日本語にローカル変更用
 const { t } = useI18n();
 const showFilter = ref(true);
-const applyFrom = ref(false);
-const editForm = ref(false);
-const loading = ref(true);
-
 const isEdit = ref(false);
+const isDialogVisible = ref(false);
 const selectedApplication = ref<ILeaveApplication>({} as ILeaveApplication);
 const leaveApplications = ref<ILeaveApplication[]>([]);
-const selectedLeaveApplication = ref<ILeaveApplication>(
-  {} as ILeaveApplication
-);
 const isLoading = ref(false);
 const isError = ref(false);
+const isConfirmDialogVisible = ref(false);
+
 const convertDate = (date: Date | null): string | null => {
   if (date == null) return null;
   const d = new Date(date);
@@ -35,33 +31,19 @@ const convertDate = (date: Date | null): string | null => {
   return `${year}-${month}-${day}`;
 };
 
-const loadData = async () => {
-  loading.value = true;
-  const params = { filter: filters, ...pagination };
-  loading.value = false;
+const handleSearch = async () => {
+
 };
-const handleApplyFilter = () => {
-  loadData();
+const openCreateDialog = () => {
+  isEdit.value = false;
+  isDialogVisible.value = true;
 };
-const handleCreateItem = () => {
-  applyFrom.value = true;
+const openUpdateDialog = (application: ILeaveApplication) => {
+  isEdit.value = true;
+  isDialogVisible.value = true;
+  selectedApplication.value = application;
 };
-const handleEditItem = (id: number) => {
-  editForm.value = true;
-  console.log("edit", id);
-};
-const handleClear = () => {
-  filters.role = "";
-  filters.status = "";
-};
-const filters = reactive({
-  role: "",
-  status: "",
-});
-const pagination = reactive({
-  page: 1,
-  pageSize: 10,
-});
+
 // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
@@ -94,16 +76,14 @@ onMounted(() => {
   fetchLeaveApplications();
 });
 
-const isConfirmDialogVisible = ref(false);
-
 const openConfirmCancelDialog = (leaveApplication: ILeaveApplication) => {
-  selectedLeaveApplication.value = leaveApplication;
+  selectedApplication.value = leaveApplication;
   isConfirmDialogVisible.value = true;
 };
 const handleCancel = async () => {
-  if (!selectedLeaveApplication.value.id) return;
+  if (!selectedApplication.value.id) return;
   try {
-    await cancelApplication(selectedLeaveApplication.value.id);
+    await cancelApplication(selectedApplication.value.id);
     showSnackbar("delete_success", "success");
     fetchLeaveApplications();
   } catch (error: any) {
@@ -132,7 +112,7 @@ const handleCancel = async () => {
               <VBtn
                 color="primary"
                 variant="elevated"
-                @click="handleCreateItem"
+                @click="openCreateDialog"
               >
                 <VIcon>mdi-plus</VIcon>
                 <span class="text-lg font-medium ml-2">{{
@@ -151,11 +131,11 @@ const handleCancel = async () => {
                 clearable
                 variant="plain"
                 class="search"
-                @keyup.enter="handleApplyFilter"
+                @keyup.enter="handleSearch"
                 @click:prepend="showFilter = !showFilter"
-                @click:clear="handleClear"
+                @click:clear="handleSearch"
               />
-              <VBtn icon @click="handleApplyFilter" density="comfortable">
+              <VBtn icon @click="handleSearch" density="comfortable">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
             </VToolbar>
@@ -195,7 +175,7 @@ const handleCancel = async () => {
                     icon
                     variant="plain"
                     class="action-btn"
-                    @click="handleEditItem"
+                    @click="openUpdateDialog(item)"
                   >
                     <VIcon color="blue">mdi-pencil</VIcon>
                   </VBtn>
@@ -215,13 +195,13 @@ const handleCancel = async () => {
       </VContainer>
     </VCol>
   </VRow>
-  <VDialog v-model="applyFrom" width="auto">
+  <VDialog v-model="isDialogVisible" width="auto">
     <LeaveRequestForm
       :isEdit="isEdit"
-      :user="selectedApplication"
-    @form:cancel="applyFrom = false"
-    @refetch-data="fetchLeaveApplications"
-     />
+      :application="selectedApplication"
+      @form:cancel="isDialogVisible = false"
+      @refetch-data="fetchLeaveApplications"
+    />
   </VDialog>
   <VDialog v-model="isConfirmDialogVisible" width="auto">
     <ConfimDialogView

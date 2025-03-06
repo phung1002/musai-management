@@ -203,7 +203,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 
 		// Can only be update if the status is 'PENDING' or 'REQUESTED_CHANGE'
 		if (!(leaveApplication.getStatus().equals(ELeaveStatus.PENDING)
-				|| !leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE))) {
+				|| leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE))) {
 			throw new BadRequestException(" Can only be update if the status is PENDING or REQUESTED_CHANGE.");
 		}
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
