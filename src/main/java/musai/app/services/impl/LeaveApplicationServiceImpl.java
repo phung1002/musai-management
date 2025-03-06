@@ -128,7 +128,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	 */
 	@Override
 	public MessageResponse respondToLeave(Long id, String status, UserDetailsImpl principal) {
-		LeaveApplication leaveApplication = leaveApplicationRepository.findById(id)
+		LeaveApplication application = leaveApplicationRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("Leave application not found"));
 
 		// Check status is valid
@@ -138,23 +138,31 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		ELeaveStatus eStatus = ELeaveStatus.valueOf(status.toUpperCase());
 
 		// Can only be revoked if the status is 'approved'.
-		if (status.equals(ELeaveStatus.REVOKED.name()) && !leaveApplication.getStatus().equals(ELeaveStatus.APPROVED)) {
+		if (status.equals(ELeaveStatus.REVOKED.name()) && !application.getStatus().equals(ELeaveStatus.APPROVED)) {
 			throw new BadRequestException("Can only be revoked if the status is 'approved'.");
 		}
 
 		// Can only be revoked if the status is 'pending'.
 		EnumSet<ELeaveStatus> updatableStatuses = EnumSet.of(ELeaveStatus.APPROVED, ELeaveStatus.REJECTED,
 				ELeaveStatus.REQUESTED_CHANGE);
-		if (updatableStatuses.contains(eStatus) && !leaveApplication.getStatus().equals(ELeaveStatus.PENDING)) {
+		if (updatableStatuses.contains(eStatus) && !application.getStatus().equals(ELeaveStatus.PENDING)) {
 			throw new BadRequestException("Can only be responded to if the status is 'pending'.");
 		}
 		// case REJECTED, REVOKED: update usedDays
-		
-		leaveApplication.setStatus(eStatus);
-		leaveApplication.setRespondedBy(userRepository.findById(principal.getId()).orElse(null));
-		leaveApplication.setRespondedAt(LocalDateTime.now());
+		if( status.equals(ELeaveStatus.REJECTED.name()) || status.equals(ELeaveStatus.REVOKED.name())) {
+			LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(application.getLeaveType().getId())
+					.orElseThrow(() -> new NotFoundException("Leave type not exist"));
+			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal);
 
-		leaveApplicationRepository.save(leaveApplication);
+			double cancelDays = getRequestDays(leaveType, application.getStartDate(), application.getEndDate());
+			updateUsedDays(userLeaves, cancelDays, true);
+		}
+		
+		application.setStatus(eStatus);
+		application.setRespondedBy(userRepository.findById(principal.getId()).orElse(null));
+		application.setRespondedAt(LocalDateTime.now());
+
+		leaveApplicationRepository.save(application);
 
 		return new MessageResponse("Leave application is " + status + " now.");
 	}
@@ -201,6 +209,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("Leave type not exist"));
 
+		// case not change leaveType
 		if (leaveType.getValue() != null) {
 			// check condition: remainDays > requestDays
 			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal);
@@ -223,6 +232,8 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 				updateUsedDays(userLeaves, requestDays - oldRequestDays, false);
 			}
 		}
+		
+		// case change leaveType: pending ......
 
 		leaveApplication.setLeaveType(leaveType);
 		leaveApplication.setStartDate(request.getStartDate());
