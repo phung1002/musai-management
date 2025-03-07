@@ -1,9 +1,10 @@
+<!-- ユーザー管理画面 -->
 <script setup lang="ts">
 import { reactive, ref, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { deleteUser, getAllUsers, searchUser } from "@/api/user";
 import { IUser } from "@/types/type";
-import UserForm from "@/components/user/UserForm.vue";
+import UserForm from "@/components/form/UserForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { showSnackbar } from "@/composables/useSnackbar";
 

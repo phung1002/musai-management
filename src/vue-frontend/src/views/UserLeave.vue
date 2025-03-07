@@ -1,7 +1,7 @@
 <!-- 社員休暇管理 画面　-->
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
-import UserLeaveForm from "@/components/user/UserLeaveForm.vue";
+import UserLeaveForm from "@/components/form/UserLeaveForm.vue";
 import { useI18n } from "vue-i18n";
 import { VTab } from "vuetify/lib/components/index.mjs";
 import { IUserLeaves } from "@/types/type";

@@ -1,3 +1,4 @@
+<!-- 社員休暇　フォーム -->
 <script lang="ts" setup>
 import { ref, Ref, defineProps, onMounted, reactive, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -7,7 +8,7 @@ import { IUserLeaves, ILeaveTypes } from "@/types/type";
 import { getLeavesTree, addUserLeave, updateUserLeave } from "@/api/leave";
 import { showSnackbar } from "@/composables/useSnackbar";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import UserList from "@/components/user/UserList.vue";
+import UserList from "@/components/ui/UserSearchBox.vue";
 const { t } = useI18n(); //日本語にローカル変更用
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const errors = ref<{ leave_type?: string; leave_name?: string }>({});
@@ -253,29 +254,32 @@ const onConfirmed = async () => {
               <VWindowItem value="paid"> </VWindowItem>
               <VWindowItem value="public"> </VWindowItem>
             </VWindow>
+            <VLabel>{{ t("employee_name") }}</VLabel>
             <VRow>
               <VCol cols="12">
-                <VLabel>{{ t("employee_name") }}</VLabel>
-                <VTextField
-                  v-model="formModel.userName"
-                  :rules="[validator.required]"
-                  variant="outlined"
-                  color="primary"
-                  name="userName"
-                  @focus="showUserList"
-                  :disabled="isEdit"
-                />
+                <VToolbar tag="div" color="transparent" flat>
+                  <VTextField
+                    v-model="formModel.userName"
+                    :rules="[validator.required]"
+                    variant="outlined"
+                    color="primary"
+                    clearable
+                    class="search"
+                    name="userName"
+                    :disabled="isEdit"
+                  />
+                  <VBtn
+                    icon
+                    density="comfortable"
+                    @click="showUserList"
+                    :disabled="isEdit"
+                  >
+                    <VIcon>mdi-magnify</VIcon>
+                  </VBtn>
+                </VToolbar>
               </VCol>
-              <VCol cols="12" v-if="!isEdit">
-                <VLabel>{{ t("user_id") }}</VLabel>
-                <VTextField
-                  v-model="formModel.userId"
-                  variant="outlined"
-                  color="primary"
-                  name="userId"
-                  :disabled="!isEdit"
-                />
-              </VCol>
+            </VRow>
+            <VRow>
               <VCol cols="4">
                 <VLabel>{{ t("valid_leaves") }}</VLabel>
                 <VSelect
