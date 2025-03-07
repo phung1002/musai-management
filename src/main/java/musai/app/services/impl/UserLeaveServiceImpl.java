@@ -91,9 +91,10 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		userLeave.setUser(existingUser);
 		userLeave.setLeaveType(leaveType);
 		userLeave.setTotalDays(userLeaveRequestDTO.getTotalDays());
-
+		userLeave.setUsedDays(0.0);
+		
 		// calculate remainedDays
-		userLeave.setRemainedDays(userLeave.getTotalDays() - userLeave.getUsedDays());
+		userLeave.setRemainedDays(userLeave.getTotalDays());
 
 		userLeave.setValidFrom(userLeaveRequestDTO.getValidFrom());
 		userLeave.setValidTo(userLeaveRequestDTO.getValidTo());

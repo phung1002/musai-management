@@ -1,49 +1,49 @@
-<!-- 書類提出 画面　-->
+<!-- 社員休暇管理 画面　-->
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
-import UploadForm from "@/components/form/UploadForm.vue";
+import UserLeaveForm from "@/components/user/UserLeaveForm.vue";
 import { useI18n } from "vue-i18n";
 import { VTab } from "vuetify/lib/components/index.mjs";
 import { IUserLeaves } from "@/types/type";
-import { getUserLeaves } from "@/api/leave";
+import { getUserLeaves, searchUserLeave } from "@/api/leave";
 const { t } = useI18n();
 const addFrom = ref(false); // 追加プラグ
-const isDialogVisible = ref(false); //確認ダイアログ
 const editForm = ref(false); //編集プラグ
-const activeTab = ref("paid"); // タブの初期値
+const activeTab = ref(" 有休"); // タブの初期値
 const userLeaves = ref<IUserLeaves[]>([]); // 休暇リスト
-const selectedId = ref<IUserLeaves>({} as IUserLeaves);
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
-
+const selectedLeave = ref<IUserLeaves | undefined>(undefined); // 編集する休暇情報
+const isEdit = ref(false); // 編集モードかどうか
 // メイン休暇タブで分類
 const tabs = ref([
-  { title: "paid_leave", icon: "mdi-gift-open", tab: "paid" },
-  { title: "public_leave", icon: "mdi-pine-tree-box", tab: "public" },
+  { title: "paid_leave", icon: "mdi-gift-open", tab: "有休" },
+  { title: "public_leave", icon: "mdi-pine-tree-box", tab: "公休" },
 ]);
 // // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  { title: t("employee_name"), key: "employee_name" },
-  { title: t("valid_leaves"), key: "valid_leaves" },
-  { title: t("available_leaves"), key: "available_leaves" },
-  { title: t("used_leaves"), key: "used_leaves" },
-  { title: t("expired"), key: "expired" },
+  { title: t("employee_name"), key: "userName" },
+  { title: t("valid_leaves"), key: "totalDays" },
+  { title: t("used_leaves"), key: "usedDays" },
+  { title: t("available_leaves"), key: "remained_day" },
+  { title: t("leave_start"), key: "validFrom" },
+  { title: t("leave_expired"), key: "validTo" },
   { title: t("action"), key: "action" },
 ]);
 // 休暇リストをロード
 const loadLeave = (lst: any) => {
-  userLeaves.value = lst.map((userLeaves: IUserLeaves) => ({
-    ...userLeaves,
+  userLeaves.value = lst.map((userLeave: IUserLeaves) => ({
+    ...userLeave,
   }));
 };
-// ユーザー休暇リスト取得　API呼び出し
+// ユーザー休暇リスト取得 API呼び出し
 const fetchLeaveType = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
     const response = await getUserLeaves(); // API呼び出
-    console.log("response", response);
+    console.log("response ss", response);
     loadLeave(response); // リスト更新
   } catch (error) {
     isError.value = true;
@@ -52,33 +52,42 @@ const fetchLeaveType = async () => {
     isLoading.value = false;
   }
 };
-// 追加用ダイアログ表示
-const handleCreateItem = () => {
-  addFrom.value = true;
+// 検索
+const keyWord = ref("");
+const handleSearch = async () => {
+  if (keyWord.value == null) {
+    fetchLeaveType();
+    return;
+  }
+  try {
+    const response = await searchUserLeave(keyWord.value);
+    loadLeave(response);
+  } catch (error) {
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
 };
-// 削除確認ダイアログ表示
-const handleDeleteItem = (id: number) => {
-  isDialogVisible.value = true;
-  console.log("delete", id);
+// 追加用ダイアログ表示
+const handleCreateItem = (leaveType: IUserLeaves) => {
+  selectedLeave.value = leaveType; // 新規作成なのでリセット
+  console.log("新規作成");
+  console.log(isEdit.value);
+  addFrom.value = true;
+  isEdit.value = false;
 };
 // 編集用ダイアログ表示
-const handleEditItem = (id: number) => {
-  editForm.value = true;
-  console.log("edit", id);
-};
-// 削除確認ダイアログでOKがクリックされたとき
-const onDeleted = () => {
-  console.log("削除されました");
-  // ここに処理を追加
+const handleEditItem = (userLeave: IUserLeaves) => {
+  selectedLeave.value = { ...userLeave }; // 選択データをセット
+  console.log("編集対象", selectedLeave.value);
+  console.log(isEdit.value);
+  addFrom.value = true;
+  isEdit.value = true;
 };
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
   fetchLeaveType();
   console.log("ok");
-});
-const pagination = reactive({
-  page: 1,
-  pageSize: 10,
 });
 </script>
 <template>
@@ -96,12 +105,29 @@ const pagination = reactive({
               <VSpacer />
               <VBtn color="primary" @click="handleCreateItem" variant="elevated"
                 ><v-icon icon="mdi-plus" start></v-icon>{{ t("add") }}
-                <VDialog v-model="addFrom" width="auto" eager>
-                  <UploadForm @form:cancel="addFrom = false" />
-                </VDialog>
               </VBtn>
             </VCardActions>
           </VToolbar>
+          <VDivider />
+          <!-- 検索バー -->
+          <VCardItem class="py-0">
+            <VToolbar tag="div" color="transparent" flat>
+              <VTextField
+                v-model="keyWord"
+                :prepend-icon="'mdi-filter-variant'"
+                :placeholder="t('type_something')"
+                hide-details
+                clearable
+                variant="plain"
+                class="search"
+                @click:clear="handleSearch"
+                @keydown.enter="handleSearch"
+              />
+              <VBtn icon density="comfortable" @click="handleSearch">
+                <VIcon>mdi-magnify</VIcon>
+              </VBtn>
+            </VToolbar>
+          </VCardItem>
           <VDivider />
           <!-- 休暇タイプタブ設定 -->
           <VTable>
@@ -122,7 +148,7 @@ const pagination = reactive({
                   v-if="!isLoading && !isError"
                 >
                   <!-- 表示　番号設定  -->
-                  <template v-slot:item.no="{ index }">
+                  <template v-slot:item.number="{ index }">
                     {{ index + 1 }}
                   </template>
                   <!-- アクション　設定  -->
@@ -132,27 +158,10 @@ const pagination = reactive({
                         icon
                         variant="plain"
                         class="action-btn"
-                        @click="handleEditItem"
+                        @click="handleEditItem(item)"
                       >
                         <VIcon color="blue">mdi-pencil</VIcon>
                         <VDialog v-model="editForm" width="auto" eager>
-                        </VDialog>
-                      </VBtn>
-                      <VBtn
-                        icon
-                        variant="plain"
-                        class="action-btn"
-                        @click="handleDeleteItem"
-                      >
-                        <VIcon color="red">mdi-delete</VIcon>
-                        <VDialog v-model="isDialogVisible" width="auto" eager>
-                          <ConfimDialogView
-                            :title="t('confirm')"
-                            :message="t('delete_confirm_message')"
-                            :isVisible="isDialogVisible"
-                            @update:isVisible="isDialogVisible = $event"
-                            @confirmed="onDeleted"
-                          />
                         </VDialog>
                       </VBtn>
                     </div>
@@ -165,6 +174,15 @@ const pagination = reactive({
       </VContainer>
     </VCol>
   </VRow>
+  <!-- 追加・修正確認 -->
+  <VDialog v-model="addFrom" width="auto" persistent>
+    <UserLeaveForm
+      :isEdit="isEdit"
+      :userLeave="selectedLeave"
+      @form-cancel="addFrom = false"
+      @refetch-data="fetchLeaveType"
+    />
+  </VDialog>
 </template>
 
 <style scoped>

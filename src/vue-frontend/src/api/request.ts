@@ -1,11 +1,9 @@
-import { ILeaveApplication } from "@/types/type";
+import { ILeaveRequest } from "@/types/type";
 import axiosIns from "@/plugins/axios";
 
-export async function listLeaveApplicationForMember(): Promise<
-  ILeaveApplication[]
-> {
+export async function listLeaveRequestForMember(): Promise<ILeaveRequest[]> {
   try {
-    const response = await axiosIns.get<ILeaveApplication[]>(
+    const response = await axiosIns.get<ILeaveRequest[]>(
       "/member/leave-applications"
     );
     return response.data;
@@ -16,7 +14,7 @@ export async function listLeaveApplicationForMember(): Promise<
 }
 
 // call to api cancel leave application
-export async function cancelApplication(id: number): Promise<void> {
+export async function cancelRequest(id: number): Promise<void> {
   try {
     await axiosIns.put(`/leave-applications/cancel/${id}`);
   } catch (error: any) {
@@ -26,9 +24,7 @@ export async function cancelApplication(id: number): Promise<void> {
 }
 
 // call to api apply a leave application
-export async function applyLeaveApplication(
-  params: ILeaveApplication
-): Promise<void> {
+export async function requestLeave(params: ILeaveRequest): Promise<void> {
   try {
     await axiosIns.post("/leave-applications", params);
   } catch (error: any) {
@@ -38,9 +34,9 @@ export async function applyLeaveApplication(
 }
 
 // call to api update leave application
-export async function updateApplication(
+export async function updateLeaveRequest(
   id: number,
-  params: ILeaveApplication
+  params: ILeaveRequest
 ): Promise<void> {
   try {
     await axiosIns.put(`/leave-applications/update/${id}`, params);
