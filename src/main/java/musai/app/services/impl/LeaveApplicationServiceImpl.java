@@ -1,6 +1,7 @@
 package musai.app.services.impl;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
@@ -10,9 +11,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import lombok.RequiredArgsConstructor;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveApplicationRequestDTO;
 import musai.app.DTO.response.LeaveApplicationResponseDTO;
@@ -32,23 +32,13 @@ import musai.app.services.LeaveApplicationService;
 import musai.app.services.UserLeaveService;
 
 @Service
+@RequiredArgsConstructor
 public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 
-	private LeaveApplicationRepository leaveApplicationRepository;
-	private UserRepository userRepository;
-	private LeaveTypeResposity leaveTypeResposity;
-
-	@Autowired
-	private UserLeaveService userLeaveService;
-
-	public LeaveApplicationServiceImpl(LeaveApplicationRepository leaveApplicationRepository,
-			UserRepository userRepository, LeaveTypeResposity leaveTypeResposity, UserLeaveService userLeaveService) {
-		super();
-		this.leaveApplicationRepository = leaveApplicationRepository;
-		this.userRepository = userRepository;
-		this.leaveTypeResposity = leaveTypeResposity;
-		this.userLeaveService = userLeaveService;
-	}
+	private final LeaveApplicationRepository leaveApplicationRepository;
+	private final UserRepository userRepository;
+	private final LeaveTypeResposity leaveTypeResposity;
+	private final UserLeaveService userLeaveService;
 
 	/**
 	 * Service get all leave applications
@@ -56,10 +46,6 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	@Override
 	public List<LeaveApplicationResponseDTO> getAllLeaveApplications() {
 		List<LeaveApplication> leaveApplications = leaveApplicationRepository.findAllByOrderByCreatedAtDesc();
-		if (leaveApplications.isEmpty()) {
-			throw new NotFoundException("No leave applications found.");
-		}
-
 		List<LeaveApplicationResponseDTO> responseDTOs = leaveApplications.stream().map(this::convertToDTO)
 				.collect(Collectors.toList());
 		return responseDTOs;
@@ -68,9 +54,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	// Convert LeaveApplication to LeaveApplicationResponseDTO
 	private LeaveApplicationResponseDTO convertToDTO(LeaveApplication leaveApplication) {
 		return new LeaveApplicationResponseDTO(leaveApplication.getId(),
-				leaveApplication.getUser() != null ? leaveApplication.getUser().getFullName() : "Unknown",
-				leaveApplication.getLeaveType().getName() != null ? leaveApplication.getLeaveType().getName()
-						: "Unknown",
+				Optional.ofNullable(leaveApplication.getUser()).map(User::getFullName).orElse("Unknown"),
+				leaveApplication.getLeaveType().getId(),
+				Optional.ofNullable(leaveApplication.getLeaveType()).map(LeaveType::getName).orElse("Unknown"),
 				leaveApplication.getStartDate(), leaveApplication.getEndDate(), leaveApplication.getReason(),
 				leaveApplication.getStatus(), leaveApplication.getRespondedAt(),
 				Optional.ofNullable(leaveApplication.getRespondedBy()).map(User::getFullName).orElse(null),
@@ -84,14 +70,8 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	public List<LeaveApplicationResponseDTO> getLeaveApplicationsForMember(UserDetailsImpl principal) {
 		// Find leave application of user are logging in
 		List<LeaveApplication> leaveApplications = leaveApplicationRepository.findByUserId(principal.getId());
-
-		if (leaveApplications.isEmpty()) {
-			throw new NotFoundException("No leave applications found for this member.");
-		}
-
 		List<LeaveApplicationResponseDTO> responseDTOs = leaveApplications.stream().map(this::convertToDTO)
 				.collect(Collectors.toList());
-
 		return responseDTOs;
 	}
 
@@ -101,57 +81,23 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	@Override
 	public MessageResponse applyLeave(LeaveApplicationRequestDTO request, UserDetailsImpl principal) {
 
+		System.out.println(principal.getId());
 		User user = userRepository.findByIdAndDeletedAtIsNull(principal.getId())
-				.orElseThrow(() -> new NotFoundException("User not exist."));
+				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
-				.orElseThrow(() -> new NotFoundException("Leave type not exist"));
+				.orElseThrow(() -> new NotFoundException("leave_type_not_exist"));
 		if (leaveType.getValue() != null) {
 			// check condition: remainDays > requestDays
-			List<UserLeaveResponseDTO> userLeaves = null;
-
-			if (leaveType.getValue().equals(ELeaveValue.HALF_DAY.name())
-					|| leaveType.getValue().equals(ELeaveValue.FULL_DAY.name())) {
-				userLeaves = userLeaveService.getUserLeaveForMember(leaveType.getParent().getId(), principal);
-			} else {
-				userLeaves = userLeaveService.getUserLeaveForMember(request.getLeaveTypeId(), principal);
-			}
-
-			double remainDays = userLeaves.stream()
-					.mapToDouble(userLeave -> userLeave.getTotalDays() - userLeave.getUsedDays()).sum();
-
+			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal);
+			double remainingDays = calculateRemainingDays(userLeaves);
 			// count request days
-			double requestDays = 0;
-
-			// case half day
-			if (leaveType.getValue().equals(ELeaveValue.HALF_DAY.name())) {
-				requestDays = 0.5;
-			} else {
-				requestDays = (int) IntStream
-						.rangeClosed(0, (int) ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()))
-						.mapToObj(request.getStartDate()::plusDays)
-						.filter(date -> date.getDayOfWeek() != DayOfWeek.SATURDAY
-								&& date.getDayOfWeek() != DayOfWeek.SUNDAY)
-						.count();
+			double requestDays = getRequestDays(leaveType, request.getStartDate(), request.getEndDate());
+			if (requestDays > remainingDays) {
+				throw new BadRequestException("requested_days_exceed");
 			}
-
-			if (requestDays > remainDays) {
-				throw new BadRequestException("Requested days exceed the remaining days.");
-			}
-
 			// update usedDays to UserLeave
-			for (UserLeaveResponseDTO item : userLeaves) {
-				if (item.getTotalDays() - item.getUsedDays() >= requestDays) {
-					// item.usedDays += requestDays
-					userLeaveService.updateUsedDays(item.getId(), item.getUsedDays() + requestDays);
-					break;
-				} else {
-					requestDays -= (item.getTotalDays() - item.getUsedDays());
-					// item.usedDays = item.totalDays
-					userLeaveService.updateUsedDays(item.getId(), item.getTotalDays());
-				}
-			}
+			updateUsedDays(userLeaves, requestDays, false);
 		}
-
 		LeaveApplication leaveApplication = new LeaveApplication();
 		leaveApplication.setUser(user);
 		leaveApplication.setLeaveType(leaveType);
@@ -168,32 +114,35 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	 */
 	@Override
 	public MessageResponse respondToLeave(Long id, String status, UserDetailsImpl principal) {
-		LeaveApplication leaveApplication = leaveApplicationRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("Leave application not found"));
-
+		LeaveApplication application = leaveApplicationRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("leave_application_not_exist"));
 		// Check status is valid
 		if (!ELeaveStatus.isValidStatus(status)) {
-			throw new BadRequestException("Invalid status");
+			throw new BadRequestException("invalid_status");
 		}
 		ELeaveStatus eStatus = ELeaveStatus.valueOf(status.toUpperCase());
-
 		// Can only be revoked if the status is 'approved'.
-		if (status.equals(ELeaveStatus.REVOKED) && !leaveApplication.getStatus().equals(ELeaveStatus.APPROVED)) {
-			throw new BadRequestException("Can only be revoked if the status is 'approved'.");
+		if (status.equals(ELeaveStatus.REVOKED.name()) && !application.getStatus().equals(ELeaveStatus.APPROVED)) {
+			throw new BadRequestException("can_only_be_revoked_if_approved");
 		}
-
 		// Can only be revoked if the status is 'pending'.
 		EnumSet<ELeaveStatus> updatableStatuses = EnumSet.of(ELeaveStatus.APPROVED, ELeaveStatus.REJECTED,
 				ELeaveStatus.REQUESTED_CHANGE);
-		if (updatableStatuses.contains(eStatus) && !leaveApplication.getStatus().equals(ELeaveStatus.PENDING)) {
-			throw new BadRequestException("Can only be responded to if the status is 'pending'.");
+		if (updatableStatuses.contains(eStatus) && !application.getStatus().equals(ELeaveStatus.PENDING)) {
+			throw new BadRequestException("can_only_be_cancel_or_response_if_pending");
 		}
-		leaveApplication.setStatus(eStatus);
-		leaveApplication.setRespondedBy(userRepository.findById(principal.getId()).orElse(null));
-		leaveApplication.setRespondedAt(LocalDateTime.now());
-
-		leaveApplicationRepository.save(leaveApplication);
-
+		// case REJECTED, REVOKED: update usedDays
+		if (status.equals(ELeaveStatus.REJECTED.name()) || status.equals(ELeaveStatus.REVOKED.name())) {
+			LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(application.getLeaveType().getId())
+					.orElseThrow(() -> new NotFoundException("leave_type_not_exist"));
+			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal);
+			double cancelDays = getRequestDays(leaveType, application.getStartDate(), application.getEndDate());
+			updateUsedDays(userLeaves, cancelDays, true);
+		}
+		application.setStatus(eStatus);
+		application.setRespondedBy(userRepository.findById(principal.getId()).orElse(null));
+		application.setRespondedAt(LocalDateTime.now());
+		leaveApplicationRepository.save(application);
 		return new MessageResponse("Leave application is " + status + " now.");
 	}
 
@@ -203,81 +152,99 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	@Override
 	public MessageResponse cancelLeave(Long id, UserDetailsImpl principal) {
 		LeaveApplication application = leaveApplicationRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("Leave application not found"));
+				.orElseThrow(() -> new NotFoundException("leave_application_not_exist"));
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(application.getLeaveType().getId())
-				.orElseThrow(() -> new NotFoundException("Leave type not exist"));
+				.orElseThrow(() -> new NotFoundException("leave_tpye_not_exist"));
 		// Can only be cancel if the status is 'pending'.
 		if (!application.getStatus().equals(ELeaveStatus.PENDING)) {
-			throw new BadRequestException(" Can only be cancel if the status is 'pending'.");
+			throw new BadRequestException("can_only_be_cancel_or_response_if_pending");
 		}
 		if (leaveType.getValue() != null) {
 			// count cancel days
-			double cancelDays = 0;
-			if (leaveType.getValue().equals(ELeaveValue.HALF_DAY.name())) {
-				cancelDays = 0.5;
-			} else {
-				cancelDays = (int) IntStream
-						.rangeClosed(0,
-								(int) ChronoUnit.DAYS.between(application.getStartDate(), application.getEndDate()))
-						.mapToObj(application.getStartDate()::plusDays)
-						.filter(date -> date.getDayOfWeek() != DayOfWeek.SATURDAY
-								&& date.getDayOfWeek() != DayOfWeek.SUNDAY)
-						.count();
-			}
+			double cancelDays = getRequestDays(leaveType, application.getStartDate(), application.getEndDate());
 			// Find user leave and update usedDays
-			List<UserLeaveResponseDTO> userLeaves = null;
-			if (leaveType.getValue().equals(ELeaveValue.HALF_DAY.name())
-					|| leaveType.getValue().equals(ELeaveValue.FULL_DAY.name())) {
-				userLeaves = userLeaveService.getUserLeaveForMember(leaveType.getParent().getId(), principal);
-			} else {
-				userLeaves = userLeaveService.getUserLeaveForMember(application.getLeaveType().getId(), principal);
-			}
+			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal);
 			Collections.reverse(userLeaves);
-
-			for (UserLeaveResponseDTO item : userLeaves) {
-				if (item.getUsedDays() >= cancelDays) {
-					// item.usedDays -= cancelDays
-					userLeaveService.updateUsedDays(item.getId(), item.getUsedDays() - cancelDays);
-					break;
-				} else {
-					cancelDays -= item.getUsedDays();
-					// item.usedDays = 0
-					userLeaveService.updateUsedDays(item.getId(), 0);
-				}
-			}
+			updateUsedDays(userLeaves, cancelDays, true);
 		}
 		application.setStatus(ELeaveStatus.CANCELED);
 		leaveApplicationRepository.save(application);
-		return new MessageResponse("Leave application is canceled");
+		return new MessageResponse("cancel_success");
 	}
 
 	@Override
-	public MessageResponse updateLeaveApplication(Long id, LeaveApplicationRequestDTO request) {
+	public MessageResponse updateLeaveApplication(Long id, LeaveApplicationRequestDTO request,
+			UserDetailsImpl principal) {
 		LeaveApplication leaveApplication = leaveApplicationRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("Leave application not found"));
-
-		// Can only be update if the status is 'pending'.
-		// ???????????????????????????????
-		System.out.println(leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE));
-		if (!leaveApplication.getStatus().equals(ELeaveStatus.PENDING)
-				|| !leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE)) {
-			throw new BadRequestException(" Can only be update if the status is PENDING or REQUESTED_CHANGE.");
+				.orElseThrow(() -> new NotFoundException("leave_application_not_exist"));
+		// Can only be update if the status is 'PENDING' or 'REQUESTED_CHANGE'
+		if (!(leaveApplication.getStatus().equals(ELeaveStatus.PENDING)
+				|| leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE))) {
+			throw new BadRequestException("can_only_be_update_if_pending_or_request_change");
 		}
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
-				.orElseThrow(() -> new NotFoundException("Leave type not exist"));
-
-		// check điều kiện: số ngày không vượt quá
-
-		// update usedDays
-
+				.orElseThrow(() -> new NotFoundException("leave_type_not_exist"));
+		// case not change leaveType
+		if (leaveType.getValue() != null) {
+			// check condition: remainDays > requestDays
+			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal);
+			double oldRequestDays = calculateLeaveDays(leaveApplication.getStartDate(), leaveApplication.getEndDate());
+			double remainingDays = calculateRemainingDays(userLeaves);
+			double requestDays = getRequestDays(leaveType, request.getStartDate(), request.getEndDate());
+			if (requestDays > remainingDays + oldRequestDays) {
+				throw new BadRequestException("requested_days_exceed");
+			}
+			// update usedDays to UserLeave
+			if (requestDays < oldRequestDays) {
+				Collections.reverse(userLeaves);
+				updateUsedDays(userLeaves, oldRequestDays - requestDays, true);
+			}
+			if (requestDays > oldRequestDays) {
+				updateUsedDays(userLeaves, requestDays - oldRequestDays, false);
+			}
+		}
+		// case change leaveType: pending ......
 		leaveApplication.setLeaveType(leaveType);
 		leaveApplication.setStartDate(request.getStartDate());
 		leaveApplication.setEndDate(request.getEndDate());
 		leaveApplication.setReason(request.getReason());
 		leaveApplication.setStatus(ELeaveStatus.PENDING);
 		leaveApplicationRepository.save(leaveApplication);
-
-		return new MessageResponse("Leave application update success");
+		return new MessageResponse("update_success");
 	}
 
+	private void updateUsedDays(List<UserLeaveResponseDTO> userLeaves, double requestDays, boolean isDecrease) {
+		for (UserLeaveResponseDTO item : userLeaves) {
+			double availableDays = isDecrease ? item.getUsedDays() : item.getTotalDays() - item.getUsedDays();
+			if (availableDays >= requestDays) {
+				double newUsedDays = isDecrease ? item.getUsedDays() - requestDays : item.getUsedDays() + requestDays;
+				userLeaveService.updateUsedDays(item.getId(), newUsedDays);
+				break;
+			} else {
+				requestDays -= availableDays;
+				userLeaveService.updateUsedDays(item.getId(), isDecrease ? 0 : item.getTotalDays());
+			}
+		}
+	}
+
+	private long calculateLeaveDays(LocalDate startDate, LocalDate endDate) {
+		return IntStream.rangeClosed(0, (int) ChronoUnit.DAYS.between(startDate, endDate)).mapToObj(startDate::plusDays)
+				.filter(date -> date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY)
+				.count();
+	}
+
+	private double calculateRemainingDays(List<UserLeaveResponseDTO> userLeaves) {
+		return userLeaves.stream().mapToDouble(userLeave -> userLeave.getTotalDays() - userLeave.getUsedDays()).sum();
+	}
+
+	private double getRequestDays(LeaveType leaveType, LocalDate startDate, LocalDate endDate) {
+		return leaveType.getValue().equals(ELeaveValue.HALF_DAY.name()) ? 0.5 : calculateLeaveDays(startDate, endDate);
+	}
+
+	private List<UserLeaveResponseDTO> getUserLeaveForMember(LeaveType leaveType, UserDetailsImpl principal) {
+		return (leaveType.getValue().equals(ELeaveValue.HALF_DAY.name())
+				|| leaveType.getValue().equals(ELeaveValue.FULL_DAY.name()))
+						? userLeaveService.getUserLeaveForMember(leaveType.getParent().getId(), principal)
+						: userLeaveService.getUserLeaveForMember(leaveType.getId(), principal);
+	}
 }
