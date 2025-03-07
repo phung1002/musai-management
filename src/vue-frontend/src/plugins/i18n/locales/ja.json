@@ -105,7 +105,6 @@
     "delete_failure": "削除に失敗しました。",
     "delete_your_self": "自分を削除することはできません。",
     "validation_error": "送信前にエラーを修正してください。",
-    "half_day_date_must_match": "半休を選択する場合、開始日と終了日は同じである必要があります。",
     "user_exists": "ユーザー名はすでにシステムに存在します。",
     "user_not_found": "ユーザー名はシステムに存在しません。",
     "admin_change_their_password": "自分のパスワードを変更する場合は、再ログインが必要です。",
@@ -114,6 +113,18 @@
     "confirm_leave_application": "{n}日間の休暇を申請しますか？",
     "error_requested_days_exceed": "申請日数が残り日数を超えています。",
     "error_leave_type_or_user_not_exist": "指定された休暇種類またはユーザーが見つかりません。"
+  },
+  "error": {
+    "unexpected": "想定外のエラーです。",
+    "user_not_exist": "ユーザーが存在しません。",
+    "leave_type_not_exist": "休暇タイプが存在しません。",
+    "leave_application_not_exist": "休暇申請が存在しません。",
+    "requested_days_exceed": "リクエストされた日数が残り日数を超えています。",
+    "invalid_status": "無効なステータスです。",
+    "can_only_be_revoked_if_approved": "ステータスが「承認済み」の場合のみ取り消しが可能です。",
+    "can_only_be_cancel_or_response_if_pending": "ステータスが「保留中」の場合のみキャンセルまたは応答できます。",
+    "can_only_be_update_if_pending_or_request_change": "ステータスが「保留中」または「変更要求」の場合のみ更新できます。",
+    "half_day_date_must_match": "半休を選択する場合、開始日と終了日は同じである必要があります。"
   },
   "validation": {
     "required_input": "このフィールドは必須です。",

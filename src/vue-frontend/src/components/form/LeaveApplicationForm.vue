@@ -88,27 +88,24 @@ const fetchLeaveType = async () => {
     isLoading.value = false;
   }
 };
-const publicLeaveChilden: Ref<ILeaveTypes> = ref(defaultLeave);
+const publicLeaveChilden: Ref<ILeaveTypes | null> = ref(defaultLeave);
 //when change value public leave in drop down box
 const onPublicLeaveChange = (newValue) => {
-  if (publicLeave.value.children) {
-    for (const child of publicLeave.value.children) {
-      if (child.id == newValue && child.children)
-        publicLeaveChilden.value = child;
-    }
-  }
+  publicLeaveChilden.value =
+    publicLeave.value.children?.find(
+      (child) => child.id === newValue && child.children
+    ) || null;
   childBox.value = null;
   getLeaveTypeId();
 };
+
 const getLeaveTypeId = () => {
-  if (activeTab.value == ELeaveType.PAID_LEAVE && paidLeave.value.id) {
-    formModel.leaveTypeId = paidBox.value;
-  } else {
-    if (childBox.value == null || childBox.value == "") {
-      formModel.leaveTypeId = publicBox.value;
-    } else formModel.leaveTypeId = childBox.value;
-  }
+  formModel.leaveTypeId =
+    activeTab.value === ELeaveType.PAID_LEAVE && paidLeave.value.id
+      ? paidBox.value
+      : childBox.value || publicBox.value;
 };
+
 watch(activeTab, () => {
   getLeaveTypeId();
 });
@@ -128,11 +125,7 @@ const handleSubmit = async () => {
       emit("refetch-data");
       handleCancel();
     } catch (error: any) {
-      if (error.status === 400) {
-        toast.error(t("message.error_requested_days_exceed"));
-      } else if (error.status == 404) {
-        toast.error(t("message.error_leave_type_or_user_not_exist"));
-      } else toast.error(t("message.add_failure"));
+      toast.error(t(error.message));
     }
   } else {
     //update
@@ -144,11 +137,7 @@ const handleSubmit = async () => {
       handleCancel();
       emit("refetch-data");
     } catch (error: any) {
-      if (error.status === 400) {
-        toast.error(t("message.error_requested_days_exceed"));
-      } else if (error.status == 404) {
-        toast.error(t("message.error_leave_type_or_user_not_exist"));
-      } else toast.error(t("message.update_failure"));
+      toast.error(t(error.message));
     } finally {
       submiting.value = false;
     }
@@ -160,13 +149,9 @@ const parseDate = (dateString) => {
 const calculateWorkingDays = (startDate, endDate) => {
   let count = 0;
   let currentDate = new Date(startDate);
-
   while (currentDate <= endDate) {
     const dayOfWeek = currentDate.getDay();
-
-    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      count++;
-    }
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) count++;
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return count;
@@ -184,7 +169,7 @@ const onConfirm = async () => {
   }
   if (halfDayId == paidBox.value) {
     if (formModel.startDate != formModel.endDate) {
-      toast.error(t("message.half_day_date_must_match"));
+      toast.error(t("error.half_day_date_must_match"));
       return;
     }
     requestDays = 0.5;
@@ -237,7 +222,7 @@ const handleCancel = () => {
     </VToolbar>
     <VForm ref="formRef" v-model="formValid" @submit.prevent="() => {}">
       <VContainer>
-        <VTable>
+        <VTable v-if="!isEdit">
           <VTabs v-model="activeTab" color="primary">
             <VTab v-for="item in tabs" :key="item.icon" :value="item.tab">
               <VIcon size="20" start :icon="item.icon" />
@@ -292,14 +277,14 @@ const handleCancel = () => {
                       cols="4"
                       class="dropdown-box"
                       v-if="
-                        publicLeaveChilden.children &&
+                        publicLeaveChilden?.children &&
                         publicLeaveChilden.children.length > 0
                       "
                     >
                       <VAutocomplete
                         v-model="childBox"
-                        :items="publicLeaveChilden.children"
-                        :label="publicLeaveChilden.name"
+                        :items="publicLeaveChilden?.children"
+                        :label="publicLeaveChilden?.name"
                         :rules="[validator.required]"
                         item-title="name"
                         item-value="id"
@@ -311,6 +296,18 @@ const handleCancel = () => {
                 </VCardText>
               </VWindowItem>
             </VWindow>
+          </VCardText>
+        </VTable>
+        <VTable v-if="isEdit">
+          <VCardText>
+            <VRow>
+              <VCol cols="3" class="d-flex align-center">
+                <VLabel>{{ t("leave_type") }}</VLabel>
+              </VCol>
+              <VCol cols="9" class="d-flex align-center">
+                <VTextField v-model="formModel.leaveTypeName" readonly />
+              </VCol>
+            </VRow>
           </VCardText>
         </VTable>
         <VDivider />
@@ -360,13 +357,9 @@ const handleCancel = () => {
       </VContainer>
     </VForm>
     <VCardActions>
-      <VBtn
-        @click="onConfirm"
-        type="submit"
-        variant="elevated"
-        color="primary"
-        >{{ t("submit") }}</VBtn
-      >
+      <VBtn @click="onConfirm" type="submit" variant="elevated" color="primary">
+        {{ t("submit") }}
+      </VBtn>
       <VBtn @click="resetForm" type="reset" variant="tonal">{{
         t("reset")
       }}</VBtn>
