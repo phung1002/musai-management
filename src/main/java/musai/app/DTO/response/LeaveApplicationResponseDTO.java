@@ -12,6 +12,7 @@ import musai.app.models.ELeaveStatus;
 public class LeaveApplicationResponseDTO {
     private Long id;
     private String userFullName;
+    private Long leaveTypeId;
     private String leaveTypeName;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -21,4 +22,3 @@ public class LeaveApplicationResponseDTO {
     private String respondedByFullName;
     private LocalDateTime createdAt;
 }
-
