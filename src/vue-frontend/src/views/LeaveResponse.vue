@@ -7,6 +7,7 @@ import {
   getLeaveApplicationsLists,
   searchLeaveApplications,
 } from "@/api/response";
+import { format } from "date-fns"; // 日付フォーマットライブラリ
 const { t } = useI18n();
 const LeaveApplications = ref<ILeaveApplications[]>([]); // 休暇リスト
 const isDialogVisible = ref(false);
@@ -18,15 +19,18 @@ const decision = ref<null | "approved" | "rejected">(null);
 // // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  { title: t("employee_name"), key: "userName" },
-  { title: t("leave_type"), key: "leaveType" },
-  { title: t("submit_date"), key: "submitDate" },
+  { title: t("employee_name"), key: "userFullName" },
+  { title: t("leave_type"), key: "leaveTypeName" },
+  { title: t("submit_date"), key: "createdAt" },
   { title: t("action"), key: "action" },
 ]);
 // 申請リストをロード
 const loadLeave = (lst: any) => {
   LeaveApplications.value = lst.map((LeaveApplication: ILeaveApplications) => ({
     ...LeaveApplication,
+    createdAt: LeaveApplication.createdAt
+      ? format(new Date(LeaveApplication.createdAt), "yyyy-MM-dd")
+      : "",
   }));
 };
 // 申請リスト取得 API呼び出し
@@ -122,7 +126,7 @@ onMounted(() => {
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->
-              <template v-slot:item.no="{ index }">
+              <template v-slot:item.number="{ index }">
                 {{ index + 1 }}
               </template>
               <!-- アクション　設定  -->
@@ -132,35 +136,38 @@ onMounted(() => {
                     icon
                     variant="plain"
                     class="action-btn"
-                    :disabled="decision !== null"
-                    :color="
-                      decision === 'approved'
-                        ? 'green'
-                        : decision === 'rejected'
-                        ? 'red'
-                        : 'primary'
-                    "
-                    @click="approve"
-                  >
-                    <VIcon color="blue">mdi-check-bold</VIcon>
-                  </VBtn>
-                  <VBtn
-                    icon
-                    variant="plain"
-                    class="action-btn"
-                    :disabled="decision !== null"
-                    :color="decision === 'rejected' ? 'red' : 'error'"
-                    @click="reject"
-                  >
-                    <VIcon color="red">mdi-close-thick</VIcon>
-                  </VBtn>
-                  <VBtn
-                    icon
-                    variant="plain"
-                    class="action-btn"
                     @click="details"
                   >
-                    <VIcon color="red">mdi-plus-box-multiple-outline</VIcon>
+                    <VIcon color="black">mdi-information-outline</VIcon>
+                  </VBtn>
+                  <VBtn
+                    icon
+                    variant="plain"
+                    class="action-btn"
+                    :disabled="decision !== null"
+                    @click="approve"
+                  >
+                    <VIcon
+                      :color="
+                        decision === 'approved'
+                          ? 'green'
+                          : decision === 'rejected'
+                          ? 'red'
+                          : 'primary'
+                      "
+                      >mdi-check-bold</VIcon
+                    >
+                  </VBtn>
+                  <VBtn
+                    icon
+                    variant="plain"
+                    class="action-btn"
+                    :disabled="decision !== null"
+                    @click="reject"
+                  >
+                    <VIcon :color="decision === 'rejected' ? 'red' : 'error'"
+                      >mdi-close-thick</VIcon
+                    >
                   </VBtn>
                 </div>
               </template>
@@ -198,6 +205,6 @@ onMounted(() => {
 }
 
 .action-btn:hover {
-  background-color: #f5f5f5;
+  background-color: #ebf5f8;
 }
 </style>

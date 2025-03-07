@@ -43,7 +43,7 @@ export interface IUser {
 export interface ILeaveTypes {
   id: number | null; // 一意のID
   name: string; // 休暇の名前
-  value: string | null;
+  value?: string;
   // leave_type: string; // 休暇のタイプ
   parentId: number | null; // 親カテゴリのID（ルートカテゴリなら省略）
   children?: ILeaveTypes[]; // 子カテゴリ（サブカテゴリー）
@@ -64,12 +64,13 @@ export interface IUserLeaves {
 }
 export interface ILeaveApplications {
   id: number;
-  name: string;
-  leave_type: string;
-  leave_duration_from: string;
-  leave_duration_to: string;
-  leave_reason: string;
+  userFullName: string;
+  leaveType: string;
+  createdAt: string;
+  startDate: string;
+  endDate: string;
+  reason: string;
   status: string;
-  parentId: number | null; // 親カテゴリのID（ルートカテゴリなら省略）
-  children?: ILeaveTypes[]; // 子カテゴリ（サブカテゴリー）
+  respondedAt: string;
+  respondedByFullName: string;
 }

@@ -23,6 +23,7 @@ const formValid = ref(false);
 const defaultLeave = {
   id: null,
   name: "",
+  value: "",
   parentId: null,
   children: [],
 };

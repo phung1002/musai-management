@@ -3,12 +3,10 @@ import { Ref, ref, reactive, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { VTab } from "vuetify/lib/components/index.mjs";
-import { useLeaveTypesStore } from "@/store/leaveTypesStore";
 import { getLeavesTree } from "@/api/leave";
-import { ILeaveTypes, ILeaveRequest } from "@/types/type";
+import { ILeaveTypes } from "@/types/type";
 const isDialogVisible = ref(false);
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
-const leaveRequst = ref<ILeaveRequest[]>([]); // 休暇リスト
 const { t } = useI18n();
 const isLoading = ref(false);
 const isError = ref(false);

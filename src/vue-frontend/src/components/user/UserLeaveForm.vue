@@ -27,7 +27,7 @@ const tabs = ref([
   { title: "", icon: "mdi-pine-tree-box", tab: "public" },
 ]);
 // デフォルト値
-const defaultLeave = {
+const defaultUserLeave = {
   id: null,
   leaveTypeId: null,
   leaveTypeName: "",
@@ -41,6 +41,13 @@ const defaultLeave = {
   name: "",
   parentId: null,
 };
+const defaultLeave = {
+  id: null,
+  name: "",
+  value: "",
+  parentId: null,
+  children: [],
+};
 // 10～30の配列を生成
 const numberOptions = Array.from({ length: 21 }, (_, i) => i + 5);
 
@@ -50,7 +57,9 @@ const public_leave: Ref<ILeaveTypes> = ref(defaultLeave);
 
 // フォームデータの初期化
 const formModel = reactive<IUserLeaves>(
-  props.isEdit ? { ...defaultLeave, ...props.userLeave } : { ...defaultLeave }
+  props.isEdit
+    ? { ...defaultUserLeave, ...props.userLeave }
+    : { ...defaultUserLeave }
 );
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
@@ -96,7 +105,9 @@ const handleUserSelect = (user: { id: number; name: string }) => {
 const handleResetForm = () => {
   Object.assign(
     formModel,
-    props.isEdit ? { ...defaultLeave, ...props.userLeave } : { ...defaultLeave }
+    props.isEdit
+      ? { ...defaultUserLeave, ...props.userLeave }
+      : { ...defaultUserLeave }
   );
   // if (formRef.value && formRef.value.resetValidation) {
   //   formRef.value.resetValidation();
@@ -135,9 +146,10 @@ const fetchLeaveType = async () => {
     leaves.value = response;
     paid_leave.value =
       leaves.value.find((item) => item.name === t("paid_leave")) ||
-      defaultLeave;
+      defaultUserLeave;
     public_leave.value =
-      leaves.value.find((item) => item !== paid_leave.value) || defaultLeave;
+      leaves.value.find((item) => item !== paid_leave.value) ||
+      defaultUserLeave;
     if (!paid_leave.value || !public_leave.value) {
       throw new Error("Missing required leave types");
     }
