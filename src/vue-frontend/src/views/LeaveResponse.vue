@@ -2,14 +2,11 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { ILeaveApplications } from "@/types/type";
-import {
-  getLeaveApplicationsLists,
-  searchLeaveApplications,
-} from "@/api/response";
+import { ILeaveResponse } from "@/types/type";
+import { getLeaveRequests, searchLeaveRequest } from "@/api/response";
 import { format } from "date-fns"; // 日付フォーマットライブラリ
 const { t } = useI18n();
-const LeaveApplications = ref<ILeaveApplications[]>([]); // 休暇リスト
+const LeaveRequests = ref<ILeaveResponse[]>([]); // 休暇リスト
 const isDialogVisible = ref(false);
 const detailsCard = ref(false);
 const isLoading = ref(false); // ローディングフラグ
@@ -26,10 +23,10 @@ const headers = reactive([
 ]);
 // 申請リストをロード
 const loadLeave = (lst: any) => {
-  LeaveApplications.value = lst.map((LeaveApplication: ILeaveApplications) => ({
-    ...LeaveApplication,
-    createdAt: LeaveApplication.createdAt
-      ? format(new Date(LeaveApplication.createdAt), "yyyy-MM-dd")
+  LeaveRequests.value = lst.map((LeaveRequest: ILeaveResponse) => ({
+    ...LeaveRequest,
+    createdAt: LeaveRequest.createdAt
+      ? format(new Date(LeaveRequest.createdAt), "yyyy-MM-dd")
       : "",
   }));
 };
@@ -38,7 +35,7 @@ const fetchLeaveType = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getLeaveApplicationsLists(); // API呼び出
+    const response = await getLeaveRequests(); // API呼び出
     console.log("response ss", response);
     loadLeave(response); // リスト更新
   } catch (error) {
@@ -56,7 +53,7 @@ const handleSearch = async () => {
     return;
   }
   try {
-    const response = await searchLeaveApplications(keyWord.value);
+    const response = await searchLeaveRequest(keyWord.value);
     loadLeave(response);
   } catch (error) {
     isError.value = true;
@@ -122,7 +119,7 @@ onMounted(() => {
             <VDataTable
               :items-per-page-text="t('items_per_page')"
               :headers="headers"
-              :items="LeaveApplications"
+              :items="LeaveRequests"
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->

@@ -7,15 +7,7 @@ export interface IAccessToken {
   expire_in: number;
 }
 
-export interface ILeaveApplicationList {
-  data: ILeaveApplication;
-}
-
-export interface IUserResp {
-  data: ILeaveApplication[];
-}
-
-export interface ILeaveApplication {
+export interface ILeaveRequest {
   id: number | null;
   leaveTypeId: number | null;
   leaveTypeName: string;
@@ -62,7 +54,7 @@ export interface IUserLeaves {
   name: string; // 追加
   parentId: null; // 追加
 }
-export interface ILeaveApplications {
+export interface ILeaveResponse {
   id: number;
   userFullName: string;
   leaveType: string;

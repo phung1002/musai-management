@@ -1,12 +1,10 @@
-import { ILeaveApplications } from "@/types/type";
+import { ILeaveResponse } from "@/types/type";
 import axiosIns from "@/plugins/axios";
 
 // 申請確認リストAPI呼び出し
-export async function getLeaveApplicationsLists(): Promise<
-  ILeaveApplications[]
-> {
+export async function getLeaveRequests(): Promise<ILeaveResponse[]> {
   try {
-    const response = await axiosIns.get<ILeaveApplications[]>(
+    const response = await axiosIns.get<ILeaveResponse[]>(
       "/leave-applications"
     );
     return response.data;
@@ -16,11 +14,11 @@ export async function getLeaveApplicationsLists(): Promise<
   }
 }
 // 申請確認検索API呼び出し
-export async function searchLeaveApplications(
+export async function searchLeaveRequest(
   key: string
-): Promise<ILeaveApplications[]> {
+): Promise<ILeaveResponse[]> {
   try {
-    const response = await axiosIns.get<ILeaveApplications[]>(
+    const response = await axiosIns.get<ILeaveResponse[]>(
       "/leave-applications///",
       {
         params: { keyword: key },

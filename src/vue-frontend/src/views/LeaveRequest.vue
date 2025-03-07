@@ -2,13 +2,10 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
-import LeaveRequestForm from "@/components/form/LeaveApplicationForm.vue";
+import LeaveRequestForm from "@/components/form/LeaveRequestForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import {
-  listLeaveApplicationForMember,
-  cancelApplication,
-} from "@/api/leaveApplication";
-import { ILeaveApplication } from "@/types/type";
+import { listLeaveRequestForMember, cancelRequest } from "@/api/request";
+import { ILeaveRequest } from "@/types/type";
 import { showSnackbar } from "@/composables/useSnackbar";
 
 // 日本語にローカル変更用
@@ -16,8 +13,8 @@ const { t } = useI18n();
 const showFilter = ref(true);
 const isEdit = ref(false);
 const isDialogVisible = ref(false);
-const selectedApplication = ref<ILeaveApplication>({} as ILeaveApplication);
-const leaveApplications = ref<ILeaveApplication[]>([]);
+const selectedRequest = ref<ILeaveRequest>({} as ILeaveRequest);
+const leaveRequests = ref<ILeaveRequest[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
 const isConfirmDialogVisible = ref(false);
@@ -36,10 +33,10 @@ const openCreateDialog = () => {
   isEdit.value = false;
   isDialogVisible.value = true;
 };
-const openUpdateDialog = (application: ILeaveApplication) => {
+const openUpdateDialog = (application: ILeaveRequest) => {
   isEdit.value = true;
   isDialogVisible.value = true;
-  selectedApplication.value = application;
+  selectedRequest.value = application;
 };
 
 // テーブル　ヘッダー
@@ -53,14 +50,14 @@ const headers = reactive([
   { title: t("action"), key: "action" },
 ]);
 // GET申請リスト　API
-const fetchLeaveApplications = async () => {
+const fetchLeaveRequests = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await listLeaveApplicationForMember(); //  API呼び出し
-    leaveApplications.value = response.map(
-      (LeaveRequestList: ILeaveApplication) => ({
-        ...LeaveRequestList,
+    const response = await listLeaveRequestForMember(); //  API呼び出し
+    leaveRequests.value = response.map(
+      (leaveRequestList: ILeaveRequest) => ({
+        ...leaveRequestList,
       })
     );
   } catch (error) {
@@ -71,19 +68,19 @@ const fetchLeaveApplications = async () => {
 };
 // Call API when component is mounted
 onMounted(() => {
-  fetchLeaveApplications();
+  fetchLeaveRequests();
 });
 
-const openConfirmCancelDialog = (leaveApplication: ILeaveApplication) => {
-  selectedApplication.value = leaveApplication;
+const openConfirmCancelDialog = (leaveRequest: ILeaveRequest) => {
+  selectedRequest.value = leaveRequest;
   isConfirmDialogVisible.value = true;
 };
 const handleCancel = async () => {
-  if (!selectedApplication.value.id) return;
+  if (!selectedRequest.value.id) return;
   try {
-    await cancelApplication(selectedApplication.value.id);
+    await cancelRequest(selectedRequest.value.id);
     showSnackbar("delete_success", "success");
-    fetchLeaveApplications();
+    fetchLeaveRequests();
   } catch (error: any) {
     showSnackbar("cancel_only_pending", "error");
   } finally {
@@ -143,7 +140,7 @@ const handleCancel = async () => {
           <VCardItem>
             <VDataTable
               :headers="headers"
-              :items="leaveApplications"
+              :items="leaveRequests"
               :items-per-page-text="t('items_per_page')"
               v-if="!isLoading && !isError"
             >
@@ -196,9 +193,9 @@ const handleCancel = async () => {
   <VDialog v-model="isDialogVisible" width="auto">
     <LeaveRequestForm
       :isEdit="isEdit"
-      :application="selectedApplication"
+      :application="selectedRequest"
       @form:cancel="isDialogVisible = false"
-      @refetch-data="fetchLeaveApplications"
+      @refetch-data="fetchLeaveRequests"
     />
   </VDialog>
   <VDialog v-model="isConfirmDialogVisible" width="auto">
