@@ -6,6 +6,7 @@ export interface IAccessToken {
   access_token: string;
   expire_in: number;
 }
+<<<<<<< Updated upstream
 
 export interface ILeaveApplicationList {
   data: ILeaveApplication;
@@ -25,18 +26,9 @@ export interface ILeaveApplication {
   reason: string;
   status: string;
 }
+=======
+>>>>>>> Stashed changes
 export type confrimStatus = "pending" | "accepted";
-
-export interface ILeaveRequest {
-  id: number;
-  name: string;
-  leave_type: string;
-  leave_duration_from: string;
-  leave_duration_to: string;
-  leave_reason: string;
-  parentId: number | null; // 親カテゴリのID（ルートカテゴリなら省略）
-  children?: ILeaveTypes[]; // 子カテゴリ（サブカテゴリー）
-}
 
 export interface IUser {
   id: number | null;
@@ -61,13 +53,27 @@ export interface ILeaveTypes {
   children?: ILeaveTypes[]; // 子カテゴリ（サブカテゴリー）
 }
 export interface IUserLeaves {
-  user_id: number | null; // 一意のID
-  username: string; // 休暇の名前
-  leave_name: string; //
-  leave_type_id: number | null; // 休暇のタイプ
-  available_days: number;
-  total_leaves: number; // ����の数
-  used_days: number;
-  valid_from: string;
-  valid_to: string;
+  id: number | null; // ����ID
+  leaveTypeId: number | null; // 休暇のタイプ
+  leaveTypeName: string; //
+  userId: number | null; // 一意のID
+  userName: string; // 休暇の名前
+  totalDays: number | null;
+  usedDays: number | null; // ����の数
+  remainedDay: number | null;
+  validFrom: string;
+  validTo: string;
+  name: string; // 追加
+  parentId: null; // 追加
+}
+export interface ILeaveApplications {
+  id: number;
+  name: string;
+  leave_type: string;
+  leave_duration_from: string;
+  leave_duration_to: string;
+  leave_reason: string;
+  status: string;
+  parentId: number | null; // 親カテゴリのID（ルートカテゴリなら省略）
+  children?: ILeaveTypes[]; // 子カテゴリ（サブカテゴリー）
 }

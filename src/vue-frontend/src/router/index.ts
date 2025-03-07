@@ -7,8 +7,8 @@ import NotFoundVue from "@/components/auth/NotFound.vue";
 import UserVue from "@/views/User.vue";
 import { ERole } from "@/constants/role";
 
-import UserLeaveManagementViewVue from "@/views/UserLeaveManagementView.vue";
-import RequestConfirmViewVue from "@/views/RequestConfirmView.vue";
+import UserLeaveManagementViewVue from "@/views/UserLeave.vue";
+import RequestConfirmViewVue from "@/views/LeaveResponse.vue";
 import PasswordChangeVue from "@/components/auth/PasswordChange.vue";
 import CalendarVue from "@/views/Calendar.vue";
 import DocumentVue from "@/views/Document.vue";

@@ -44,6 +44,8 @@
   "update_leave": "update leave",
   "update": "update",
   "employee_name": "employee name",
+  "employee_leave_register":"employee leave register",
+  "employee_leave_edit":"employee leave edit",
   "roles": {
     "ADMIN": "admin",
     "MANAGER": "management",
@@ -53,7 +55,8 @@
   "valid_leaves": "valid leaves",
   "available_leaves": "available leaves",
   "used_leaves": "used leaves",
-  "expired": "date of expiry",
+  "leave_start": "leave valid from",
+  "leave_expired": "leave expired",
   "paid_leave": "paid leave",
   "public_leave": "public leave",
   "full_day_leave": "full day leave",

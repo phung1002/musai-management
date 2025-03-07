@@ -4,12 +4,15 @@ import { ref, reactive, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import LeaveRequestForm from "@/components/form/LeaveApplicationForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
+<<<<<<< Updated upstream:src/vue-frontend/src/views/LeaveApplication.vue
 import {
   listLeaveApplicationForMember,
   cancelApplication,
 } from "@/api/leaveApplication";
 import { ILeaveApplication } from "@/types/type";
 import { showSnackbar } from "@/composables/useSnackbar";
+=======
+>>>>>>> Stashed changes:src/vue-frontend/src/views/LeaveRequest.vue
 
 // 日本語にローカル変更用
 const { t } = useI18n();
@@ -18,12 +21,15 @@ const applyFrom = ref(false);
 const editForm = ref(false);
 const loading = ref(true);
 
+<<<<<<< Updated upstream:src/vue-frontend/src/views/LeaveApplication.vue
 const isEdit = ref(false);
 const selectedApplication = ref<ILeaveApplication>({} as ILeaveApplication);
 const leaveApplications = ref<ILeaveApplication[]>([]);
 const selectedLeaveApplication = ref<ILeaveApplication>(
   {} as ILeaveApplication
 );
+=======
+>>>>>>> Stashed changes:src/vue-frontend/src/views/LeaveRequest.vue
 const isLoading = ref(false);
 const isError = ref(false);
 const convertDate = (date: Date | null): string | null => {
@@ -77,12 +83,15 @@ const fetchLeaveApplications = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
+<<<<<<< Updated upstream:src/vue-frontend/src/views/LeaveApplication.vue
     const response = await listLeaveApplicationForMember(); //  API呼び出し
     leaveApplications.value = response.map(
       (LeaveRequestList: ILeaveApplication) => ({
         ...LeaveRequestList,
       })
     );
+=======
+>>>>>>> Stashed changes:src/vue-frontend/src/views/LeaveRequest.vue
   } catch (error) {
     isError.value = true;
   } finally {
@@ -165,7 +174,10 @@ const handleCancel = async () => {
           <VCardItem>
             <VDataTable
               :headers="headers"
+<<<<<<< Updated upstream:src/vue-frontend/src/views/LeaveApplication.vue
               :items="leaveApplications"
+=======
+>>>>>>> Stashed changes:src/vue-frontend/src/views/LeaveRequest.vue
               :items-per-page-text="t('items_per_page')"
               v-if="!isLoading && !isError"
             >

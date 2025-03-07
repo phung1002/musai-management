@@ -51,6 +51,7 @@ const fetchUsers = async () => {
   try {
     const response = await getAllUsers();
     loadUser(response);
+    console.log("response", response);
   } catch (error) {
     isError.value = true;
   } finally {
@@ -84,7 +85,7 @@ const handleDeleteUser = async () => {
 };
 const keyWord = ref("");
 const handleSearch = async () => {
-  if (keyWord.value == null){
+  if (keyWord.value == null) {
     fetchUsers();
     return;
   }

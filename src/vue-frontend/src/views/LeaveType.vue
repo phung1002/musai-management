@@ -1,7 +1,7 @@
 <!-- 休暇管理 画面 -->
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
-import LeaveForm from "@/components/form/LeaveForm.vue";
+import LeaveTypeForm from "@/components/form/LeaveTypeForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useI18n } from "vue-i18n";
 import { ILeaveTypes } from "@/types/type";
@@ -188,7 +188,7 @@ onMounted(() => {
   </VRow>
   <!-- 追加・修正確認 -->
   <VDialog v-model="addLeaves" width="auto" persistent>
-    <LeaveForm
+    <LeaveTypeForm
       :isEdit="isEdit"
       :leave="selectedLeave"
       @form-cancel="addLeaves = false"
