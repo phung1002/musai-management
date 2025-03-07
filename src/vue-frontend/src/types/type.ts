@@ -6,7 +6,6 @@ export interface IAccessToken {
   access_token: string;
   expire_in: number;
 }
-<<<<<<< Updated upstream
 
 export interface ILeaveApplicationList {
   data: ILeaveApplication;
@@ -15,7 +14,6 @@ export interface ILeaveApplicationList {
 export interface IUserResp {
   data: ILeaveApplication[];
 }
-
 
 export interface ILeaveApplication {
   id: number | null;
@@ -26,8 +24,6 @@ export interface ILeaveApplication {
   reason: string;
   status: string;
 }
-=======
->>>>>>> Stashed changes
 export type confrimStatus = "pending" | "accepted";
 
 export interface IUser {
