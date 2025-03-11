@@ -3,16 +3,21 @@
 import { ref, reactive, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { ILeaveResponse } from "@/types/type";
-import { getLeaveRequests, searchLeaveRequest } from "@/api/response";
+import { toast } from "vue3-toastify";
+import {
+  getLeaveRequests,
+  searchLeaveRequest,
+  updateLeaveRespond,
+} from "@/api/response";
 import { format } from "date-fns"; // 日付フォーマットライブラリ
+import LeaveResponseDetails from "@/components/ui/LeaveResponseDetails.vue";
 const { t } = useI18n();
 const LeaveRequests = ref<ILeaveResponse[]>([]); // 休暇リスト
-const isDialogVisible = ref(false);
+const selectedResponse = ref<ILeaveResponse>({} as ILeaveResponse);
 const detailsCard = ref(false);
+const isDetails = ref(false);
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
-// 申請の状態を管理 (null: 未決定, 'approved': 許可, 'rejected': 拒否)
-const decision = ref<null | "approved" | "rejected">(null);
 // // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
@@ -62,19 +67,30 @@ const handleSearch = async () => {
   }
 };
 // 許可処理
-const approve = (id: number) => {
-  decision.value = "approved";
-  isDialogVisible.value = true;
-  console.log("accept", id);
+const approve = async (id: number) => {
+  try {
+    await updateLeaveRespond(id, "APPROVED");
+    toast.success(t("message.approved_success"));
+    await fetchLeaveType(); // 最新データを取得
+  } catch (error) {
+    console.error("Error approving request:", error);
+  }
 };
 // 拒否処理
-const reject = (id: number) => {
-  decision.value = "rejected";
-  console.log("reject", id);
+const reject = async (id: number) => {
+  try {
+    await updateLeaveRespond(id, "REJECTED");
+    toast.success(t("message.rejected_success"));
+    await fetchLeaveType(); // 最新データを取得
+  } catch (error) {
+    console.error("Error rejecting request:", error);
+  }
 };
-const details = (id: number) => {
+const details = (LeaveResponse: ILeaveResponse) => {
   detailsCard.value = true;
-  console.log("reject", id);
+  isDetails.value = true;
+  selectedResponse.value = LeaveResponse;
+  console.log(LeaveResponse);
 };
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
@@ -133,7 +149,7 @@ onMounted(() => {
                     icon
                     variant="plain"
                     class="action-btn"
-                    @click="details"
+                    @click="details(item)"
                   >
                     <VIcon color="black">mdi-information-outline</VIcon>
                   </VBtn>
@@ -141,14 +157,16 @@ onMounted(() => {
                     icon
                     variant="plain"
                     class="action-btn"
-                    :disabled="decision !== null"
-                    @click="approve"
+                    :disabled="item.status != 'PENDING'"
+                    @click="approve(item.id)"
                   >
                     <VIcon
                       :color="
-                        decision === 'approved'
+                        item.status == 'APPROVED'
                           ? 'green'
-                          : decision === 'rejected'
+                          : item.status == 'REJECTED'
+                          ? 'red'
+                          : item.status == 'REVOKED'
                           ? 'red'
                           : 'primary'
                       "
@@ -159,10 +177,17 @@ onMounted(() => {
                     icon
                     variant="plain"
                     class="action-btn"
-                    :disabled="decision !== null"
-                    @click="reject"
+                    :disabled="item.status != 'PENDING'"
+                    @click="reject(item.id)"
                   >
-                    <VIcon :color="decision === 'rejected' ? 'red' : 'error'"
+                    <VIcon
+                      :color="
+                        item.status == 'REJECTED'
+                          ? 'red'
+                          : item.status == 'REVOKED'
+                          ? 'red'
+                          : 'error'
+                      "
                       >mdi-close-thick</VIcon
                     >
                   </VBtn>
@@ -174,6 +199,14 @@ onMounted(() => {
       </VContainer>
     </VCol>
   </VRow>
+  <VDialog v-model="detailsCard" width="auto">
+    <LeaveResponseDetails
+      @form:cancel="detailsCard = false"
+      @fetch="fetchLeaveType"
+      :isDetails="isDetails"
+      :LeaveResponse="selectedResponse"
+    />
+  </VDialog>
 </template>
 
 <style scoped>

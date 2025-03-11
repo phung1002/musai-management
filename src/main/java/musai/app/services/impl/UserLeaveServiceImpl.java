@@ -136,8 +136,9 @@ public class UserLeaveServiceImpl implements UserLeaveService {
         
         List<UserLeave> userLeaves = userLeaveRepository.findAll()
             .stream()
-            .filter(userLeave -> !userLeave.getValidFrom().isAfter(today)
-                && !userLeave.getValidTo().isBefore(today))
+            //TODO
+//            .filter(userLeave -> !userLeave.getValidFrom().isAfter(today)
+//                && !userLeave.getValidTo().isBefore(today))
             .sorted(Comparator.comparing(UserLeave::getValidTo))
             .collect(Collectors.toList());
 
