@@ -1,12 +1,12 @@
 <!-- 休暇申請 画面-->
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import LeaveRequestForm from "@/components/form/LeaveRequestForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { listLeaveRequestForMember, cancelRequest } from "@/api/request";
 import { ILeaveRequest } from "@/types/type";
-import { showSnackbar } from "@/composables/useSnackbar";
+import { toast } from "vue3-toastify";
 
 // 日本語にローカル変更用
 const { t } = useI18n();
@@ -55,11 +55,9 @@ const fetchLeaveRequests = async () => {
   isError.value = false;
   try {
     const response = await listLeaveRequestForMember(); //  API呼び出し
-    leaveRequests.value = response.map(
-      (leaveRequestList: ILeaveRequest) => ({
-        ...leaveRequestList,
-      })
-    );
+    leaveRequests.value = response.map((leaveRequestList: ILeaveRequest) => ({
+      ...leaveRequestList,
+    }));
   } catch (error) {
     isError.value = true;
   } finally {
@@ -79,10 +77,11 @@ const handleCancel = async () => {
   if (!selectedRequest.value.id) return;
   try {
     await cancelRequest(selectedRequest.value.id);
-    showSnackbar("delete_success", "success");
+
+    toast.success(t("delete_success"));
     fetchLeaveRequests();
   } catch (error: any) {
-    showSnackbar("cancel_only_pending", "error");
+    toast.error(t("cancel_only_pending"));
   } finally {
     isConfirmDialogVisible.value = false;
   }

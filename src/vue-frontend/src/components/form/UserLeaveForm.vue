@@ -1,3 +1,4 @@
+<!-- 社員休暇　フォーム -->
 <script lang="ts" setup>
 import { ref, Ref, defineProps, onMounted, reactive, watch } from "vue";
 import { useI18n } from "vue-i18n";
@@ -5,9 +6,10 @@ import { VSelect, VTab } from "vuetify/lib/components/index.mjs";
 import { useValidator } from "@/utils/validation";
 import { IUserLeaves, ILeaveTypes } from "@/types/type";
 import { getLeavesTree, addUserLeave, updateUserLeave } from "@/api/leave";
-import { showSnackbar } from "@/composables/useSnackbar";
+import { toast } from "vue3-toastify";
+import { ELeaveType } from "@/constants/leaveType";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import UserList from "@/components/user/UserList.vue";
+import UserList from "@/components/ui/UserSearchBox.vue";
 const { t } = useI18n(); //日本語にローカル変更用
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const errors = ref<{ leave_type?: string; leave_name?: string }>({});
@@ -18,13 +20,13 @@ const isDialogVisible = ref(false); // 確認ダイアログ表示
 const userListVisible = ref(false); // ユーザー一覧ポップアップの表示状態
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
-const activeTab = ref("paid"); // タブの初期値
 const formRef = ref(null);
 const formValid = ref(false);
 // メイン休暇タブで分類
+const activeTab = ref(ELeaveType.PAID_LEAVE); // タブの初期値
 const tabs = ref([
-  { title: "", icon: "mdi-gift-open", tab: "paid" },
-  { title: "", icon: "mdi-pine-tree-box", tab: "public" },
+  { title: "", icon: "mdi-gift-open", tab: ELeaveType.PAID_LEAVE },
+  { title: "", icon: "mdi-pine-tree-box", tab: ELeaveType.PUBLIC_LEAVE },
 ]);
 // デフォルト値
 const defaultUserLeave = {
@@ -44,16 +46,18 @@ const defaultUserLeave = {
 const defaultLeave = {
   id: null,
   name: "",
-  value: "",
   parentId: null,
+  value: "",
   children: [],
 };
+// 各カテゴリーの items
+const paidLeave: Ref<ILeaveTypes> = ref(defaultLeave);
+const publicLeave: Ref<ILeaveTypes> = ref(defaultLeave);
+const paidBox = ref(null);
+const publicBox = ref(null);
+const childBox = ref(null);
 // 10～30の配列を生成
 const numberOptions = Array.from({ length: 21 }, (_, i) => i + 5);
-
-// 各カテゴリーの items
-const paid_leave: Ref<ILeaveTypes> = ref(defaultLeave);
-const public_leave: Ref<ILeaveTypes> = ref(defaultLeave);
 
 // フォームデータの初期化
 const formModel = reactive<IUserLeaves>(
@@ -64,31 +68,57 @@ const formModel = reactive<IUserLeaves>(
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
   fetchLeaveType();
+  onPublicLeaveChange(); // 自動的にSUMMER_DAYを表示
 });
-// タブ変更時に `parentId` を設定
-watch(activeTab, (seletedTab) => {
-  setParentId(seletedTab);
+const publicLeaveChilden: Ref<ILeaveTypes | null> = ref(defaultLeave);
+const summerDayName = ref(""); // "SUMMER_DAY" の名前を格納する
+const summerDayId = ref<number | null>(null); // 初期値はnullが安全
+const onPublicLeaveChange = () => {
+  console.log("publicLeave.value.children?", publicLeave.value.children);
+
+  const specialLeave = publicLeave.value.children?.find(
+    (child) => child.value === "SPECIAL_LEAVE" && child.children
+  );
+  console.log("specialLeave", specialLeave?.id);
+  const summerDay = specialLeave?.children?.find(
+    (child) => child.value === "SUMMER_DAY"
+  );
+  console.log("summerDay", summerDay?.id);
+  // 名前とIDの両方を取得
+  summerDayName.value = summerDay?.name || "";
+  summerDayId.value = summerDay?.id ?? null;
+  console.log("SUMMER_DAY Name:", summerDayName.value);
+
+  publicLeaveChilden.value = specialLeave || null;
+  childBox.value = null;
+  getLeaveTypeId();
+};
+const getLeaveTypeId = () => {
+  formModel.leaveTypeId =
+    activeTab.value === ELeaveType.PAID_LEAVE && paidLeave.value.id
+      ? paidBox.value
+      : childBox.value || publicBox.value;
+};
+watch(activeTab, () => {
+  getLeaveTypeId();
+  onPublicLeaveChange();
 });
 
 // 親IDを設定
-const setParentId = (selectedTab: string) => {
-  if (selectedTab === "paid") {
-    formModel.leaveTypeId = paid_leave.value.id;
-    formModel.leaveTypeName = paid_leave.value.name;
-    console.log("setParentId", formModel.leaveTypeId, paid_leave.value.id);
-    console.log(
-      "leaveTypeName",
-      formModel.leaveTypeName,
-      paid_leave.value.name
-    );
+const setleaveTypeId = (selectedTab: string) => {
+  if (selectedTab === ELeaveType.PAID_LEAVE) {
+    formModel.leaveTypeId = paidLeave.value.id;
+    formModel.leaveTypeName = paidLeave.value.name;
+    console.log("setleaveTypeId", formModel.leaveTypeId, paidLeave.value.id);
+    console.log("leaveTypeName", formModel.leaveTypeName, paidLeave.value.name);
   } else {
-    formModel.leaveTypeId = public_leave.value.id;
-    formModel.leaveTypeName = public_leave.value.name;
-    console.log("setParentId", formModel.leaveTypeId, public_leave.value.id);
+    formModel.leaveTypeId = summerDayId.value;
+    formModel.leaveTypeName = summerDayName.value;
+    console.log("setleaveTypeId", formModel.leaveTypeId, publicLeave.value.id);
     console.log(
       "leaveTypeName",
       formModel.leaveTypeName,
-      public_leave.value.name
+      publicLeave.value.name
     );
   }
 };
@@ -117,7 +147,7 @@ const handleResetForm = () => {
   // 追加際activeTab現在ままにする
   if (!props.isEdit) {
     console.log("isEdit", props.isEdit, leaves);
-    activeTab.value = "paid";
+    activeTab.value = ELeaveType.PAID_LEAVE;
     formValid.value = false;
   }
 };
@@ -140,21 +170,22 @@ const fetchLeaveType = async () => {
   isError.value = false;
   try {
     const response = await getLeavesTree();
-    if (!response || response.length < 2) {
-      throw new Error("Invalid leaves data");
-    }
     leaves.value = response;
-    paid_leave.value =
-      leaves.value.find((item) => item.name === t("paid_leave")) ||
-      defaultUserLeave;
-    public_leave.value =
-      leaves.value.find((item) => item !== paid_leave.value) ||
-      defaultUserLeave;
-    if (!paid_leave.value || !public_leave.value) {
+    // カテゴリーごとに分類
+    paidLeave.value =
+      leaves.value.find((item) => item.value === ELeaveType.PAID_LEAVE) ||
+      defaultLeave;
+    console.log("paidLeave.value", paidLeave.value);
+
+    publicLeave.value =
+      leaves.value.find((item) => item.value === ELeaveType.PUBLIC_LEAVE) ||
+      defaultLeave;
+    console.log("publicLeave.value", publicLeave.value.children);
+    if (!paidLeave.value || !publicLeave.value) {
       throw new Error("Missing required leave types");
     }
-    tabs.value[0].title = paid_leave.value.name;
-    tabs.value[1].title = public_leave.value.name;
+    tabs.value[0].title = paidLeave.value.name;
+    tabs.value[1].title = publicLeave.value.name;
   } catch (error) {
     isError.value = true;
     console.error("Error fetching leaves:", error);
@@ -165,13 +196,13 @@ const fetchLeaveType = async () => {
 // フォーム送信処理
 const handleSubmit = async () => {
   if (!props.isEdit) {
-    setParentId(activeTab.value);
+    setleaveTypeId(activeTab.value);
     console.log("新しいデータを登録します...");
     // 登録処理を実行
     try {
       console.log(formModel);
       await addUserLeave(formModel);
-      showSnackbar("add_success", "success");
+      toast.success(t("add_success"));
       emit("refetch-data");
       handleCancel();
     } catch (error: any) {
@@ -179,7 +210,7 @@ const handleSubmit = async () => {
       if (error.status === 400) {
         errorMessage.push("user_exists");
       }
-      showSnackbar(errorMessage, "error");
+      toast.error(errorMessage);
     } finally {
       isDialogVisible.value = false;
     }
@@ -194,7 +225,7 @@ const onConfirmed = async () => {
   try {
     if (formModel.id == null) return;
     await updateUserLeave(formModel.id, formModel);
-    showSnackbar("update_success", "success");
+    toast.success(t("update_success"));
     handleCancel();
     emit("refetch-data");
   } catch (error: any) {
@@ -204,7 +235,7 @@ const onConfirmed = async () => {
     } else if (error.status == 403) {
       errorMessage.push("cannot_remove_own_admin_role");
     }
-    showSnackbar(errorMessage, "error");
+    toast.error(errorMessage);
   } finally {
     isDialogVisible.value = false;
   }
@@ -250,32 +281,53 @@ const onConfirmed = async () => {
               <span v-if="errors.leave_type" class="error" style="color: red">{{
                 errors.leave_type
               }}</span>
-              <VWindowItem value="paid"> </VWindowItem>
-              <VWindowItem value="public"> </VWindowItem>
+              <VWindowItem :value="ELeaveType.PAID_LEAVE"> </VWindowItem>
+              <!-- <VWindowItem value="public"> </VWindowItem> -->
+              <VWindowItem :value="ELeaveType.PUBLIC_LEAVE">
+                <VLabel>{{ t("leave_type") }}</VLabel>
+
+                <VRow class="mb-4">
+                  <VCol>
+                    <VTextField
+                      v-model="summerDayName"
+                      variant="outlined"
+                      color="primary"
+                      class="search"
+                      name="publicLeaveName"
+                      readonly
+                  /></VCol>
+                </VRow>
+              </VWindowItem>
             </VWindow>
+            <VLabel>{{ t("employee_name") }}</VLabel>
             <VRow>
-              <VCol cols="12">
-                <VLabel>{{ t("employee_name") }}</VLabel>
-                <VTextField
-                  v-model="formModel.userName"
-                  :rules="[validator.required]"
-                  variant="outlined"
-                  color="primary"
-                  name="userName"
-                  @focus="showUserList"
-                  :disabled="isEdit"
-                />
+              <VCol>
+                <VToolbar tag="div" color="transparent" flat>
+                  <VTextField
+                    v-model="formModel.userName"
+                    :rules="[validator.required]"
+                    variant="outlined"
+                    color="primary"
+                    clearable
+                    class="search"
+                    name="userName"
+                    :disabled="isEdit"
+                    readonly
+                  >
+                    <template #append-inner>
+                      <VBtn
+                        icon="mdi-magnify"
+                        variant="text"
+                        @click="showUserList"
+                        :disabled="isEdit"
+                        density="comfortable"
+                      />
+                    </template>
+                  </VTextField>
+                </VToolbar>
               </VCol>
-              <VCol cols="12" v-if="!isEdit">
-                <VLabel>{{ t("user_id") }}</VLabel>
-                <VTextField
-                  v-model="formModel.userId"
-                  variant="outlined"
-                  color="primary"
-                  name="userId"
-                  :disabled="!isEdit"
-                />
-              </VCol>
+            </VRow>
+            <VRow>
               <VCol cols="4">
                 <VLabel>{{ t("valid_leaves") }}</VLabel>
                 <VSelect

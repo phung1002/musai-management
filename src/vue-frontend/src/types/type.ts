@@ -57,7 +57,7 @@ export interface IUserLeaves {
 export interface ILeaveResponse {
   id: number;
   userFullName: string;
-  leaveType: string;
+  leaveTypeName: string;
   createdAt: string;
   startDate: string;
   endDate: string;

@@ -1,3 +1,4 @@
+<!-- カレンダー　画面 -->
 <script setup lang="ts">
 import { VCalendar } from "vuetify/labs/VCalendar";
 import { useI18n } from "vue-i18n";

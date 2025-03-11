@@ -238,12 +238,14 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	}
 
 	private double getRequestDays(LeaveType leaveType, LocalDate startDate, LocalDate endDate) {
-		return leaveType.getValue().equals(ELeaveValue.HALF_DAY.name()) ? 0.5 : calculateLeaveDays(startDate, endDate);
+		String leaveValue = leaveType.getValue() != null ? leaveType.getValue() : "";
+		return leaveValue.equals(ELeaveValue.HALF_DAY.name()) ? 0.5 : calculateLeaveDays(startDate, endDate);
 	}
 
 	private List<UserLeaveResponseDTO> getUserLeaveForMember(LeaveType leaveType, UserDetailsImpl principal) {
-		return (leaveType.getValue().equals(ELeaveValue.HALF_DAY.name())
-				|| leaveType.getValue().equals(ELeaveValue.FULL_DAY.name()))
+		String leaveValue = leaveType.getValue() != null ? leaveType.getValue() : "";
+		return (leaveValue.equals(ELeaveValue.HALF_DAY.name())
+				|| leaveValue.equals(ELeaveValue.FULL_DAY.name()))
 						? userLeaveService.getUserLeaveForMember(leaveType.getParent().getId(), principal)
 						: userLeaveService.getUserLeaveForMember(leaveType.getId(), principal);
 	}
