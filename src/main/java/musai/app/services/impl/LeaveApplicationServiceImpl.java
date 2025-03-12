@@ -166,6 +166,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal);
 			Collections.reverse(userLeaves);
 			updateUsedDays(userLeaves, cancelDays, true);
+			
 		}
 		application.setStatus(ELeaveStatus.CANCELED);
 		leaveApplicationRepository.save(application);

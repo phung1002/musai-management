@@ -3,6 +3,7 @@
   "password_confirm": "password confirm",
   "new_password": "new password",
   "new_password_confirm": "new password confirm",
+  "current_password": "current password",
   "username": "username",
   "user_id": "user id",
   "sign_in": "sign in",
@@ -70,7 +71,7 @@
   "leave_apply_confirm_message": "are you sure to submit?",
   "leave_update_confirm_message": "are you sure to update?",
   "confirm": "confirm!",
-  "password_change_confirm_message": "are you sure to change password?",
+  
   "logout_confirm_message": "are you sure to logout?",
   "delete_confirm_message": "are you sure to delete?",
   "cancel_confirm_message": "are you sure to cancel?",
@@ -123,7 +124,8 @@
     "cancel_only_pending": "You can only cancel a leave application with the status 'Pending.'",
     "confirm_leave_application": "Do you want to apply for leave for {n} days?",
     "error_requested_days_exceed": "Requested days exceed the remaining days.",
-    "error_leave_type_or_user_not_exist": "The selected leave type or user could not be found."
+    "error_leave_type_or_user_not_exist": "The selected leave type or user could not be found.",
+    "password_change_confirm_message": "are you sure to change password? After changing the password, you need to log in again."
   },
   "error": {
     "unexpected": "Unexpected error.",

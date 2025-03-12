@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { ILeaveResponse } from "@/types/type";
 import { updateLeaveRespond } from "@/api/response";
 import { toast } from "vue3-toastify";
+import { ELeaveStatus } from "@/constants/leaveStatus";
 const { t } = useI18n();
 const props = defineProps<{ LeaveResponse: ILeaveResponse }>();
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
@@ -28,7 +29,7 @@ const onRevoked = async () => {
   console.log(targetId.value);
 
   try {
-    await updateLeaveRespond(targetId.value, "REVOKED");
+    await updateLeaveRespond(targetId.value, ELeaveStatus.REVOKED);
     toast.success(t("message.cancel_success"));
     // await fetchLeaveType(); // 最新データを取得
     isDialogVisible.value = false; // ダイアログを閉じる
@@ -123,7 +124,7 @@ const onRevoked = async () => {
         type="submit"
         variant="elevated"
         color="red"
-        :disabled="LeaveResponse.status != 'APPROVED'"
+        :disabled="LeaveResponse.status != ELeaveStatus.APPROVED"
       >
         {{ t("application_status.REVOKED") }}
       </VBtn>

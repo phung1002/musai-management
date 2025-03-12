@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.constraints.NotEmpty;
 import musai.app.DTO.MessageResponse;
+import musai.app.DTO.request.ChangePasswordRequestDTO;
 import musai.app.DTO.request.UserRequestDTO;
 import musai.app.DTO.response.UserResponseDTO;
 import musai.app.security.services.UserDetailsImpl;
@@ -25,7 +27,7 @@ import musai.app.validation.ValidationGroups;
 
 @RestController
 @RequestMapping("/api/user")
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 	private final UserService userService;
 
@@ -73,7 +75,7 @@ public class UserController {
 	/**
 	 * API delete user Only ADMIN can delete user and they can't delete themself
 	 * 
-	 * @paramater UserRequestDTO
+	 * parameter UserRequestDTO
 	 * @return ResponseEntity
 	 */
 	@DeleteMapping("/delete/{id}")
@@ -96,5 +98,17 @@ public class UserController {
 	public List<UserResponseDTO> searchUserResponse(@RequestParam String keyword) {
 
 		return userService.searchUser(keyword);
+	}
+	/**
+	 * API Change password 
+	 * 
+	 * parameter UserRequestDTO
+	 * @return ResponseEntity
+	 */
+	@PutMapping("/change-password")
+	public ResponseEntity<?> changePassword( @Validated @RequestBody ChangePasswordRequestDTO changePasswordRequestDTO,
+			@AuthenticationPrincipal UserDetailsImpl principal) {
+		MessageResponse response = userService.changePassword(changePasswordRequestDTO, principal);
+		return ResponseEntity.ok(response);
 	}
 }

@@ -24,6 +24,7 @@ const headers = reactive([
   { title: t("employee_name"), key: "userFullName" },
   { title: t("leave_type"), key: "leaveTypeName" },
   { title: t("submit_date"), key: "createdAt" },
+  { title: t("status"), key: "status" },
   { title: t("action"), key: "action" },
 ]);
 // 申請リストをロード
@@ -86,6 +87,20 @@ const reject = async (id: number) => {
     console.error("Error rejecting request:", error);
   }
 };
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "APPROVED":
+      return "green";
+    case "REJECTED":
+      return "orange";
+    case "PENDING":
+      return "blue";
+    case "REVOKED":
+      return "red";
+    default:
+      return "grey";
+  }
+};
 const details = (LeaveResponse: ILeaveResponse) => {
   detailsCard.value = true;
   isDetails.value = true;
@@ -142,6 +157,14 @@ onMounted(() => {
               <template v-slot:item.number="{ index }">
                 {{ index + 1 }}
               </template>
+              <template v-slot:item.status="{ item }">
+                <span
+                  :style="{ color: getStatusColor(item.status) }"
+                  class="status-text"
+                >
+                  {{ t(`application_status.${item.status}`) }}
+                </span>
+              </template>
               <!-- アクション　設定  -->
               <template v-slot:item.action="{ item }">
                 <div class="action-buttons">
@@ -160,16 +183,7 @@ onMounted(() => {
                     :disabled="item.status != 'PENDING'"
                     @click="approve(item.id)"
                   >
-                    <VIcon
-                      :color="
-                        item.status == 'APPROVED'
-                          ? 'green'
-                          : item.status == 'REJECTED'
-                          ? 'red'
-                          : item.status == 'REVOKED'
-                          ? 'red'
-                          : 'primary'
-                      "
+                    <VIcon :color="getStatusColor(item.status)"
                       >mdi-check-bold</VIcon
                     >
                   </VBtn>
@@ -180,14 +194,7 @@ onMounted(() => {
                     :disabled="item.status != 'PENDING'"
                     @click="reject(item.id)"
                   >
-                    <VIcon
-                      :color="
-                        item.status == 'REJECTED'
-                          ? 'red'
-                          : item.status == 'REVOKED'
-                          ? 'red'
-                          : 'error'
-                      "
+                    <VIcon :color="getStatusColor(item.status)"
                       >mdi-close-thick</VIcon
                     >
                   </VBtn>
