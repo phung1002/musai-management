@@ -154,8 +154,10 @@ public class UserLeaveServiceImpl implements UserLeaveService {
                 .userName(userLeave.getUser().getUsername())
                 .leaveTypeId(userLeave.getLeaveType().getId())
                 .leaveTypeName(userLeave.getLeaveType().getName())
+                .leaveTypeValue(userLeave.getLeaveType().getValue())
                 .totalDays(userLeave.getTotalDays())
                 .usedDays(userLeave.getUsedDays())
+                .remainedDays(userLeave.getRemainedDays())
                 .validFrom(userLeave.getValidFrom())
                 .validTo(userLeave.getValidTo())
                 .build();

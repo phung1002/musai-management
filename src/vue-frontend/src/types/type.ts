@@ -32,6 +32,11 @@ export interface IUser {
   joinDate: string | null;
   gender: string;
 }
+export interface IPasswordChange {
+  currentPassword: string; // 現在のパスワード
+  newPassword: string; // 新しいパスワード
+  confirmPassword: string; // 新しいパスワード（確認用）
+}
 export interface ILeaveTypes {
   id: number | null; // 一意のID
   name: string; // 休暇の名前
@@ -44,11 +49,12 @@ export interface IUserLeaves {
   id: number | null; // ����ID
   leaveTypeId: number | null; // 休暇のタイプ
   leaveTypeName: string; //
+  leaveTypeValue: string;
   userId: number | null; // 一意のID
   userName: string; // 休暇の名前
   totalDays: number | null;
   usedDays: number | null; // ����の数
-  remainedDay: number | null;
+  remainedDays: number | null;
   validFrom: string;
   validTo: string;
   name: string; // 追加

@@ -1,0 +1,6 @@
+export enum ELeaveStatus {
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
+  PENDING = "PENDING",
+  REVOKED = "REVOKED",
+}

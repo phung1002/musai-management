@@ -7,6 +7,7 @@ import { IUser } from "@/types/type";
 import UserForm from "@/components/form/UserForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { showSnackbar } from "@/composables/useSnackbar";
+import { ERole } from "@/constants/role";
 
 const isConfirmDialogVisible = ref(false);
 const formatRole = (role: string) => role;
@@ -99,7 +100,16 @@ const handleSearch = async () => {
     isLoading.value = false;
   }
 };
-
+const getRoleColor = (roles: string) => {
+  switch (roles) {
+    case ERole.ADMIN:
+      return "red";
+    case ERole.MANAGER:
+      return "orange";
+    default:
+      return "green";
+  }
+};
 // Call API when component is mounted
 onMounted(() => {
   fetchUsers();
@@ -173,8 +183,8 @@ onMounted(() => {
                 <VChipGroup column active-class="bg-primary text-white">
                   <VChip
                     v-for="(role, index) in item.roles"
+                    :style="{ color: getRoleColor(role) }"
                     :key="index"
-                    variant="elevated"
                     text-color="white"
                   >
                     {{ t(`roles.${role}`) }}

@@ -3,6 +3,7 @@
   "password_confirm": "パスワード確認",
   "new_password": "新パスワード",
   "new_password_confirm": "新パスワード確認用",
+  "current_password": "現在パスワード",
   "username": "ユーザー名",
   "user_id": "社員番号",
   "sign_in": "ログイン",
@@ -66,7 +67,6 @@
   "leave_apply_confirm_message": "提出してもよろしいですか？",
   "leave_update_confirm_message": "更新してもよろしいですか？",
   "confirm": "確認！",
-  "password_change_confirm_message": "パスワード変更してもよろしいですか？",
   "logout_confirm_message": "ログアウトしてもよろしいですか？",
   "delete_confirm_message": "削除してもよろしいですか？",
   "cancel_confirm_message": "取り消してもよろしいですか？",
@@ -124,9 +124,12 @@
     "cancel_only_pending": " ステータスが「承認待ち」の休暇申請のみキャンセルできます。",
     "confirm_leave_application": "{n}日間の休暇を申請しますか？",
     "error_requested_days_exceed": "申請日数が残り日数を超えています。",
-    "error_leave_type_or_user_not_exist": "指定された休暇種類またはユーザーが見つかりません。"
+    "error_leave_type_or_user_not_exist": "指定された休暇種類またはユーザーが見つかりません。",
+    "password_change_confirm_message": 
+      "パスワード変更してもよろしいですか？パスワート変更後、再ログインが必要です"
   },
   "error": {
+    "validation_error": "送信前にエラーを修正してください。",
     "unexpected": "想定外のエラーです。",
     "user_not_exist": "ユーザーが存在しません。",
     "leave_type_not_exist": "休暇タイプが存在しません。",
@@ -136,7 +139,8 @@
     "can_only_be_revoked_if_approved": "ステータスが「承認済み」の場合のみ取り消しが可能です。",
     "can_only_be_cancel_or_response_if_pending": "ステータスが「保留中」の場合のみキャンセルまたは応答できます。",
     "can_only_be_update_if_pending_or_request_change": "ステータスが「保留中」または「変更要求」の場合のみ更新できます。",
-    "half_day_date_must_match": "半休を選択する場合、開始日と終了日は同じである必要があります。"
+    "half_day_date_must_match": "半休を選択する場合、開始日と終了日は同じである必要があります。",
+    "current_password_incorect": "現在のパスワードが正しくありません。"
   },
   "validation": {
     "required_input": "このフィールドは必須です。",

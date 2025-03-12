@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import musai.app.DTO.MessageResponse;
+import musai.app.DTO.request.ChangePasswordRequestDTO;
 import musai.app.DTO.request.UserRequestDTO;
 import musai.app.DTO.response.UserResponseDTO;
 import musai.app.exception.BadRequestException;
@@ -21,6 +22,7 @@ import musai.app.models.Role;
 import musai.app.models.User;
 import musai.app.repositories.RoleRepository;
 import musai.app.repositories.UserRepository;
+import musai.app.security.jwt.JwtUtils;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.UserService;
 
@@ -248,6 +250,22 @@ public class UserServiceImpl implements UserService {
 
 		return filteredUser;
 
+	}
+
+	@Override
+	public MessageResponse changePassword(ChangePasswordRequestDTO changePasswordRequestDTO,
+			UserDetailsImpl principal) {
+		User user = userRepository.findByIdAndDeletedAtIsNull(principal.getId())
+				.orElseThrow(() -> new NotFoundException("User not exist."));
+
+		if (!encoder.matches(changePasswordRequestDTO.getPassword(), user.getPassword())) {
+
+			throw new BadRequestException("current_password_incorect");
+		}
+		user.setPassword(encoder.encode(changePasswordRequestDTO.getNewPassword()));
+		userRepository.save(user);
+
+		return null;
 	}
 
 }

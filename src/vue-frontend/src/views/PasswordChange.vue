@@ -1,74 +1,67 @@
 <!-- パスワード変更　画面 -->
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
+import { ref, reactive } from "vue";
 import { useI18n } from "vue-i18n";
-import { IUser } from "@/types/type";
+import { IPasswordChange } from "@/types/type";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import { changePassword } from "@/api/auth";
-import SnackBar from "@/components/common/SnackBar.vue";
-import { showSnackbar } from "@/composables/useSnackbar";
+import { changePassword } from "@/api/user"; // API追加
 import { useValidator } from "@/utils/validation";
-import { formRules, defaultUser } from "../../configs/userFormConfig";
-// タイトルを日本語に変更用
+import { formRules } from "../configs/userFormConfig";
+import { toast } from "vue3-toastify";
+import { logout } from "@/api/auth";
+import router from "@/router";
 const { t } = useI18n();
-
 const validator = useValidator(t);
-const props = defineProps<{ user?: IUser; isEdit: boolean }>();
-const formModel = reactive<IUser>(
-  props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser }
-);
-// バリデーションルール
-const formRulesConfig = formRules(validator, formModel);
+// formModel を IPasswordChange 型として一元管理
+const formModel = reactive<IPasswordChange>({
+  currentPassword: "",
+  newPassword: "",
+  confirmPassword: "",
+});
+const formRulesConfig = formRules(validator, true); // 編集モードの場合
 const formValid = ref(false);
-
+// const formRef = ref<VForm | null>(null);
 // フォームデータ
-const password = ref("");
+const currentPassword = ref("");
 const newPassword = ref("");
 const confirmPassword = ref("");
 
 // ローディング状態 & メッセージ
 const loading = ref(false);
 const isDialogVisible = ref(false);
+
 // 入力初期化
 const handleResetFilter = () => {
-  password.value = "";
+  currentPassword.value = "";
   newPassword.value = "";
   confirmPassword.value = "";
 };
 
 // 登録処理
 const handleSubmit = async (formValid: boolean) => {
-  // エラーチェック
   if (!formValid) {
-    showSnackbar("validation_error", "error");
+    toast.error(t("error.validation_error"));
     return;
   }
-  // if (Object.keys(errors.value).length > 0) {
-  //   showSnackbar('validation_error', 'error');
-  //   // 登録処理を中断する
-  //   return;
-  // } else if (Object.keys(errors.value).length < 0)
-  // return;
   loading.value = true;
   isDialogVisible.value = true;
-  // message.value = "";
 };
 
-// API 呼び出し
+//データ統合： formModel 内のデータを使用する
 const onSubmit = async () => {
-  console.log("password:", password.value);
-  console.log("newPassword:", newPassword.value);
-  console.log("許可されました");
   try {
     await changePassword({
-      password: password.value,
-      newPassword: newPassword.value,
+      password: formModel.currentPassword,
+      newPassword: formModel.newPassword,
     });
-    showSnackbar("add_success", "success");
-    // フォームのリセット
+    toast.success(t("message.add_success"));
     handleResetFilter();
-  } catch (error) {
-    showSnackbar("add_failure", "error");
+    logout();
+    router.push({
+      path: "/login",
+    });
+  } catch (error: any) {
+    toast.error(t(error.message));
   } finally {
     loading.value = false;
   }
@@ -89,21 +82,21 @@ const onSubmit = async () => {
             </VToolbarTitle>
           </VToolbar>
           <VCardText>
-            <VForm class="mt-2" v-model="formValid">
+            <VForm ref="formRef" class="mt-2" v-model="formValid">
               <VRow>
                 <VCol cols="12" md="6">
                   <VTextField
-                    v-model="password"
-                    id="current-password"
-                    :placeholder="t('password')"
-                    :rules="formRulesConfig.password"
+                    v-model="formModel.currentPassword"
+                    :rules="[validator.required]"
+                    id="current-currentPassword"
+                    :placeholder="t('current_password')"
                     type="password"
                   />
                 </VCol>
                 <VCol cols="12" md="6"> </VCol>
                 <VCol cols="12" md="6">
                   <VTextField
-                    v-model="newPassword"
+                    v-model="formModel.newPassword"
                     id="new-password"
                     :placeholder="t('new_password')"
                     :rules="formRulesConfig.password"
@@ -112,10 +105,10 @@ const onSubmit = async () => {
                 </VCol>
                 <VCol cols="12" md="6">
                   <VTextField
-                    v-model="confirmPassword"
+                    v-model="formModel.confirmPassword"
                     id="confirm-password"
                     :placeholder="t('new_password_confirm')"
-                    :rules="[validator.checkEqual(newPassword)]"
+                    :rules="[validator.checkEqual(formModel.newPassword)]"
                     type="password"
                   />
                 </VCol>
@@ -137,7 +130,7 @@ const onSubmit = async () => {
           <VDialog v-model="isDialogVisible" width="auto" eager>
             <ConfimDialogView
               :title="t('confirm')"
-              :message="t('password_change_confirm_message')"
+              :message="t('message.password_change_confirm_message')"
               :isVisible="isDialogVisible"
               @update:isVisible="isDialogVisible = $event"
               @confirmed="onSubmit"

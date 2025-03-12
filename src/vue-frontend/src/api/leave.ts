@@ -113,12 +113,12 @@ export async function updateUserLeave(
 // 社員休暇検索API呼び出し
 export async function searchUserLeave(key: string): Promise<IUserLeaves[]> {
   try {
-    const response = await axiosIns.get<IUserLeaves[]>("/user-leaves/all", {
+    const response = await axiosIns.get<IUserLeaves[]>("/user-leaves/search", {
       params: { keyword: key },
     });
     return response.data;
   } catch (error) {
-    console.error("Search leave failed:", error);
+    console.error("Search Userleave failed:", error);
     throw error;
   }
 }

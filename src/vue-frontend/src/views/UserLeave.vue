@@ -1,6 +1,6 @@
 <!-- 社員休暇管理 画面　-->
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed } from "vue";
 import UserLeaveForm from "@/components/form/UserLeaveForm.vue";
 import { useI18n } from "vue-i18n";
 import { VTab } from "vuetify/lib/components/index.mjs";
@@ -15,10 +15,11 @@ const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 const selectedLeave = ref<IUserLeaves | undefined>(undefined); // 編集する休暇情報
 const isEdit = ref(false); // 編集モードかどうか
+const selectedTab = ref("paid_leave");
 // メイン休暇タブで分類
 const tabs = ref([
   { title: "paid_leave", icon: "mdi-gift-open", tab: "有休" },
-  { title: "public_leave", icon: "mdi-pine-tree-box", tab: "公休" },
+  { title: "public_leave", icon: "mdi-pine-tree-box", tab: "夏休み" },
 ]);
 // // テーブル　ヘッダー
 const headers = reactive([
@@ -26,11 +27,21 @@ const headers = reactive([
   { title: t("employee_name"), key: "userName" },
   { title: t("valid_leaves"), key: "totalDays" },
   { title: t("used_leaves"), key: "usedDays" },
-  { title: t("available_leaves"), key: "remained_day" },
+  { title: t("available_leaves"), key: "remainedDays" },
   { title: t("leave_start"), key: "validFrom" },
   { title: t("leave_expired"), key: "validTo" },
   { title: t("action"), key: "action" },
 ]);
+// データを分類する計算プロパティ
+const filteredLeaves = computed(() => {
+  return userLeaves.value.filter(
+    (leave) =>
+      (selectedTab.value === "paid_leave" &&
+        leave.leaveTypeValue == "PAID_LEAVE") ||
+      (selectedTab.value === "public_leave" &&
+        leave.leaveTypeValue == "SUMMER_DAY")
+  );
+});
 // 休暇リストをロード
 const loadLeave = (lst: any) => {
   userLeaves.value = lst.map((userLeave: IUserLeaves) => ({
@@ -108,43 +119,46 @@ onMounted(() => {
               </VBtn>
             </VCardActions>
           </VToolbar>
-          <VDivider />
-          <!-- 検索バー -->
-          <VCardItem class="py-0">
-            <VToolbar tag="div" color="transparent" flat>
-              <VTextField
-                v-model="keyWord"
-                :prepend-icon="'mdi-filter-variant'"
-                :placeholder="t('type_something')"
-                hide-details
-                clearable
-                variant="plain"
-                class="search"
-                @click:clear="handleSearch"
-                @keydown.enter="handleSearch"
-              />
-              <VBtn icon density="comfortable" @click="handleSearch">
-                <VIcon>mdi-magnify</VIcon>
-              </VBtn>
-            </VToolbar>
-          </VCardItem>
+
           <VDivider />
           <!-- 休暇タイプタブ設定 -->
           <VTable>
-            <VTabs v-model="activeTab" color="primary">
-              <VTab v-for="item in tabs" :key="item.icon" :value="item.tab">
-                <VIcon size="20" start :icon="item.icon" />
-                {{ t(item.title) }}
+            <VTabs v-model="selectedTab" color="primary">
+              <VTab v-for="tab in tabs" :key="tab.title" :value="tab.title">
+                <!-- <VIcon size="20" start :icon="item.icon" /> -->
+                <v-icon>{{ tab.icon }}</v-icon>
+                {{ tab.tab }}
               </VTab>
             </VTabs>
             <VCardItem>
+              <VDivider />
+              <!-- 検索バー -->
+              <VCardItem class="py-0">
+                <VToolbar tag="div" color="transparent" flat>
+                  <VTextField
+                    v-model="keyWord"
+                    :prepend-icon="'mdi-filter-variant'"
+                    :placeholder="t('type_something')"
+                    hide-details
+                    clearable
+                    variant="plain"
+                    class="search"
+                    @click:clear="handleSearch"
+                    @keydown.enter="handleSearch"
+                  />
+                  <VBtn icon density="comfortable" @click="handleSearch">
+                    <VIcon>mdi-magnify</VIcon>
+                  </VBtn>
+                </VToolbar>
+              </VCardItem>
+              <VDivider />
               <VWindow v-model="activeTab">
                 <VWindowItem value="paid"></VWindowItem>
                 <VWindowItem value="public"></VWindowItem>
                 <VDataTable
                   :items-per-page-text="t('items_per_page')"
                   :headers="headers"
-                  :items="userLeaves"
+                  :items="filteredLeaves"
                   v-if="!isLoading && !isError"
                 >
                   <!-- 表示　番号設定  -->

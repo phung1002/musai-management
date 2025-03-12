@@ -7,6 +7,7 @@ import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { listLeaveRequestForMember, cancelRequest } from "@/api/request";
 import { ILeaveRequest } from "@/types/type";
 import { toast } from "vue3-toastify";
+import { ELeaveStatus } from "@/constants/leaveStatus";
 
 // 日本語にローカル変更用
 const { t } = useI18n();
@@ -86,6 +87,20 @@ const handleCancel = async () => {
     isConfirmDialogVisible.value = false;
   }
 };
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case ELeaveStatus.APPROVED:
+      return "green";
+    case ELeaveStatus.REJECTED:
+      return "orange";
+    case ELeaveStatus.PENDING:
+      return "blue";
+    case ELeaveStatus.REVOKED:
+      return "red";
+    default:
+      return "grey";
+  }
+};
 </script>
 
 <template>
@@ -149,7 +164,12 @@ const handleCancel = async () => {
               </template>
               <!--   -->
               <template v-slot:item.status="{ item }">
-                {{ t(`application_status.${item.status}`) }}
+                <span
+                  :style="{ color: getStatusColor(item.status) }"
+                  class="status-text"
+                >
+                  {{ t(`application_status.${item.status}`) }}
+                </span>
               </template>
 
               <!--   -->
