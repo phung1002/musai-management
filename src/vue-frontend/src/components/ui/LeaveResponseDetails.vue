@@ -1,6 +1,6 @@
 <!-- 申請詳細　画面 -->
 <script setup lang="ts">
-import { defineProps, defineEmits, ref } from "vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { ILeaveResponse } from "@/types/type";
 import { updateLeaveRespond } from "@/api/response";

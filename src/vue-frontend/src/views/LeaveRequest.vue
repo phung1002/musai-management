@@ -78,11 +78,10 @@ const handleCancel = async () => {
   if (!selectedRequest.value.id) return;
   try {
     await cancelRequest(selectedRequest.value.id);
-
-    toast.success(t("delete_success"));
+    toast.success(t("message.delete_success"));
     fetchLeaveRequests();
   } catch (error: any) {
-    toast.error(t("cancel_only_pending"));
+    toast.error(t("message.cancel_only_pending"));
   } finally {
     isConfirmDialogVisible.value = false;
   }

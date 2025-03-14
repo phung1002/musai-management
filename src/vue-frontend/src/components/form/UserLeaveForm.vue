@@ -1,6 +1,6 @@
 <!-- 社員休暇　フォーム -->
 <script lang="ts" setup>
-import { ref, Ref, defineProps, onMounted, reactive, watch } from "vue";
+import { ref, Ref, onMounted, reactive, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { VSelect, VTab } from "vuetify/lib/components/index.mjs";
 import { useValidator } from "@/utils/validation";

@@ -19,7 +19,7 @@ const items = [
   { type: "divider", roles: [ERole.ADMIN] },
   { type: "subheader", title: t("admin"), roles: [ERole.ADMIN] },
   {
-    title: t("user_management"),
+    title: t("employee_management"),
     props: {
       prependIcon: "mdi-account-box-multiple-outline",
       link: true,
@@ -42,7 +42,7 @@ const items = [
   },
   { type: "subheader", title: t("manager"), roles: [ERole.MANAGER] },
   {
-    title: t("user_leave_management"),
+    title: t("employee_leave_management"),
     props: {
       prependIcon: "mdi-badge-account-horizontal-outline",
       link: true,

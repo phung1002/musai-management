@@ -1,23 +1,25 @@
 <!-- PDFファイル　アップロード　画面 -->
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
+import { ref, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
-import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import SnackBar from "@/components/common/SnackBar.vue";
-import { showSnackbar } from "@/composables/useSnackbar";
-import { useValidator } from "@/utils/validation";
-// import { uploadPdf } from '@/api/request';
+import ConfimDialogView from "@/components/common/ConfimDialog.vue"; // 確認ダイアログ
+import { useValidator } from "@/utils/validation"; // バリデーション
+import { uploadDocument } from "@/api/document"; // API関数
+import { toast } from "vue3-toastify"; // トースト通知
+
 const { t } = useI18n();
-const isDialogVisible = ref(false);
-const validator = useValidator(t);
-const selectedFile = ref<File | null>(null);
-const pdfPreviewUrl = ref<string | null>(null);
+const isDialogVisible = ref(false); // 確認ダイアログ表示
+const validator = useValidator(t); // バリデーション
+const selectedFile = ref<File | null>(null); // 選択されたファイル
+const pdfPreviewUrl = ref<string | null>(null); // PDF プレビュー URL
 
 const emit = defineEmits(["form:cancel"]);
+// ファイルリセット
 const resetFile = () => {
   selectedFile.value = null;
   pdfPreviewUrl.value = null;
 };
+// ファイルアップロード
 const handleFileUpload = (event: Event) => {
   const input = event.target as HTMLInputElement;
   if (input.files && input.files[0]) {
@@ -27,48 +29,51 @@ const handleFileUpload = (event: Event) => {
       alert("PDF ファイルを選択してください");
       return;
     }
-
     selectedFile.value = file;
     pdfPreviewUrl.value = URL.createObjectURL(file);
   }
 };
-// 入力チェック　バリデーションを行う
+// アップロード確認
 const uploadFile = async () => {
-  console.log("Uploaded PDF URL:", selectedFile.value);
   if (!selectedFile.value) {
-    showSnackbar("validation_error", "error");
+    toast.error(t("message.no_file_selected"));
     return;
   }
   isDialogVisible.value = true;
 };
+
+// アップロード処理
+const onConfirmed = async () => {
+  if (!selectedFile.value) {
+    toast.error(t("error.validation_error"));
+    return;
+  }
+  try {
+    await uploadDocument(selectedFile.value);
+    toast.success(t("message.upload_success"));
+  } catch (error) {
+    console.error("PDF アップロードに失敗しました:", error);
+    toast.error(t("error.upload_error"));
+  }
+  handleCancel(); // フォーム閉じる
+};
+// キャンセル処理
 const handleCancel = () => {
   resetFile();
   emit("form:cancel");
 };
-// API 通信
-const onConfirmed = async () => {
-  if (!selectedFile.value) {
-    showSnackbar("ファイルが選択されていません", "error");
-    return;
+
+// メモリリーク防止 (コンポーネント終了時)
+onUnmounted(() => {
+  if (pdfPreviewUrl.value) {
+    URL.revokeObjectURL(pdfPreviewUrl.value);
   }
-  // アップロード処理
-  console.log("Uploading PDF:", selectedFile.value);
-  try {
-    // const uploadedUrl = await uploadPdf(selectedFile.value);
-    // console.log("Uploaded PDF URL:", uploadedUrl);
-    showSnackbar("upload_success", "success");
-  } catch (error) {
-    console.error("PDF アップロードに失敗しました:", error);
-    showSnackbar("upload_error", "error");
-  }
-  handleCancel(); //フォーム閉じる
-};
+});
 </script>
 
 <template>
   <VCard width="940px">
     <VToolbar tag="div">
-      <SnackBar :snackbar="showSnackbar"></SnackBar>
       <VToolbarTitle
         ><VIcon icon="mdi-file-upload-outline" />{{
           t("pdf_file_upload")
@@ -86,6 +91,7 @@ const onConfirmed = async () => {
               accept="application/pdf"
               @change="handleFileUpload"
               :rules="[validator.required]"
+              :clearable="!selectedFile"
             ></v-file-input>
           </VCol>
         </VRow>
