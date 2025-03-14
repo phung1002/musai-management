@@ -5,8 +5,11 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,12 +37,12 @@ public class DocumentController {
 	// API list all document
 	@GetMapping("/all")
 	public ResponseEntity<Object> listFiles() {
-	    try {
-	        List<DocumentResponseDTO> files = documentService.listAllFiles();
-	        return ResponseEntity.ok(files); 
-	    } catch (IOException e) {
-	        return ResponseEntity.internalServerError().body("file_upload_failed");
-	    } 
+		try {
+			List<DocumentResponseDTO> files = documentService.listAllFiles();
+			return ResponseEntity.ok(files);
+		} catch (IOException e) {
+			return ResponseEntity.internalServerError().body("file_upload_failed");
+		}
 	}
 
 	// API Get document of member
@@ -56,15 +59,33 @@ public class DocumentController {
 		try {
 			Document document = documentService.uploadFile(file, principal);
 			return ResponseEntity.ok(document);
-		
+
 		} catch (IllegalArgumentException e) {
-	        return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-	    } catch (NotFoundException e) {
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
-	    } catch (IOException e) {
-	        return ResponseEntity.internalServerError().body(new MessageResponse("file_upload_failed"));
-	    } catch (Exception e) {
-	        return ResponseEntity.internalServerError().body(new MessageResponse( e.getMessage()));
-	    }
+			return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+		} catch (NotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+		} catch (IOException e) {
+			return ResponseEntity.internalServerError().body(new MessageResponse("file_upload_failed"));
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().body(new MessageResponse(e.getMessage()));
+		}
 	}
+
+	// API delete
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteDocument(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl principal) {
+		try {
+			documentService.deleteDocument(id, principal.getId());
+			return ResponseEntity.ok(new MessageResponse("file_deleted_successfully"));
+		} catch (NotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+		} catch (AccessDeniedException e) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(e.getMessage()));
+		} catch (IOException e) {
+			return ResponseEntity.internalServerError().body(new MessageResponse("error_deleting_file"));
+		} catch (Exception e) {
+			return ResponseEntity.internalServerError().body(new MessageResponse("unexpected_error"));
+		}
+	}
+
 }

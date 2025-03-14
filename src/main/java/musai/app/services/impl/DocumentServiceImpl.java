@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -96,12 +97,10 @@ public class DocumentServiceImpl implements DocumentService {
 	private String cleanFileName(String fileName) {
 		// remove timestamp
 		fileName = fileName.replaceFirst("^\\d+_", "");
-	
 		//remove .pdf
 		if (fileName.endsWith(".pdf")) {
 			fileName = fileName.substring(0, fileName.length() - 4);
 		}
-
 		return fileName;
 	}
 
@@ -135,12 +134,37 @@ public class DocumentServiceImpl implements DocumentService {
 		// Create a new document entity to store file metadata in the database
 		Document document = new Document();
 		document.setTitle(fileName);
-		document.setPath("/uploads/" + principal.getId() + "/" + fileName);
+		document.setPath("/" + principal.getId() + "/" + fileName);
 		document.setUploadBy(user);
 		document.setUploadAt(LocalDateTime.now());
 
 		// Save the document metadata to the database
 		return documentRepository.save(document);
 	}
+
+	@Override
+	public void deleteDocument(Long documentId, Long userId) throws IOException {
+	    Document document = documentRepository.findByIdAndDeletedAtIsNull(documentId)
+	            .orElseThrow(() -> new NotFoundException("file_not_found"));
+
+	    if (!document.getUploadBy().getId().equals(userId)) {
+	        throw new AccessDeniedException("not_authorized_to_delete");
+	    }
+
+	    Path filePath = Paths.get(uploadDir, document.getPath());
+	    File file = filePath.toFile();
+
+	    if (file.exists() && file.isFile()) {
+	        if (!file.delete()) {
+	            throw new IOException("file_delete_failed");
+	        }
+	    } else {
+	        throw new NotFoundException("file_not_found_in_directory");
+	    }
+
+	    document.setDeletedAt(LocalDateTime.now());
+	    documentRepository.save(document);
+	}
+
 
 }
