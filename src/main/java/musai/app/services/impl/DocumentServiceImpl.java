@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -166,5 +168,18 @@ public class DocumentServiceImpl implements DocumentService {
 	    documentRepository.save(document);
 	}
 
+	@Override
+	public Resource previewDocument(Long documentId) throws Exception {
+        Document document = documentRepository.findByIdAndDeletedAtIsNull(documentId)
+                .orElseThrow(() -> new NotFoundException("file_not_found"));
 
+        String filePath = uploadDir + document.getPath();
+
+        File file = new File(filePath);
+        if (!file.exists()) {
+            throw new NotFoundException("file_not_found_in_directory");
+        }
+        Path path = Paths.get(filePath);
+        return new FileSystemResource(path);
+    }
 }
