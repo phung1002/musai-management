@@ -16,8 +16,8 @@ const { t } = useI18n();
 
 const applyFrom = ref(false); // フォーム表示
 const isDialogVisible = ref(false); // 確認ダイアログ表示
-const documents = ref<IDocument[]>([]); // 🔹 動的データ
-const selectedDocumentId = ref<number | null>(null); // 🔹 削除用
+const documents = ref<IDocument[]>([]); // 動的データ
+const selectedDocumentId = ref<number | null>(null); // 削除用
 const pdfPreviewUrl = ref<string | null>(null); // PDFプレビューURL
 const isPreviewDialogVisible = ref(false); // プレビューダイアログ表示制御
 const pdfUrl = ref<string | null>(null); // PDFファイルURL
@@ -27,17 +27,26 @@ const isError = ref(false); // エラープラグ
 const headers = reactive([
   { title: t("number"), key: "number" },
   { title: t("title"), key: "title" },
-  { title: t("submitter"), key: "submitter" },
-  { title: t("submit_date"), key: "submit_date" },
+  { title: t("submitter"), key: "uploadBy" },
+  { title: t("submit_date"), key: "uploadAt" },
   { title: t("action"), key: "action" },
 ]);
+
 // データ取得
 const fetchDocuments = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    // documents.value = await getDocuments();
-    console.log(documents.value);
+    documents.value = await getDocuments();
+    console.log("documents", documents.value);
+    // 日付を "yyyy-MM-dd" 形式に変換
+    documents.value = documents.value.map((doc: any) => {
+      if (doc.uploadAt) {
+        const date = new Date(doc.uploadAt); // uploadAtをDateオブジェクトに変換
+        doc.uploadAt = date.toISOString().split("T")[0]; // "yyyy-MM-dd"形式に変換
+      }
+      return doc;
+    });
   } catch (error) {
     isError.value = true;
     console.error("データ取得失敗:", error);
@@ -55,21 +64,19 @@ const handleDeleteItem = (id: number) => {
 // プレビュー関数
 const handlePreview = async (id: number) => {
   try {
-    const response = await getDocumentPreview(id);
-    // 取得したFileオブジェクトを使ってBlob URLを生成
-    if (response.filePath) {
-      pdfUrl.value = URL.createObjectURL(response.filePath); // Blob URLに変換して設定
-    }
+    // const response = await getDocumentPreview(id);
+    // // 取得したFileオブジェクトを使ってBlob URLを生成
+    // if (response.filePath) {
+    //   pdfUrl.value = URL.createObjectURL(response.filePath); // Blob URLに変換して設定
+    // }
     isPreviewDialogVisible.value = true;
-    console.log("PDFプレビュー表示:", response.filePath);
+    // console.log("PDFプレビュー表示:", response.filePath);
   } catch (error) {
     console.error("PDFのプレビューに失敗しました:", error);
   }
 };
-// プレビューダイアログを閉じる
-const closePreviewDialog = () => {
-  isPreviewDialogVisible.value = false;
-  pdfPreviewUrl.value = null;
+const onCancelHandler = () => {
+  isPreviewDialogVisible.value = false; // ダイアログを閉じる
 };
 
 // 削除処理
@@ -110,7 +117,10 @@ onMounted(() => {
               <VBtn color="primary" @click="handleCreateItem" variant="elevated"
                 ><v-icon icon="mdi-plus" start></v-icon>{{ t("upload") }}
                 <VDialog v-model="applyFrom" width="auto" eager>
-                  <UploadForm @form:cancel="applyFrom = false" />
+                  <UploadForm
+                    @form:cancel="applyFrom = false"
+                    @fetch="fetchDocuments"
+                  />
                 </VDialog>
               </VBtn>
             </VCardActions>
@@ -126,7 +136,7 @@ onMounted(() => {
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->
-              <template v-slot:item.no="{ index }">
+              <template v-slot:item.number="{ index }">
                 {{ index + 1 }}
               </template>
               <!-- アクション　設定  -->
@@ -166,8 +176,14 @@ onMounted(() => {
       @update:isVisible="isDialogVisible = $event"
       @confirmed="onDeleted"
     />
-    <!-- PDFプレビュー表示 -->
-    <PdfPreview :pdfUrl="pdfUrl" :isVisible="isPreviewDialogVisible" />
+  </VDialog>
+  <!-- PDFプレビュー表示ダイアログ -->
+  <VDialog v-model="isPreviewDialogVisible" width="auto" eager>
+    <PdfPreview
+      :pdfUrl="pdfUrl"
+      :isVisible="isPreviewDialogVisible"
+      @form:cancel="onCancelHandler"
+    />
   </VDialog>
 </template>
 

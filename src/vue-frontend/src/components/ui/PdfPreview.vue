@@ -7,7 +7,6 @@ import { toast } from "vue3-toastify"; // トースト通知
 const { t } = useI18n();
 const selectedFile = ref<File | null>(null); // 選択されたファイル
 const pdfPreviewUrl = ref<string | null>(null); // PDF プレビュー URL
-
 const emit = defineEmits(["form:cancel"]); // form:cancel イベント
 
 // ファイルリセット
@@ -48,13 +47,10 @@ const handleDownload = () => {
 if (props.pdfUrl) {
   pdfPreviewUrl.value = props.pdfUrl; // pdfUrl プロパティから URL を設定
 }
-
-// キャンセル処理
 const handleCancel = () => {
+  emit("form:cancel"); // ここでイベントが発火する
   resetFile();
-  emit("form:cancel");
 };
-
 // メモリリーク防止 (コンポーネント終了時)
 onUnmounted(() => {
   if (pdfPreviewUrl.value) {
@@ -69,7 +65,9 @@ onUnmounted(() => {
       <VToolbarTitle>
         <VIcon icon="mdi-file-upload-outline" /> {{ t("pdf_view") }}
       </VToolbarTitle>
-      <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
+      <VBtn @click="handleCancel" icon :disabled="false">
+        <VIcon icon="mdi-close" />
+      </VBtn>
     </VToolbar>
     <!-- PDF プレビュー -->
     <VCard flat elevation="0" v-if="pdfPreviewUrl" class="mt-4">

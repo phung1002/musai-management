@@ -1,4 +1,4 @@
-import axiosIns from "axios";
+import axiosIns from "@/plugins/axios";
 import { IDocument } from "@/types/type";
 
 // ドキュメントアップロードAPI呼び出し
@@ -7,10 +7,12 @@ export async function uploadDocument(file: File): Promise<IDocument> {
 
   const formData = new FormData();
   formData.append("file", file);
-  console.log("フォームデータ:", formData);
-
   try {
-    const response = await axiosIns.post("/documents/upload", formData);
+    const response = await axiosIns.post("/documents/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     console.log("アップロード成功 - レスポンスデータ:", response.data);
 
     return {

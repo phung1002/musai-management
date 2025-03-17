@@ -6,14 +6,12 @@ import ConfimDialogView from "@/components/common/ConfimDialog.vue"; // 確認�
 import { useValidator } from "@/utils/validation"; // バリデーション
 import { uploadDocument } from "@/api/document"; // API関数
 import { toast } from "vue3-toastify"; // トースト通知
-
 const { t } = useI18n();
 const isDialogVisible = ref(false); // 確認ダイアログ表示
 const validator = useValidator(t); // バリデーション
 const selectedFile = ref<File | null>(null); // 選択されたファイル
 const pdfPreviewUrl = ref<string | null>(null); // PDF プレビュー URL
-
-const emit = defineEmits(["form:cancel"]);
+const emit = defineEmits(["form:cancel", "fetch"]);
 // ファイルリセット
 const resetFile = () => {
   selectedFile.value = null;
@@ -51,6 +49,7 @@ const onConfirmed = async () => {
   try {
     await uploadDocument(selectedFile.value);
     toast.success(t("message.upload_success"));
+    emit("fetch");
   } catch (error) {
     console.error("PDF アップロードに失敗しました:", error);
     toast.error(t("error.upload_error"));
