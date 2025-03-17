@@ -9,5 +9,8 @@ import musai.app.models.Document;
 
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Long> {
-	 Optional<Document> findByTitleAndDeletedAtIsNull(String title);
+	
+	Optional<Document> findByTitleAndDeletedAtIsNull(String title);
+
+	Optional<Document> findByIdAndDeletedAtIsNull(Long id);
 }
