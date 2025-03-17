@@ -99,7 +99,7 @@ public class DocumentServiceImpl implements DocumentService {
 	private String cleanFileName(String fileName) {
 		// remove timestamp
 		fileName = fileName.replaceFirst("^\\d+_", "");
-		//remove .pdf
+		// remove .pdf
 		if (fileName.endsWith(".pdf")) {
 			fileName = fileName.substring(0, fileName.length() - 4);
 		}
@@ -146,40 +146,40 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Override
 	public void deleteDocument(Long documentId, Long userId) throws IOException {
-	    Document document = documentRepository.findByIdAndDeletedAtIsNull(documentId)
-	            .orElseThrow(() -> new NotFoundException("file_not_found"));
+		Document document = documentRepository.findByIdAndDeletedAtIsNull(documentId)
+				.orElseThrow(() -> new NotFoundException("file_not_found"));
 
-	    if (!document.getUploadBy().getId().equals(userId)) {
-	        throw new AccessDeniedException("not_authorized_to_delete");
-	    }
+		if (!document.getUploadBy().getId().equals(userId)) {
+			throw new AccessDeniedException("not_authorized_to_delete");
+		}
 
-	    Path filePath = Paths.get(uploadDir, document.getPath());
-	    File file = filePath.toFile();
+		Path filePath = Paths.get(uploadDir, document.getPath());
+		File file = filePath.toFile();
 
-	    if (file.exists() && file.isFile()) {
-	        if (!file.delete()) {
-	            throw new IOException("file_delete_failed");
-	        }
-	    } else {
-	        throw new NotFoundException("file_not_found_in_directory");
-	    }
+		if (file.exists() && file.isFile()) {
+			if (!file.delete()) {
+				throw new IOException("file_delete_failed");
+			}
+		} else {
+			throw new NotFoundException("file_not_found_in_directory");
+		}
 
-	    document.setDeletedAt(LocalDateTime.now());
-	    documentRepository.save(document);
+		document.setDeletedAt(LocalDateTime.now());
+		documentRepository.save(document);
 	}
 
 	@Override
-	public Resource previewDocument(Long documentId) throws Exception {
-        Document document = documentRepository.findByIdAndDeletedAtIsNull(documentId)
-                .orElseThrow(() -> new NotFoundException("file_not_found"));
+	public Resource getDocumentResource(Long documentId) throws Exception {
+		Document document = documentRepository.findByIdAndDeletedAtIsNull(documentId)
+				.orElseThrow(() -> new NotFoundException("file_not_found"));
 
-        String filePath = uploadDir + document.getPath();
+		String filePath = uploadDir + document.getPath();
 
-        File file = new File(filePath);
-        if (!file.exists()) {
-            throw new NotFoundException("file_not_found_in_directory");
-        }
-        Path path = Paths.get(filePath);
-        return new FileSystemResource(path);
-    }
+		File file = new File(filePath);
+		if (!file.exists()) {
+			throw new NotFoundException("file_not_found_in_directory");
+		}
+		Path path = Paths.get(filePath);
+		return new FileSystemResource(path);
+	}
 }

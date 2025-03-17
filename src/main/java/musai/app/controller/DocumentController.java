@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -94,8 +95,24 @@ public class DocumentController {
 	@GetMapping("/preview/{documentId}")
 	public ResponseEntity<?> previewDocument(@PathVariable Long documentId) {
 		try {
-			Resource file = documentService.previewDocument(documentId);
+			Resource file = documentService.getDocumentResource(documentId);
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF).body(file);
+		} catch (NotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new MessageResponse("error_previewing_file"));
+		}
+	}
+
+	// API download
+	@GetMapping("/download/{documentId}")
+	public ResponseEntity<?> downloadDocument(@PathVariable Long documentId) {
+		try {
+			Resource file = documentService.getDocumentResource(documentId);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+					.body(file);
 		} catch (NotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(e.getMessage()));
 		} catch (Exception e) {
