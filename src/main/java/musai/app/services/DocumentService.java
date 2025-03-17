@@ -20,6 +20,6 @@ public interface DocumentService {
 
 	void deleteDocument(Long id, Long deletedBy) throws IOException;
 
-	Resource getDocumentResource(Long documentId) throws Exception;
+	Resource previewDocument(Long documentId) throws Exception;
 
 }
