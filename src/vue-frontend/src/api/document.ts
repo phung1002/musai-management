@@ -37,6 +37,23 @@ export async function getDocuments(): Promise<IDocument[]> {
     throw error;
   }
 }
+export async function getDocumentsOfMember(
+  userId?: number
+): Promise<IDocument[]> {
+  try {
+    let response;
+
+    // userIdが渡されていれば、そのユーザーの書類を取得
+
+    response = await axiosIns.get<IDocument[]>(`/documents`);
+
+    console.log("response.data", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("List documents failed:", error);
+    throw error;
+  }
+}
 // ドキュメント削除API呼び出し
 export async function deleteDocument(id: number): Promise<void> {
   try {
@@ -48,13 +65,13 @@ export async function deleteDocument(id: number): Promise<void> {
   }
 }
 // ドキュメントプレビューAPI
-export async function getDocumentPreview(
-  id: number
-): Promise<{ filePath: File }> {
+export async function getDocumentPreview(id: number): Promise<{ file: File }> {
   try {
-    const response = await axiosIns.get(`/documents/${id}/preview`, {
+    const response = await axiosIns.get(`/documents/preview/${id}`, {
       responseType: "blob",
     });
+
+    console.log(response.data);
 
     // 取得したFileオブジェクトを返す
     const file = new File([response.data], "fileName.pdf", {
@@ -62,7 +79,7 @@ export async function getDocumentPreview(
     });
 
     return {
-      filePath: file, // Fileオブジェクトを返す
+      file: file, // Fileオブジェクトを返す
     };
   } catch (error) {
     console.error("Document preview failed:", error);

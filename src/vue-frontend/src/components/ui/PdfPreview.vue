@@ -18,31 +18,38 @@ const resetFile = () => {
 // PDF プレビュー
 const props = defineProps<{
   pdfUrl: string | null;
+  pdfTitle: string; // pdfTitle を受け取る
 }>();
 
 // ファイルダウンロード
-const handleDownload = () => {
+const handleDownload = async () => {
+  console.log(props.pdfUrl);
   if (!props.pdfUrl) {
     toast.error("PDFファイルのURLが無効です。");
     return;
   }
-
   try {
-    // ダウンロードリンクを作成
+    const response = await fetch(props.pdfUrl); // ファイルデータを取得
+    const blob = await response.blob(); // Blob形式に変換
+    // Blobデータをダウンロードリンクに変換
+    const blobUrl = URL.createObjectURL(blob);
+    // ダウンロードリンク作成
     const link = document.createElement("a");
-    link.href = props.pdfUrl;
-    link.download = props.pdfUrl.split("/").pop() || "downloaded_file.pdf";
+    link.href = blobUrl;
+    // ファイル名の指定 (props.pdfTitle を使用)
+    link.download = props.pdfTitle || "downloaded_file.pdf"; // pdfTitleを使用してファイル名を設定
+    // ダウンロードリンクの挿入とクリック
+    document.body.appendChild(link);
     link.click();
-
-    // ダウンロード完了後に成功メッセージを表示
+    // 使用後のクリーンアップ
+    URL.revokeObjectURL(blobUrl);
+    document.body.removeChild(link);
     toast.success("ダウンロードが完了しました！");
   } catch (error) {
-    // エラーが発生した場合にエラーメッセージを表示
     console.error("ダウンロード中にエラーが発生しました:", error);
     toast.error("ダウンロード中にエラーが発生しました。");
   }
 };
-
 // プレビューダイアログの状態を更新
 if (props.pdfUrl) {
   pdfPreviewUrl.value = props.pdfUrl; // pdfUrl プロパティから URL を設定

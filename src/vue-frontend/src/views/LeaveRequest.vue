@@ -155,6 +155,7 @@ const getStatusColor = (status: string) => {
               :headers="headers"
               :items="leaveRequests"
               :items-per-page-text="t('items_per_page')"
+              :no-data-text="t('no_records_found')"
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->

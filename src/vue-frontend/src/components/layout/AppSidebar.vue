@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import logoImg from "@/assets/images/logo.png";
 import { reactive, computed } from "vue";
-//import { useLocale } from 'vuetify';
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/store/userStore";
 import { ERole } from "@/constants/role";
@@ -128,18 +127,6 @@ const handleDrawerWidth = () => {
       ? "mdi-arrow-expand-left  "
       : "mdi-arrow-expand-right";
 };
-
-// const menus = computed(() => {
-//   console.log(userStore.roles);
-
-//   if (drawerProps.railWidth === 256) {
-//     return items;
-//   } else {
-//     return items.filter((item) => {
-//       return item.type !== 'subheader';
-//     });
-//   }
-// });
 </script>
 
 <template>
