@@ -47,18 +47,17 @@ export interface ILeaveTypes {
 }
 export interface IUserLeaves {
   id: number | null; // ����ID
-  leaveTypeId: number | null; // 休暇のタイプ
+  leaveTypeId: number; // 休暇のタイプ
   leaveTypeName: string; //
   leaveTypeValue: string;
-  userId: number | null; // 一意のID
+  userId: number; // 一意のID
   userName: string; // 休暇の名前
-  totalDays: number | null;
-  usedDays: number | null; // ����の数
-  remainedDays: number | null;
+  totalDays: number ;
+  usedDays: number ;
+  remainedDays: number;
   validFrom: string;
   validTo: string;
   name: string; // 追加
-  parentId: null; // 追加
 }
 export interface ILeaveResponse {
   id: number;

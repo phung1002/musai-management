@@ -5,7 +5,8 @@ import { useI18n } from "vue-i18n";
 import LeaveRequestForm from "@/components/form/LeaveRequestForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { listLeaveRequestForMember, cancelRequest } from "@/api/request";
-import { ILeaveRequest } from "@/types/type";
+import { getUserLeavesForMember } from "@/api/userLeave";
+import { ILeaveRequest, IUserLeaves } from "@/types/type";
 import { toast } from "vue3-toastify";
 import { ELeaveStatus } from "@/constants/leaveStatus";
 
@@ -19,6 +20,7 @@ const leaveRequests = ref<ILeaveRequest[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
 const isConfirmDialogVisible = ref(false);
+const userLeaves = ref([{ leaveTypeName: "", remainedDays: 0, validTo: "" }]);
 
 const convertDate = (date: Date | null): string | null => {
   if (date == null) return null;
@@ -39,7 +41,11 @@ const openUpdateDialog = (application: ILeaveRequest) => {
   isDialogVisible.value = true;
   selectedRequest.value = application;
 };
-
+const headersUserLeave = ref([
+  { title: t("leave_type"), key: "leaveTypeName" },
+  { title: t("available_leaves"), key: "remainedDays" },
+  { title: t("leave_expired"), key: "validTo" },
+]);
 // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
@@ -50,6 +56,18 @@ const headers = reactive([
   { title: t("status"), key: "status" },
   { title: t("action"), key: "action" },
 ]);
+const loadUserLeave = async () => {
+  try {
+    let response = await getUserLeavesForMember();
+    userLeaves.value = response.map(
+      ({ leaveTypeName, remainedDays, validTo }) => ({
+        leaveTypeName,
+        remainedDays,
+        validTo,
+      })
+    );
+  } catch (error) {}
+};
 // GET申請リスト　API
 const fetchLeaveRequests = async () => {
   isLoading.value = true;
@@ -68,6 +86,7 @@ const fetchLeaveRequests = async () => {
 // Call API when component is mounted
 onMounted(() => {
   fetchLeaveRequests();
+  loadUserLeave();
 });
 
 const openConfirmCancelDialog = (leaveRequest: ILeaveRequest) => {
@@ -107,6 +126,18 @@ const getStatusColor = (status: string) => {
   <VRow>
     <VCol cols="12">
       <VContainer class="app-container">
+        <VCardText class="d-flex justify-end">
+          <VDataTable
+            :headers="headersUserLeave"
+            :items="userLeaves"
+            item-value="id"
+            density="compact"
+            class="small-text"
+            hide-default-footer
+            style="max-width: 40%; font-size: 0.8rem"
+          />
+        </VCardText>
+
         <VCard flat elevation="0">
           <VToolbar tag="div">
             <VToolbarTitle>
@@ -115,6 +146,7 @@ const getStatusColor = (status: string) => {
                 t("leave_request")
               }}</span>
             </VToolbarTitle>
+
             <!-- 申請入力フォーム　ボタン-->
             <VCardActions>
               <VSpacer />
