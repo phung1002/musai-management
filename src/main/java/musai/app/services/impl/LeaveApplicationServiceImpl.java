@@ -88,7 +88,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 				.orElseThrow(() -> new NotFoundException("leave_type_not_exist"));
 		if (leaveType.getValue() != null) {
 			// check condition: remainDays > requestDays
-			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal);
+			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal.getId());
 			double remainingDays = calculateRemainingDays(userLeaves);
 			// count request days
 			double requestDays = getRequestDays(leaveType, request.getStartDate(), request.getEndDate());
@@ -96,7 +96,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 				throw new BadRequestException("requested_days_exceed");
 			}
 			// update usedDays to UserLeave
-			updateUsedDays(userLeaves, requestDays, false);
+			updateUsedDaysRemainedDays(userLeaves, requestDays, false);
 		}
 		LeaveApplication leaveApplication = new LeaveApplication();
 		leaveApplication.setUser(user);
@@ -135,9 +135,10 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		if (status.equals(ELeaveStatus.REJECTED.name()) || status.equals(ELeaveStatus.REVOKED.name())) {
 			LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(application.getLeaveType().getId())
 					.orElseThrow(() -> new NotFoundException("leave_type_not_exist"));
-			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal);
+			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, application.getUser().getId());
+			System.out.println(userLeaves);
 			double cancelDays = getRequestDays(leaveType, application.getStartDate(), application.getEndDate());
-			updateUsedDays(userLeaves, cancelDays, true);
+			updateUsedDaysRemainedDays(userLeaves, cancelDays, true);
 		}
 		application.setStatus(eStatus);
 		application.setRespondedBy(userRepository.findById(principal.getId()).orElse(null));
@@ -163,9 +164,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 			// count cancel days
 			double cancelDays = getRequestDays(leaveType, application.getStartDate(), application.getEndDate());
 			// Find user leave and update usedDays
-			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal);
+			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal.getId());
 			Collections.reverse(userLeaves);
-			updateUsedDays(userLeaves, cancelDays, true);
+			updateUsedDaysRemainedDays(userLeaves, cancelDays, true);
 			
 		}
 		application.setStatus(ELeaveStatus.CANCELED);
@@ -188,7 +189,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		// case not change leaveType
 		if (leaveType.getValue() != null) {
 			// check condition: remainDays > requestDays
-			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal);
+			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, principal.getId());
 			double oldRequestDays = calculateLeaveDays(leaveApplication.getStartDate(), leaveApplication.getEndDate());
 			double remainingDays = calculateRemainingDays(userLeaves);
 			double requestDays = getRequestDays(leaveType, request.getStartDate(), request.getEndDate());
@@ -198,10 +199,10 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 			// update usedDays to UserLeave
 			if (requestDays < oldRequestDays) {
 				Collections.reverse(userLeaves);
-				updateUsedDays(userLeaves, oldRequestDays - requestDays, true);
+				updateUsedDaysRemainedDays(userLeaves, oldRequestDays - requestDays, true);
 			}
 			if (requestDays > oldRequestDays) {
-				updateUsedDays(userLeaves, requestDays - oldRequestDays, false);
+				updateUsedDaysRemainedDays(userLeaves, requestDays - oldRequestDays, false);
 			}
 		}
 		// case change leaveType: pending ......
@@ -214,16 +215,18 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		return new MessageResponse("update_success");
 	}
 
-	private void updateUsedDays(List<UserLeaveResponseDTO> userLeaves, double requestDays, boolean isDecrease) {
+	private void updateUsedDaysRemainedDays(List<UserLeaveResponseDTO> userLeaves, double requestDays, boolean isDecrease) {
+		
 		for (UserLeaveResponseDTO item : userLeaves) {
 			double availableDays = isDecrease ? item.getUsedDays() : item.getTotalDays() - item.getUsedDays();
 			if (availableDays >= requestDays) {
 				double newUsedDays = isDecrease ? item.getUsedDays() - requestDays : item.getUsedDays() + requestDays;
-				userLeaveService.updateUsedDays(item.getId(), newUsedDays);
+				System.out.println(newUsedDays);
+				userLeaveService.updateUsedDaysRemainedDays(item.getId(), newUsedDays);
 				break;
 			} else {
 				requestDays -= availableDays;
-				userLeaveService.updateUsedDays(item.getId(), isDecrease ? 0 : item.getTotalDays());
+				userLeaveService.updateUsedDaysRemainedDays(item.getId(), isDecrease ? 0 : item.getTotalDays());
 			}
 		}
 	}
@@ -235,7 +238,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	}
 
 	private double calculateRemainingDays(List<UserLeaveResponseDTO> userLeaves) {
-		return userLeaves.stream().mapToDouble(userLeave -> userLeave.getTotalDays() - userLeave.getUsedDays()).sum();
+		return userLeaves.stream().mapToDouble(userLeave -> userLeave.getRemainedDays()).sum();
 	}
 
 	private double getRequestDays(LeaveType leaveType, LocalDate startDate, LocalDate endDate) {
@@ -243,11 +246,11 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		return leaveValue.equals(ELeaveValue.HALF_DAY.name()) ? 0.5 : calculateLeaveDays(startDate, endDate);
 	}
 
-	private List<UserLeaveResponseDTO> getUserLeaveForMember(LeaveType leaveType, UserDetailsImpl principal) {
+	private List<UserLeaveResponseDTO> getUserLeaveForMember(LeaveType leaveType, Long userId) {
 		String leaveValue = leaveType.getValue() != null ? leaveType.getValue() : "";
 		return (leaveValue.equals(ELeaveValue.HALF_DAY.name())
 				|| leaveValue.equals(ELeaveValue.FULL_DAY.name()))
-						? userLeaveService.getUserLeaveForMember(leaveType.getParent().getId(), principal)
-						: userLeaveService.getUserLeaveForMember(leaveType.getId(), principal);
+						? userLeaveService.getUserLeaveForMember(leaveType.getParent().getId(), userId)
+						: userLeaveService.getUserLeaveForMember(leaveType.getId(), userId);
 	}
 }

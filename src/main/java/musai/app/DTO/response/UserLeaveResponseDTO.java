@@ -7,15 +7,17 @@ import lombok.Data;
 
 @Data
 @Builder
-
 @AllArgsConstructor
 public class UserLeaveResponseDTO {
 	private Long id;
-	//private Long userId;
+	private Long userId;
     private String userFullName;
+    private Long leaveTypeId;  
     private String leaveTypeName;
+    private String leaveTypeValue;
     private Double totalDays;
     private Double usedDays;
+    private Double remainedDays;
     private LocalDate validFrom;
     private LocalDate validTo;
 }
