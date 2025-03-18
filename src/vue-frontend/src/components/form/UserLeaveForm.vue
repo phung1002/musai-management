@@ -11,6 +11,9 @@ import { toast } from "vue3-toastify";
 import { ELeaveType } from "@/constants/leaveType";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import UserList from "@/components/ui/UserSearchBox.vue";
+import type { VForm } from "vuetify/lib/components/index.mjs";
+
+const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const { t } = useI18n(); //日本語にローカル変更用
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const errors = ref<{ leave_type?: string; leave_name?: string }>({});
@@ -21,7 +24,6 @@ const isDialogVisible = ref(false); // 確認ダイアログ表示
 const userListVisible = ref(false); // ユーザー一覧ポップアップの表示状態
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
-const formRef = ref(null);
 const formValid = ref(false);
 // メイン休暇タブで分類
 const activeTab = ref(ELeaveType.PAID_LEAVE); // タブの初期値
@@ -42,7 +44,7 @@ const defaultUserLeave = {
   usedDays: 0,
   validFrom: "",
   validTo: "",
-  name: ""
+  name: "",
 };
 const defaultLeave = {
   id: null,
@@ -97,7 +99,7 @@ const getLeaveTypeId = () => {
   formModel.leaveTypeId =
     activeTab.value === ELeaveType.PAID_LEAVE && paidLeave.value.id
       ? paidBox.value ?? 0
-      :  (childBox.value ?? 0) || (publicBox.value ?? 0);
+      : (childBox.value ?? 0) || (publicBox.value ?? 0);
 };
 watch(activeTab, () => {
   getLeaveTypeId();
@@ -139,8 +141,9 @@ const handleResetForm = () => {
       ? { ...defaultUserLeave, ...props.userLeave }
       : { ...defaultUserLeave }
   );
-  // if (formRef.value && formRef.value.resetValidation) {
-  //   formRef.value.resetValidation();
+  if (formRef.value && formRef.value.resetValidation) {
+    formRef.value.resetValidation();
+  }
   if (formRef.value && formRef.value) {
     formRef.value;
   }
@@ -196,6 +199,12 @@ const fetchLeaveType = async () => {
 };
 // フォーム送信処理
 const handleSubmit = async () => {
+  // 入力バリデーション
+  const isValid = await formRef.value?.validate();
+  if (!isValid?.valid) {
+    toast.error(t("error.validation_error"));
+    return;
+  }
   if (!props.isEdit) {
     setleaveTypeId(activeTab.value);
     console.log("新しいデータを登録します...");
@@ -204,8 +213,9 @@ const handleSubmit = async () => {
       console.log(formModel);
       await addUserLeave(formModel);
       toast.success(t("message.add_success"));
-      emit("refetch-data");
       handleCancel();
+      setTimeout(() => handleResetForm(), 200); // リセットを遅延させる
+      emit("refetch-data");
     } catch (error: any) {
       toast.error(t(error.message));
     } finally {

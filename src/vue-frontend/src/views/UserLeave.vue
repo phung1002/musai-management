@@ -24,7 +24,7 @@ const tabs = ref([
 // // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  { title: t("employee_name"), key: "userName" },
+  { title: t("employee_name"), key: "userFullName" },
   { title: t("valid_leaves"), key: "totalDays" },
   { title: t("used_leaves"), key: "usedDays" },
   { title: t("available_leaves"), key: "remainedDays" },

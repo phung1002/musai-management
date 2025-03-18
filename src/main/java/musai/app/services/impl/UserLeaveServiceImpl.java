@@ -109,7 +109,7 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 	public UserLeave editUserLeave(UserLeaveRequestDTO userLeaveRequestDTO) {
 		// Fetch exiting UserLeave
 		UserLeave existingUserLeave = userLeaveRepository.findById(userLeaveRequestDTO.getId())
-	            .orElseThrow(() -> new NotFoundException("user_leave_not_found"));
+				.orElseThrow(() -> new NotFoundException("user_leave_not_found"));
 		// userId
 		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getUserId())
 				.orElseThrow(() -> new NotFoundException("user_not_exist"));
@@ -132,15 +132,15 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 
 	// List All
 	@Override
-    public List<UserLeaveResponseDTO> getAllUserLeaves() {
-        LocalDate today = LocalDate.now();
-        
-        List<UserLeave> userLeaves = userLeaveRepository.findAll()
-            .stream()
-            //TODO いつまでの期間確認して追加
+	public List<UserLeaveResponseDTO> getAllUserLeaves() {
+//        LocalDate today = LocalDate.now();
+
+		List<UserLeave> userLeaves = userLeaveRepository.findAll().stream()
+		// TODO いつまでの期間確認して追加
 //            .filter(userLeave -> !userLeave.getValidFrom().isAfter(today)
 //                && !userLeave.getValidTo().isBefore(today))
-				.sorted(Comparator.comparing(UserLeave::getValidTo)).collect(Collectors.toList());
+				.sorted(Comparator.comparing(UserLeave::getValidTo))
+				.collect(Collectors.toList());
 
 		return userLeaves.stream().map(this::convertToDTOAll).collect(Collectors.toList());
 	}

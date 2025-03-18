@@ -15,7 +15,9 @@ import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useUserStore } from "@/store/userStore";
 import { logout } from "@/api/auth";
 import router from "@/router";
+import type { VForm } from "vuetify/lib/components/index.mjs";
 
+const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const userStore = useUserStore();
 const formatDate = (date: string | null) =>
   date ? new Date(date).toISOString() : null;
@@ -23,7 +25,6 @@ const formatDate = (date: string | null) =>
 const { t } = useI18n();
 const submiting = ref(false);
 const validator = useValidator(t);
-const formRef = ref(null);
 const isDialogVisible = ref(false);
 const activeTab = ref("account");
 const emit = defineEmits(["form-cancel", "refetch-data"]);
@@ -85,8 +86,9 @@ const isChangeYourPassword = async () => {
 };
 
 const handleSubmit = async (toLogin: boolean) => {
+  // 入力バリデーション
   const isValid = await formRef.value?.validate();
-  if (!isValid.valid) {
+  if (!isValid?.valid) {
     toast.error(t("error.validation_error"));
     return;
   }

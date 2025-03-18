@@ -8,6 +8,9 @@ import { ILeaveTypes } from "@/types/type";
 import { getLeavesTree, addLeave, updateLeave } from "@/api/leave";
 import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
+import type { VForm } from "vuetify/lib/components/index.mjs";
+
+const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const { t } = useI18n(); //日本語にローカル変更用
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const errors = ref<{ leave_type?: string; leave_name?: string }>({});
@@ -18,7 +21,6 @@ const isDialogVisible = ref(false); // 確認ダイアログ表示
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 const activeTab = ref("paid"); // タブの初期値
-const formRef = ref(null);
 const formValid = ref(false);
 // デフォルト値
 const defaultLeave = {
@@ -151,6 +153,12 @@ const fetchLeaveType = async () => {
 };
 // フォーム送信処理
 const handleSubmit = async () => {
+  // 入力バリデーション
+  const isValid = await formRef.value?.validate();
+  if (!isValid?.valid) {
+    toast.error(t("error.validation_error"));
+    return;
+  }
   if (!props.isEdit) {
     setParentId(activeTab.value);
     console.log("新しいデータを登録します...");
