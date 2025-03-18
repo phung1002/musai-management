@@ -33,12 +33,8 @@ export async function updateUserLeave(
     await axiosIns.put(`/user-leaves/update/${id}`, params);
     console.log("Update user successfully");
   } catch (error: any) {
-    if (error.response) {
-      console.error("Update user failed:", error.response.data);
-    } else {
-      console.error("Unexpected error:", error);
-    }
-    throw error;
+    console.error("Update user failed:", error);
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 // 社員休暇検索API呼び出し
@@ -59,11 +55,7 @@ export async function addUserLeave(params: IUserLeaves): Promise<void> {
     await axiosIns.post("/user-leaves/add", params);
     console.log("Add leave successfully");
   } catch (error: any) {
-    if (error.response) {
-      console.error("Add leave failed:", error.response.data);
-    } else {
-      console.error("Unexpected error:", error);
-    }
-    throw error;
+    console.error("Add leave failed:", error);
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }

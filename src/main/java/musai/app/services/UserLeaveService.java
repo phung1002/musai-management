@@ -11,7 +11,7 @@ public interface UserLeaveService {
 
 	List<UserLeaveResponseDTO> getUserLeaveForMember(Long leaveTypeId, Long userId);
 
-	MessageResponse updateUsedDaysRemainedDays(Long id, double usedDay);
+	void updateUsedDaysRemainedDays(Long id, double usedDay);
 
 	UserLeave createUserLeave(UserLeaveRequestDTO userLeaveRequestDTO);
 

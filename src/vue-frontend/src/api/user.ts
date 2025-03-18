@@ -16,14 +16,9 @@ export async function getAllUsers(): Promise<IUser[]> {
 export async function createUser(params: IUser): Promise<void> {
   try {
     await axiosIns.post("/user/add", params);
-    console.log("Add user successfully");
   } catch (error: any) {
-    if (error.response) {
-      console.error("Add user failed:", error.response.data);
-    } else {
-      console.error("Unexpected error:", error);
-    }
-    throw error;
+    console.error("Add user failed:", error);
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 // call to api update user
@@ -32,12 +27,8 @@ export async function updateUser(id: number, params: IUser): Promise<void> {
     await axiosIns.put(`/user/edit/${id}`, params);
     console.log("Update user successfully");
   } catch (error: any) {
-    if (error.response) {
-      console.error("Update user failed:", error.response.data);
-    } else {
-      console.error("Unexpected error:", error);
-    }
-    throw error;
+    console.error("Update user failed:", error);
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 
@@ -46,12 +37,8 @@ export async function deleteUser(id: number): Promise<void> {
   try {
     await axiosIns.delete(`/user/delete/${id}`);
   } catch (error: any) {
-    if (error.response) {
-      console.error("Delete user failed:", error.response.data);
-    } else {
-      console.error("Unexpected error:", error);
-    }
-    throw error;
+    console.error("Delete user failed:", error);
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 

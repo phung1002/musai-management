@@ -66,11 +66,11 @@ public class UserServiceImpl implements UserService {
 	 */
 	public MessageResponse addUser(UserRequestDTO userRequestDTO) {
 		if (userRepository.existsByUsername(userRequestDTO.getUsername())) {
-			throw new BadRequestException("Username is already taken!");
+			throw new BadRequestException("username_already_exist");
 		}
 
 		if (userRepository.existsByEmail(userRequestDTO.getEmail())) {
-			throw new BadRequestException("Email is already in use!");
+			throw new BadRequestException("email_already_exists");
 		}
 
 		// Create new user's account
@@ -83,8 +83,7 @@ public class UserServiceImpl implements UserService {
 		Set<Role> roles = new HashSet<>();
 
 		if (strRoles == null) {
-			Role memberRole = roleRepository.findByName(ERole.MEMBER)
-					.orElseThrow(() -> new BadRequestException("Role is not found."));
+			Role memberRole = getRoleByName(ERole.MEMBER);
 			roles.add(memberRole);
 		} else {
 			strRoles.forEach(role -> {
@@ -92,7 +91,7 @@ public class UserServiceImpl implements UserService {
 				try {
 					enumRole = ERole.valueOf(role); // String to ERole
 				} catch (IllegalArgumentException e) {
-					throw new BadRequestException("Invalid role specified.");
+					throw new BadRequestException("role_invalid");
 				}
 
 				switch (enumRole) {
@@ -112,7 +111,7 @@ public class UserServiceImpl implements UserService {
 		}
 		user.setRoles(roles);
 		userRepository.save(user);// save to DB
-		return new MessageResponse("User registered successfully!");
+		return new MessageResponse("add_success");
 	}
 
 	/**
@@ -125,17 +124,17 @@ public class UserServiceImpl implements UserService {
 	public MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO, UserDetailsImpl principal) {
 		// Find User by ID
 		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
-				.orElseThrow(() -> new NotFoundException("User not exist."));
+				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		// Check user name or email exist (unless belong to current user)
 		if (!existingUser.getUsername().equals(userRequestDTO.getUsername())
 				&& userRepository.existsByUsername(userRequestDTO.getUsername())) {
-			throw new BadRequestException("Username is already taken!");
+			throw new BadRequestException("username_already_exist");
 		}
 
 		if (!existingUser.getEmail().equals(userRequestDTO.getEmail())
 				&& userRepository.existsByEmail(userRequestDTO.getEmail())) {
-			throw new BadRequestException("Email is already in use!");
+			throw new BadRequestException("email_already_exists");
 		}
 
 		// update information of user
@@ -163,7 +162,7 @@ public class UserServiceImpl implements UserService {
 				try {
 					enumRole = ERole.valueOf(role); // String to ERole
 				} catch (IllegalArgumentException e) {
-					throw new BadRequestException("Invalid role specified.");
+					throw new BadRequestException("role_invalid");
 				}
 				switch (enumRole) {
 				case ADMIN:
@@ -180,14 +179,14 @@ public class UserServiceImpl implements UserService {
 				}
 			});
 			if (isUserModifyingSelf(userId, principal) && !roles.contains(getRoleByName(ERole.ADMIN))) {
-				throw new ForbiddenException("You are not allowed to remove your own ADMIN permissions.");
+				throw new ForbiddenException("cannot_remove_own_admin_role");
 			}
 			existingUser.setRoles(roles);
 		}
 		// Save change
 		userRepository.save(existingUser);
 
-		return new MessageResponse("User updated successfully!");
+		return new MessageResponse("update_success");
 	}
 
 	/**
@@ -199,14 +198,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public MessageResponse deleteUser(Long userId, UserDetailsImpl principal) {
 		if (isUserModifyingSelf(userId, principal)) {
-			throw new ForbiddenException("Can not delete your self");
+			throw new ForbiddenException("cannot_delete_your_self");
 		}
 		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
-				.orElseThrow(() -> new NotFoundException("User not exist."));
+				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		existingUser.setDeletedAt(LocalDateTime.now());
 		userRepository.save(existingUser); // Update deleted_at
-		return new MessageResponse("User just deleted.");
+		return new MessageResponse("delete_success");
 	}
 
 	private boolean isUserModifyingSelf(Long id, UserDetailsImpl principal) {
@@ -218,14 +217,14 @@ public class UserServiceImpl implements UserService {
 	 */
 	private Role getRoleByName(ERole roleName) {
 		return roleRepository.findByName(roleName)
-				.orElseThrow(() -> new BadRequestException("Role " + roleName + " is not found."));
+				.orElseThrow(() -> new BadRequestException("role_not_found"));
 	}
 
 	// get detail
 	@Override
 	public UserResponseDTO detailUser(Long userId) {
 		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
-				.orElseThrow(() -> new NotFoundException("User not exist."));
+				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		return new UserResponseDTO(existingUser.getId(), existingUser.getUsername(), existingUser.getEmail(),
 				existingUser.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),
@@ -256,7 +255,7 @@ public class UserServiceImpl implements UserService {
 	public MessageResponse changePassword(ChangePasswordRequestDTO changePasswordRequestDTO,
 			UserDetailsImpl principal) {
 		User user = userRepository.findByIdAndDeletedAtIsNull(principal.getId())
-				.orElseThrow(() -> new NotFoundException("User not exist."));
+				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		if (!encoder.matches(changePasswordRequestDTO.getPassword(), user.getPassword())) {
 

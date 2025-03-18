@@ -73,22 +73,21 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 	}
 
 	@Override
-	public MessageResponse updateUsedDaysRemainedDays(Long id, double usedDay) {
+	public void updateUsedDaysRemainedDays(Long id, double usedDay) {
 		UserLeave userLeave = userLeaveRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("User Leave not found"));
+				.orElseThrow(() -> new NotFoundException("user_leave_not_foun"));
 		userLeave.setUsedDays(usedDay);
 		userLeave.setRemainedDays(userLeave.getTotalDays() - usedDay);
-		return new MessageResponse("User Leave update usedDays successful.");
 	}
 
 	// Create new leave user_leaves
 	public UserLeave createUserLeave(UserLeaveRequestDTO userLeaveRequestDTO) {
 		// userId
 		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getUserId())
-				.orElseThrow(() -> new NotFoundException("User not exist."));
+				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 		// leaveTypeId
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getLeaveTypeId())
-				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
+				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
 
 		UserLeave userLeave = new UserLeave();
 
@@ -110,14 +109,13 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 	public UserLeave editUserLeave(UserLeaveRequestDTO userLeaveRequestDTO) {
 		// Fetch exiting UserLeave
 		UserLeave existingUserLeave = userLeaveRepository.findById(userLeaveRequestDTO.getId())
-				.orElseThrow(() -> new NotFoundException("UserLeave not found"));
+				.orElseThrow(() -> new NotFoundException("user_leave_not_found"));
 		// userId
 		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getUserId())
-				.orElseThrow(() -> new NotFoundException("User not exist."));
+				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 		// leaveTypeId
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getLeaveTypeId())
-				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
-
+				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
 		// update information of user
 		existingUserLeave.setUser(existingUser);
 		existingUserLeave.setLeaveType(leaveType);
@@ -134,13 +132,15 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 
 	// List All
 	@Override
-
 	public List<UserLeaveResponseDTO> getAllUserLeaves() {
+//        LocalDate today = LocalDate.now();
+
 		List<UserLeave> userLeaves = userLeaveRepository.findAll().stream()
-		// TODO
+		// TODO いつまでの期間確認して追加
 //            .filter(userLeave -> !userLeave.getValidFrom().isAfter(today)
 //                && !userLeave.getValidTo().isBefore(today))
-				.sorted(Comparator.comparing(UserLeave::getValidTo)).collect(Collectors.toList());
+				.sorted(Comparator.comparing(UserLeave::getValidTo))
+				.collect(Collectors.toList());
 
 		return userLeaves.stream().map(this::convertToDTOAll).collect(Collectors.toList());
 	}
