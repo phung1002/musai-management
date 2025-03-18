@@ -52,12 +52,12 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		return responseDTO;
 	}
 
-	// Service get list user leave for member
+	// Service get list user leave for member to show in screen
 	@Override
 	public List<UserLeaveResponseDTO> getUserLeaveForMember(Long userId) {
 		LocalDate today = LocalDate.now();
 		List<UserLeave> userLeaves = userLeaveRepository.findByUserId(userId).stream()
-				.filter(userLeave -> (userLeave.getRemainedDays() > 0) && !userLeave.getValidFrom().isAfter(today)
+				.filter(userLeave -> !userLeave.getValidFrom().isAfter(today)
 						&& !userLeave.getValidTo().isBefore(today))
 				.sorted(Comparator.comparing(UserLeave::getValidTo)).collect(Collectors.toList());
 		List<UserLeaveResponseDTO> responseDTO = userLeaves.stream().map(this::convertToDTO)
@@ -73,12 +73,11 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 	}
 
 	@Override
-	public MessageResponse updateUsedDaysRemainedDays(Long id, double usedDay) {
+	public void updateUsedDaysRemainedDays(Long id, double usedDay) {
 		UserLeave userLeave = userLeaveRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("User Leave not found"));
 		userLeave.setUsedDays(usedDay);
 		userLeave.setRemainedDays(userLeave.getTotalDays() - usedDay);
-		return new MessageResponse("User Leave update usedDays successful.");
 	}
 
 	// Create new leave user_leaves
@@ -134,11 +133,11 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 
 	// List All
 	@Override
-
 	public List<UserLeaveResponseDTO> getAllUserLeaves() {
 		List<UserLeave> userLeaves = userLeaveRepository.findAll().stream()
 		// TODO
-//            .filter(userLeave -> !userLeave.getValidFrom().isAfter(today)
+            .filter(userLeave -> userLeave.getUser().getDeletedAt() == null)
+//            		&& !userLeave.getValidFrom().isAfter(today)
 //                && !userLeave.getValidTo().isBefore(today))
 				.sorted(Comparator.comparing(UserLeave::getValidTo)).collect(Collectors.toList());
 

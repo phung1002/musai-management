@@ -46,7 +46,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	@Override
 	public List<LeaveApplicationResponseDTO> getAllLeaveApplications() {
 		List<LeaveApplication> leaveApplications = leaveApplicationRepository.findAllByOrderByCreatedAtDesc();
-		List<LeaveApplicationResponseDTO> responseDTOs = leaveApplications.stream().map(this::convertToDTO)
+		List<LeaveApplicationResponseDTO> responseDTOs = leaveApplications.stream()
+				.filter(leaveApplication -> leaveApplication.getUser().getDeletedAt() == null)
+				.map(this::convertToDTO)
 				.collect(Collectors.toList());
 		return responseDTOs;
 	}
