@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.UserLeaveRequestDTO;
 import musai.app.DTO.response.UserLeaveResponseDTO;
-import musai.app.DTO.response.UserLeaveResponseDTO2;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.UserLeaveService;
 
@@ -27,51 +26,53 @@ import musai.app.services.UserLeaveService;
 public class UserLeaveController {
 	@Autowired
 	private UserLeaveService userLeaveService;
-	
+
 	public UserLeaveController(UserLeaveService userLeaveService) {
 		this.userLeaveService = userLeaveService;
 	}
 
 	/**
 	 * get list user leave for member
+	 * 
 	 * @param principal
 	 * @return
 	 */
 	@PreAuthorize("hasRole('MEMBER')")
-	@GetMapping("/member")
-	public ResponseEntity<?> getUserLeaveForMember(@AuthenticationPrincipal UserDetailsImpl principal){
-		List<UserLeaveResponseDTO> response = userLeaveService.getUserLeaveForMember(null, principal);
+	@GetMapping
+	public ResponseEntity<?> getUserLeaveForMember(@AuthenticationPrincipal UserDetailsImpl principal) {
+		List<UserLeaveResponseDTO> response = userLeaveService.getUserLeaveForMember(principal.getId());
 		return ResponseEntity.ok(response);
 	}
-	
+
 	// add
 	@PostMapping("/add")
 	public ResponseEntity<?> createLeave(@RequestBody UserLeaveRequestDTO request) {
-		 userLeaveService.createUserLeave(request);
+		userLeaveService.createUserLeave(request);
 
 		return ResponseEntity.ok(new MessageResponse("Add user leaves successfully"));
 	}
 
 	// update
 	@PutMapping("/update/{id}")
-	public ResponseEntity<?> editUserLeave(@PathVariable Long id,@RequestBody UserLeaveRequestDTO request) {
+	public ResponseEntity<?> editUserLeave(@PathVariable Long id, @RequestBody UserLeaveRequestDTO request) {
 		userLeaveService.editUserLeave(request);
 
 		return ResponseEntity.ok(new MessageResponse("Update user leaves successfully"));
 	}
-	
+
 	// List All
 	@GetMapping("/all")
 	public ResponseEntity<?> getAllUserLeaves() {
-		List<UserLeaveResponseDTO2> userLeave = userLeaveService.getAllUserLeaves();
-		
+		List<UserLeaveResponseDTO> userLeave = userLeaveService.getAllUserLeaves();
+
 		return ResponseEntity.ok(userLeave);
-		
+
 	}
+
 	// Search
 	@GetMapping("/search")
-	public List<UserLeaveResponseDTO2> searchUserLeaves(@RequestParam String keyword) {
-		
+	public List<UserLeaveResponseDTO> searchUserLeaves(@RequestParam String keyword) {
+
 		return userLeaveService.searchUserLeaves(keyword);
-}
 	}
+}

@@ -5,7 +5,8 @@ import { useI18n } from "vue-i18n";
 import { VSelect, VTab } from "vuetify/lib/components/index.mjs";
 import { useValidator } from "@/utils/validation";
 import { IUserLeaves, ILeaveTypes } from "@/types/type";
-import { getLeavesTree, addUserLeave, updateUserLeave } from "@/api/leave";
+import { addUserLeave, updateUserLeave } from "@/api/userLeave";
+import { getLeavesTree } from "@/api/leave";
 import { toast } from "vue3-toastify";
 import { ELeaveType } from "@/constants/leaveType";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
@@ -31,18 +32,17 @@ const tabs = ref([
 // デフォルト値
 const defaultUserLeave = {
   id: null,
-  leaveTypeId: null,
+  leaveTypeId: 0,
   leaveTypeName: "",
   leaveTypeValue: "",
   userName: "",
-  userId: null,
-  remainedDays: null,
-  totalDays: null,
-  usedDays: null,
+  userId: 0,
+  remainedDays: 0,
+  totalDays: 0,
+  usedDays: 0,
   validFrom: "",
   validTo: "",
-  name: "",
-  parentId: null,
+  name: ""
 };
 const defaultLeave = {
   id: null,
@@ -96,8 +96,8 @@ const onPublicLeaveChange = () => {
 const getLeaveTypeId = () => {
   formModel.leaveTypeId =
     activeTab.value === ELeaveType.PAID_LEAVE && paidLeave.value.id
-      ? paidBox.value
-      : childBox.value || publicBox.value;
+      ? paidBox.value ?? 0
+      :  (childBox.value ?? 0) || (publicBox.value ?? 0);
 };
 watch(activeTab, () => {
   getLeaveTypeId();
@@ -107,12 +107,12 @@ watch(activeTab, () => {
 // 親IDを設定
 const setleaveTypeId = (selectedTab: string) => {
   if (selectedTab === ELeaveType.PAID_LEAVE) {
-    formModel.leaveTypeId = paidLeave.value.id;
+    formModel.leaveTypeId = paidLeave.value.id ?? 0;
     formModel.leaveTypeName = paidLeave.value.name;
     console.log("setleaveTypeId", formModel.leaveTypeId, paidLeave.value.id);
     console.log("leaveTypeName", formModel.leaveTypeName, paidLeave.value.name);
   } else {
-    formModel.leaveTypeId = summerDayId.value;
+    formModel.leaveTypeId = summerDayId.value ?? 0;
     formModel.leaveTypeName = summerDayName.value;
     console.log("setleaveTypeId", formModel.leaveTypeId, publicLeave.value.id);
     console.log(
@@ -171,6 +171,7 @@ const fetchLeaveType = async () => {
   try {
     const response = await getLeavesTree();
     leaves.value = response;
+
     // カテゴリーごとに分類
     paidLeave.value =
       leaves.value.find((item) => item.value === ELeaveType.PAID_LEAVE) ||

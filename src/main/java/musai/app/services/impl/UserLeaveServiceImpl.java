@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.UserLeaveRequestDTO;
 import musai.app.DTO.response.UserLeaveResponseDTO;
-import musai.app.DTO.response.UserLeaveResponseDTO2;
 import musai.app.exception.NotFoundException;
 import musai.app.models.LeaveType;
 import musai.app.models.User;
@@ -19,7 +18,6 @@ import musai.app.models.UserLeave;
 import musai.app.repositories.LeaveTypeResposity;
 import musai.app.repositories.UserLeaveRepository;
 import musai.app.repositories.UserRepository;
-import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.UserLeaveService;
 
 @Service
@@ -38,42 +36,48 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		this.leaveTypeResposity = leaveTypeResposity;
 	}
 
-	/**
-	 * Service get list user leave for member
-	 */
+	// Service get list user leave with leaveTypeId, userId
 	@Override
-	public List<UserLeaveResponseDTO> getUserLeaveForMember(Long leaveTypeId, UserDetailsImpl principal) {
-
+	public List<UserLeaveResponseDTO> getUserLeaveForMember(Long leaveTypeId, Long userId) {
 		LocalDate today = LocalDate.now();
-
 		// get user leave of user logging in + filter user leave is valid today
 		// (validFrom < today < validTo)
-		List<UserLeave> userLeaves = userLeaveRepository.findByUserId(principal.getId()).stream()
-				.filter(userLeave -> !userLeave.getValidFrom().isAfter(today) 
+		List<UserLeave> userLeaves = userLeaveRepository.findByUserId(userId).stream()
+				.filter(userLeave -> (userLeave.getRemainedDays() > 0) && !userLeave.getValidFrom().isAfter(today)
 						&& !userLeave.getValidTo().isBefore(today)
-						&& (userLeave.getTotalDays() - userLeave.getUsedDays() > 0)
 						&& (leaveTypeId == null || userLeave.getLeaveType().getId().equals(leaveTypeId)))
-				.sorted(Comparator.comparing(UserLeave::getValidTo))
-				.collect(Collectors.toList());
-
+				.sorted(Comparator.comparing(UserLeave::getValidTo)).collect(Collectors.toList());
 		List<UserLeaveResponseDTO> responseDTO = userLeaves.stream().map(this::convertToDTO)
 				.collect(Collectors.toList());
-		System.err.println(responseDTO);
+		return responseDTO;
+	}
+
+	// Service get list user leave for member
+	@Override
+	public List<UserLeaveResponseDTO> getUserLeaveForMember(Long userId) {
+		LocalDate today = LocalDate.now();
+		List<UserLeave> userLeaves = userLeaveRepository.findByUserId(userId).stream()
+				.filter(userLeave -> (userLeave.getRemainedDays() > 0) && !userLeave.getValidFrom().isAfter(today)
+						&& !userLeave.getValidTo().isBefore(today))
+				.sorted(Comparator.comparing(UserLeave::getValidTo)).collect(Collectors.toList());
+		List<UserLeaveResponseDTO> responseDTO = userLeaves.stream().map(this::convertToDTO)
+				.collect(Collectors.toList());
 		return responseDTO;
 	}
 
 	private UserLeaveResponseDTO convertToDTO(UserLeave userLeave) {
-		return new UserLeaveResponseDTO(userLeave.getId(), userLeave.getUser().getFullName(),
-				userLeave.getLeaveType().getName(), userLeave.getTotalDays(), userLeave.getUsedDays(),
-				userLeave.getValidFrom(), userLeave.getValidTo());
+		return new UserLeaveResponseDTO(userLeave.getId(), userLeave.getUser().getId(),
+				userLeave.getUser().getFullName(), userLeave.getLeaveType().getId(), userLeave.getLeaveType().getName(),
+				userLeave.getLeaveType().getValue(), userLeave.getTotalDays(), userLeave.getUsedDays(),
+				userLeave.getRemainedDays(), userLeave.getValidFrom(), userLeave.getValidTo());
 	}
-	
 
 	@Override
-	public void updateUsedDays(Long id, double usedDay) {
-		UserLeave userLeave = userLeaveRepository.findById(id).orElseThrow(() 
-				-> new NotFoundException("user_leave_not_found"));
+	public void updateUsedDaysRemainedDays(Long id, double usedDay) {
+		UserLeave userLeave = userLeaveRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException("user_leave_not_foun"));
 		userLeave.setUsedDays(usedDay);
+		userLeave.setRemainedDays(userLeave.getTotalDays() - usedDay);
 	}
 
 	// Create new leave user_leaves
@@ -91,7 +95,7 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		userLeave.setLeaveType(leaveType);
 		userLeave.setTotalDays(userLeaveRequestDTO.getTotalDays());
 		userLeave.setUsedDays(0.0);
-		
+
 		// calculate remainedDays
 		userLeave.setRemainedDays(userLeave.getTotalDays());
 
@@ -112,13 +116,12 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		// leaveTypeId
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
-		
 		// update information of user
 		existingUserLeave.setUser(existingUser);
 		existingUserLeave.setLeaveType(leaveType);
 		existingUserLeave.setTotalDays(userLeaveRequestDTO.getTotalDays());
 		existingUserLeave.setUsedDays(userLeaveRequestDTO.getUsedDays());
-		
+
 		// recalculate remainedDays
 		existingUserLeave.setRemainedDays(userLeaveRequestDTO.getTotalDays() - userLeaveRequestDTO.getUsedDays());
 		existingUserLeave.setValidFrom(userLeaveRequestDTO.getValidFrom());
@@ -127,10 +130,9 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		return userLeaveRepository.save(existingUserLeave);
 	}
 
-	//List All
+	// List All
 	@Override
-	
-    public List<UserLeaveResponseDTO2> getAllUserLeaves() {
+    public List<UserLeaveResponseDTO> getAllUserLeaves() {
         LocalDate today = LocalDate.now();
         
         List<UserLeave> userLeaves = userLeaveRepository.findAll()
@@ -138,56 +140,38 @@ public class UserLeaveServiceImpl implements UserLeaveService {
             //TODO いつまでの期間確認して追加
 //            .filter(userLeave -> !userLeave.getValidFrom().isAfter(today)
 //                && !userLeave.getValidTo().isBefore(today))
-            .sorted(Comparator.comparing(UserLeave::getValidTo))
-            .collect(Collectors.toList());
+				.sorted(Comparator.comparing(UserLeave::getValidTo)).collect(Collectors.toList());
 
-        return userLeaves.stream()
-            .map(this::convertToDTOAll)
-            .collect(Collectors.toList());
-    }
-
-    private UserLeaveResponseDTO2 convertToDTOAll (UserLeave userLeave) {
-        return UserLeaveResponseDTO2.builder()
-                .id(userLeave.getId())
-                .userId(userLeave.getUser().getId())
-                .userName(userLeave.getUser().getUsername())
-                .leaveTypeId(userLeave.getLeaveType().getId())
-                .leaveTypeName(userLeave.getLeaveType().getName())
-                .leaveTypeValue(userLeave.getLeaveType().getValue())
-                .totalDays(userLeave.getTotalDays())
-                .usedDays(userLeave.getUsedDays())
-                .remainedDays(userLeave.getRemainedDays())
-                .validFrom(userLeave.getValidFrom())
-                .validTo(userLeave.getValidTo())
-                .build();
+		return userLeaves.stream().map(this::convertToDTOAll).collect(Collectors.toList());
 	}
-    
-  //Search
-    @Override
-    public List<UserLeaveResponseDTO2> searchUserLeaves(String keyword) {
-        LocalDate today = LocalDate.now();
-        
-        // First, find users matching the keyword
-        List<Long> matchingUserIds = userRepository.findAllByDeletedAtIsNull().stream()
-                .filter(user -> user.getUsername().toLowerCase().contains(keyword.toLowerCase()) 
-                        || (user.getFullName() != null && user.getFullName().toLowerCase().contains(keyword.toLowerCase())))
-                .map(User::getId)
-                .collect(Collectors.toList());
-        
-        // Then find all user leaves for these users
-        List<UserLeave> userLeaves = userLeaveRepository.findAll().stream()
-                .filter(userLeave -> 
-                        matchingUserIds.contains(userLeave.getUser().getId()) &&
-                        !userLeave.getValidFrom().isAfter(today) && 
-                        !userLeave.getValidTo().isBefore(today))
-                .sorted(Comparator.comparing(UserLeave::getValidTo))
-                .collect(Collectors.toList());
-        
-        // Convert to DTOs
-        return userLeaves.stream()
-                .map(this::convertToDTOAll)
-                .collect(Collectors.toList());
-    }
+
+	private UserLeaveResponseDTO convertToDTOAll(UserLeave userLeave) {
+		return UserLeaveResponseDTO.builder().id(userLeave.getId()).userId(userLeave.getUser().getId())
+				.userFullName(userLeave.getUser().getUsername()).leaveTypeId(userLeave.getLeaveType().getId())
+				.leaveTypeName(userLeave.getLeaveType().getName()).leaveTypeValue(userLeave.getLeaveType().getValue())
+				.totalDays(userLeave.getTotalDays()).usedDays(userLeave.getUsedDays())
+				.remainedDays(userLeave.getRemainedDays()).validFrom(userLeave.getValidFrom())
+				.validTo(userLeave.getValidTo()).build();
+	}
+
+	// Search
+	@Override
+	public List<UserLeaveResponseDTO> searchUserLeaves(String keyword) {
+		LocalDate today = LocalDate.now();
+
+		// First, find users matching the keyword
+		List<Long> matchingUserIds = userRepository.findAllByDeletedAtIsNull().stream().filter(user -> user
+				.getUsername().toLowerCase().contains(keyword.toLowerCase())
+				|| (user.getFullName() != null && user.getFullName().toLowerCase().contains(keyword.toLowerCase())))
+				.map(User::getId).collect(Collectors.toList());
+
+		// Then find all user leaves for these users
+		List<UserLeave> userLeaves = userLeaveRepository.findAll().stream()
+				.filter(userLeave -> matchingUserIds.contains(userLeave.getUser().getId())
+						&& !userLeave.getValidFrom().isAfter(today) && !userLeave.getValidTo().isBefore(today))
+				.sorted(Comparator.comparing(UserLeave::getValidTo)).collect(Collectors.toList());
+
+		// Convert to DTOs
+		return userLeaves.stream().map(this::convertToDTOAll).collect(Collectors.toList());
+	}
 }
-
-

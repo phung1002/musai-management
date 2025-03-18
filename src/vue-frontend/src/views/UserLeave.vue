@@ -5,7 +5,7 @@ import UserLeaveForm from "@/components/form/UserLeaveForm.vue";
 import { useI18n } from "vue-i18n";
 import { VTab } from "vuetify/lib/components/index.mjs";
 import { IUserLeaves } from "@/types/type";
-import { getUserLeaves, searchUserLeave } from "@/api/leave";
+import { getUserLeaves, searchUserLeave } from "@/api/userLeave";
 const { t } = useI18n();
 const addFrom = ref(false); // 追加プラグ
 const editForm = ref(false); //編集プラグ
@@ -63,6 +63,7 @@ const fetchLeaveType = async () => {
     isLoading.value = false;
   }
 };
+
 // 検索
 const keyWord = ref("");
 const handleSearch = async () => {
