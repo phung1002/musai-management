@@ -1,12 +1,13 @@
 <!-- 休暇タイプ　フォーム -->
 <script lang="ts" setup>
-import { ref, Ref, defineProps, onMounted, reactive, watch } from "vue";
+import { ref, Ref, onMounted, reactive, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { VTab } from "vuetify/lib/components/index.mjs";
 import { useValidator } from "@/utils/validation";
 import { ILeaveTypes } from "@/types/type";
 import { getLeavesTree, addLeave, updateLeave } from "@/api/leave";
 import { showSnackbar } from "@/composables/useSnackbar";
+import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 const { t } = useI18n(); //日本語にローカル変更用
 const emit = defineEmits(["form-cancel", "refetch-data"]);
@@ -157,7 +158,7 @@ const handleSubmit = async () => {
     // 登録処理を実行
     try {
       await addLeave(formModel);
-      showSnackbar("add_success", "success");
+      toast.success(t("message.add_success"));
       emit("refetch-data");
       handleCancel();
     } catch (error: any) {
@@ -180,7 +181,7 @@ const onConfirmed = async () => {
   try {
     if (formModel.id == null) return;
     await updateLeave(formModel.id, formModel);
-    showSnackbar("update_success", "success");
+    toast.success(t("message.update_success"));
     handleCancel();
     emit("refetch-data");
   } catch (error: any) {

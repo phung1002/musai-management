@@ -6,8 +6,7 @@ import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useI18n } from "vue-i18n";
 import { ILeaveTypes } from "@/types/type";
 import { deleteLeave, getLeaves, searchLeave } from "@/api/leave";
-import { showSnackbar } from "@/composables/useSnackbar";
-
+import { toast } from "vue3-toastify";
 const { t } = useI18n(); // 日本語にローカル変更用
 const addLeaves = ref(false); // 休暇追加・編集フォーム表示
 const isDialogVisible = ref(false); // 削除確認ダイアログ表示
@@ -90,13 +89,13 @@ const onDeleted = async () => {
   try {
     await deleteLeave(selectedId.value.id);
     console.log(`休暇ID ${selectedId.value.id} を削除しました`);
-    showSnackbar("delete_success", "success");
+    toast.success(t("message.delete_success"));
     fetchLeaveType(); // リスト更新
   } catch (error: any) {
     if (error.status == 403) {
-      showSnackbar("delete_your_self", "error");
+      toast.error(t("message.delete_your_self"));
     } else {
-      showSnackbar("delete_failure", "error");
+      toast.error(t("message.delete_failure"));
     }
   } finally {
     isDialogVisible.value = false;

@@ -17,7 +17,6 @@ const handleSubmit = () => {
 const showProfile = () => {
   showProfileView.value = true;
 };
-
 // APIからプロフィール情報取得
 const infor = ref<IUser>({} as IUser);
 const getProfile = async () => {
@@ -66,7 +65,7 @@ const onConfirmed = () => {
           <!-- 性別　女性の場合写真表示設定 -->
           <VAvatar size="35" v-if="infor.gender === 'female'">
             <img
-              src="@\assets\images\users\avatar-4.png"
+              src="@\assets\images\users\avatar-2.png"
               height="35"
               alt="user"
             />

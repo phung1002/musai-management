@@ -79,4 +79,3 @@ export async function searchLeave(key: string): Promise<ILeaveTypes[]> {
     throw error;
   }
 }
-

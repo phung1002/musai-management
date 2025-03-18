@@ -71,3 +71,10 @@ export interface ILeaveResponse {
   respondedAt: string;
   respondedByFullName: string;
 }
+// 書類提出
+export interface IDocument {
+  id: number;
+  title: string;
+  filePath: string;
+  submitDate: string;
+}

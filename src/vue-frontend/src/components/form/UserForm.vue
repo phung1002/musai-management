@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch, computed } from "vue";
+import { reactive, ref, computed } from "vue";
 import { IUser } from "@/types/type";
 import { useI18n } from "vue-i18n";
 import { useValidator } from "@/utils/validation";
@@ -11,6 +11,7 @@ import {
 } from "../../configs/userFormConfig";
 import { createUser, updateUser } from "@/api/user";
 import { showSnackbar } from "@/composables/useSnackbar";
+import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useUserStore } from "@/store/userStore";
 import { logout } from "@/api/auth";
@@ -87,7 +88,7 @@ const isChangeYourPassword = async () => {
 const handleSubmit = async (toLogin: boolean) => {
   const isValid = await formRef.value?.validate();
   if (!isValid.valid) {
-    showSnackbar("validation_error", "error");
+    toast.error(t("error.validation_error"));
     return;
   }
   const payload: IUser = {
@@ -100,7 +101,7 @@ const handleSubmit = async (toLogin: boolean) => {
     try {
       // if create user
       await createUser(payload);
-      showSnackbar("add_success", "success");
+      toast.success(t("message.add_success"));
       emit("refetch-data");
       handleCancel();
     } catch (error: any) {
@@ -117,7 +118,7 @@ const handleSubmit = async (toLogin: boolean) => {
       // if update user
       if (formModel.id == null) return;
       await updateUser(formModel.id, payload);
-      showSnackbar("update_success", "success");
+      toast.success(t("message.update_success"));
       handleCancel();
       if (toLogin) {
         logout();
@@ -162,8 +163,8 @@ const handleCancel = () => {
 <template>
   <VCard width="940px">
     <VToolbar tag="div">
-      <VToolbarTitle v-if="!isEdit">{{ t("create_user") }}</VToolbarTitle>
-      <VToolbarTitle v-else>{{ t("update_user") }}</VToolbarTitle>
+      <VToolbarTitle v-if="!isEdit">{{ t("employee_register") }}</VToolbarTitle>
+      <VToolbarTitle v-else>{{ t("employee_update") }}</VToolbarTitle>
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
     <VForm ref="formRef" v-model="formValid" lazy-validation="false">
@@ -176,7 +177,7 @@ const handleCancel = () => {
           <VWindowItem value="account">
             <VRow>
               <VCol cols="6">
-                <VLabel>{{ t("username") }}</VLabel>
+                <VLabel>{{ t("employee_name") }}</VLabel>
                 <VTextField
                   v-model="formModel.username"
                   :rules="formRulesConfig.username"
