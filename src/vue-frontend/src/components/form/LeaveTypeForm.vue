@@ -6,9 +6,11 @@ import { VTab } from "vuetify/lib/components/index.mjs";
 import { useValidator } from "@/utils/validation";
 import { ILeaveTypes } from "@/types/type";
 import { getLeavesTree, addLeave, updateLeave } from "@/api/leave";
-import { showSnackbar } from "@/composables/useSnackbar";
 import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
+import type { VForm } from "vuetify/lib/components/index.mjs";
+
+const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const { t } = useI18n(); //日本語にローカル変更用
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const errors = ref<{ leave_type?: string; leave_name?: string }>({});
@@ -19,7 +21,6 @@ const isDialogVisible = ref(false); // 確認ダイアログ表示
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 const activeTab = ref("paid"); // タブの初期値
-const formRef = ref(null);
 const formValid = ref(false);
 // デフォルト値
 const defaultLeave = {
@@ -152,6 +153,12 @@ const fetchLeaveType = async () => {
 };
 // フォーム送信処理
 const handleSubmit = async () => {
+  // 入力バリデーション
+  const isValid = await formRef.value?.validate();
+  if (!isValid?.valid) {
+    toast.error(t("error.validation_error"));
+    return;
+  }
   if (!props.isEdit) {
     setParentId(activeTab.value);
     console.log("新しいデータを登録します...");
@@ -162,11 +169,7 @@ const handleSubmit = async () => {
       emit("refetch-data");
       handleCancel();
     } catch (error: any) {
-      const errorMessage = ["add_failure"];
-      if (error.status === 400) {
-        errorMessage.push("user_exists");
-      }
-      showSnackbar(errorMessage, "error");
+      toast.error(t(error.message));
     } finally {
       isDialogVisible.value = false;
     }
@@ -185,13 +188,7 @@ const onConfirmed = async () => {
     handleCancel();
     emit("refetch-data");
   } catch (error: any) {
-    const errorMessage = ["update_failure"];
-    if (error.status === 400) {
-      errorMessage.push("user_exists");
-    } else if (error.status == 403) {
-      errorMessage.push("cannot_remove_own_admin_role");
-    }
-    showSnackbar(errorMessage, "error");
+    toast.error(t(error.message));
   } finally {
     isDialogVisible.value = false;
   }

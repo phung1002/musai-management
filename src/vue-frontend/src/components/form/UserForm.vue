@@ -10,13 +10,14 @@ import {
   genders,
 } from "../../configs/userFormConfig";
 import { createUser, updateUser } from "@/api/user";
-import { showSnackbar } from "@/composables/useSnackbar";
 import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useUserStore } from "@/store/userStore";
 import { logout } from "@/api/auth";
 import router from "@/router";
+import type { VForm } from "vuetify/lib/components/index.mjs";
 
+const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const userStore = useUserStore();
 const formatDate = (date: string | null) =>
   date ? new Date(date).toISOString() : null;
@@ -24,7 +25,6 @@ const formatDate = (date: string | null) =>
 const { t } = useI18n();
 const submiting = ref(false);
 const validator = useValidator(t);
-const formRef = ref(null);
 const isDialogVisible = ref(false);
 const activeTab = ref("account");
 const emit = defineEmits(["form-cancel", "refetch-data"]);
@@ -86,8 +86,9 @@ const isChangeYourPassword = async () => {
 };
 
 const handleSubmit = async (toLogin: boolean) => {
+  // 入力バリデーション
   const isValid = await formRef.value?.validate();
-  if (!isValid.valid) {
+  if (!isValid?.valid) {
     toast.error(t("error.validation_error"));
     return;
   }
@@ -105,11 +106,7 @@ const handleSubmit = async (toLogin: boolean) => {
       emit("refetch-data");
       handleCancel();
     } catch (error: any) {
-      const errorMessage = ["add_failure"];
-      if (error.status === 400) {
-        errorMessage.push("user_exists");
-      }
-      showSnackbar(errorMessage, "error");
+      toast.error(t(error.message));
     } finally {
       submiting.value = false;
     }
@@ -129,13 +126,7 @@ const handleSubmit = async (toLogin: boolean) => {
         emit("refetch-data");
       }
     } catch (error: any) {
-      const errorMessage = ["update_failure"];
-      if (error.status === 400) {
-        errorMessage.push("user_exists");
-      } else if (error.status == 403) {
-        errorMessage.push("cannot_remove_own_admin_role");
-      }
-      showSnackbar(errorMessage, "error");
+      toast.error(t(error.message));
     } finally {
       submiting.value = false;
     }

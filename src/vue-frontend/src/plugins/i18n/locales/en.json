@@ -104,7 +104,7 @@
   "submit_date": "submit date",
   "responded_by": "responded by",
   "pdf_view": "PDF view",
-  "dawnload": "dawnload",
+  "download": "download",
   "no_leave_day": "The leave has not yet been accrued.",
   "message": {
     "list_failure": "Failed to fetch data. Please try again.",
@@ -149,7 +149,14 @@
     "current_password_incorect": "current password incorect",
     "upload_error": "upload error",
     "download_success": "download success",
-    "download_failure": "download failure"  
+    "download_failure": "download failure",
+    "email_already_exists": "Email is already in use.",
+    "role_not_found": "Role not found",
+    "role_invalid":"Invalid role specified.",
+    "username_already_exist":"Username already exists.",
+    "cannot_remove_own_admin_role":"You are not allowed to remove your own ADMIN permissions.",
+    "cannot_delete_your_self":"Can not delete your self",
+    "user_leave_not_found":"User Leave not found"
   },
   "validation": {
     "required_input": "this field is required",

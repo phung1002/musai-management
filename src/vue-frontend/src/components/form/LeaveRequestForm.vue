@@ -10,7 +10,9 @@ import { requestLeave, updateLeaveRequest } from "@/api/request";
 import { ILeaveTypes, ILeaveRequest } from "@/types/type";
 import { useValidator } from "@/utils/validation";
 import { ELeaveType } from "@/constants/leaveType";
+import type { VForm } from "vuetify/lib/components/index.mjs";
 
+const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const isDialogVisible = ref(false);
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
 const { t } = useI18n();
@@ -19,7 +21,6 @@ const isLoading = ref(false);
 const isError = ref(false);
 const emit = defineEmits(["form:cancel", "refetch-data"]);
 const validator = useValidator(t);
-const formRef = ref(null);
 const formValid = ref(false);
 const props = defineProps<{
   application?: ILeaveRequest;
@@ -176,9 +177,10 @@ const onConfirm = async () => {
       parseDate(formModel.startDate),
       parseDate(formModel.endDate)
     );
+  // 入力バリデーション
   const isValid = await formRef.value?.validate();
-  if (!isValid.valid) {
-    toast.error(t("message.validation_error"));
+  if (!isValid?.valid) {
+    toast.error(t("error.validation_error"));
     return;
   }
   messageConfirm.value = t("message.confirm_leave_application", requestDays);
