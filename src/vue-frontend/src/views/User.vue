@@ -7,6 +7,7 @@ import { IUser } from "@/types/type";
 import UserForm from "@/components/form/UserForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { showSnackbar } from "@/composables/useSnackbar";
+import { toast } from "vue3-toastify";
 import { ERole } from "@/constants/role";
 
 const isConfirmDialogVisible = ref(false);
@@ -16,7 +17,7 @@ const { t } = useI18n();
 // Headers of table
 const headers = reactive([
   { title: t("number"), key: "number" },
-  { title: t("username"), key: "username" },
+  { title: t("employee_name"), key: "username" },
   { title: t("email"), key: "email" },
   { title: t("full_name"), key: "fullName" },
   { title: t("role"), key: "roles" },
@@ -73,7 +74,7 @@ const handleDeleteUser = async () => {
 
   try {
     await deleteUser(selectedUser.value.id);
-    showSnackbar("delete_success", "success");
+    toast.success(t("message.delete_success"));
     fetchUsers();
   } catch (error: any) {
     const errorMessage = ["delete_failure"];
@@ -126,7 +127,7 @@ onMounted(() => {
             <VToolbarTitle>
               <VIcon>mdi-account-box-multiple-outline</VIcon>
               <span class="text-lg font-medium ml-2">{{
-                t("user_management")
+                t("employee_management")
               }}</span>
             </VToolbarTitle>
             <!-- 申請入力フォーム　ボタン-->

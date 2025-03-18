@@ -123,7 +123,7 @@ export async function searchUserLeave(key: string): Promise<IUserLeaves[]> {
   }
 }
 // 社員休暇追加API呼び出し
-export async function addUserLeave(params: ILeaveTypes): Promise<void> {
+export async function addUserLeave(params: IUserLeaves): Promise<void> {
   try {
     await axiosIns.post("/user-leaves/add", params);
     console.log("Add leave successfully");

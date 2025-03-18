@@ -5,7 +5,9 @@
   "new_password_confirm": "新パスワード確認用",
   "current_password": "現在パスワード",
   "username": "ユーザー名",
-  "user_id": "社員番号",
+  "login_id": "ログインID",
+  "employee_name": "社員名",
+  "employee_id": "社員番号",
   "sign_in": "ログイン",
   "email": "メール",
   "invalid_login_input": "ユーザー名またはパスワードが正しくありません。",
@@ -30,9 +32,9 @@
   "pdf_file_upload":"PDFファイル添付",
   "logout": "ログアウト",
   "profile": "プロファイル",
-  "user_management": "ユーザー管理",
+  "employee_management": "社員管理",
   "leave_management": "休暇管理",
-  "user_leave_management": "社員休暇管理",
+  "employee_leave_management": "社員休暇管理",
   "employee_leave_register":"社員休暇登録",
   "employee_leave_edit":"社員休暇編集",
   "request_confirm": "申請確認",
@@ -44,6 +46,7 @@
   "admin": "管理者",
   "manager": "担当者",
   "member": "ユーザー",
+  "submitter": "提出者",
   "roles": {
     "ADMIN": "管理者",
     "MANAGER": "担当者",
@@ -86,8 +89,8 @@
   "confirm_password_required_error": "新パスワード確認用は必須です。",
   "required": "必須",
   "invalid_range": "選択された日付が一致しません。",
-  "create_user": "ユーザー登録",
-  "update_user": "ユーザー編集",
+  "employee_register": "社員登録",
+  "employee_update": "社員編集",
   "male": "男性",
   "female": "女性",
   "undefined": "未設定",
@@ -98,9 +101,10 @@
   "update": "更新",
   "parent_id": "親番号",
   "title": "タイトル",
-  "submit_date": "提出日",
-  "employee_name": "社員名",
+  "submit_date": "提出日", 
   "responded_by": "承認・拒否者",
+  "pdf_view": "PDF表示",
+  "dawnload": "ダウンロード",
   "message": {
     "list_failure": "データの取得に失敗しました。もう一度お試しください。",
     "add_success": "新規作成が成功しました。",
@@ -125,8 +129,11 @@
     "confirm_leave_application": "{n}日間の休暇を申請しますか？",
     "error_requested_days_exceed": "申請日数が残り日数を超えています。",
     "error_leave_type_or_user_not_exist": "指定された休暇種類またはユーザーが見つかりません。",
-    "password_change_confirm_message": 
-      "パスワード変更してもよろしいですか？パスワート変更後、再ログインが必要です"
+    "password_change_confirm_message": "パスワード変更してもよろしいですか？パスワート変更後、再ログインが必要です",
+    "no_file_selected": "ファイルが選択されていません。",
+    "upload_success": "アップロードが成功しました。",
+    "download_success": "ダウンロードが完了しました",
+    "download_failure": "ダウンロードに失敗しました。"
   },
   "error": {
     "validation_error": "送信前にエラーを修正してください。",
@@ -138,9 +145,10 @@
     "invalid_status": "無効なステータスです。",
     "can_only_be_revoked_if_approved": "ステータスが「承認済み」の場合のみ取り消しが可能です。",
     "can_only_be_cancel_or_response_if_pending": "ステータスが「保留中」の場合のみキャンセルまたは応答できます。",
-    "can_only_be_update_if_pending_or_request_change": "ステータスが「保留中」または「変更要求」の場合のみ更新できます。",
+    "can_only_be_update_if_pending_or_request_change": "ステータスが「保留中」または「変更要求」の場合のみ更新できます",
     "half_day_date_must_match": "半休を選択する場合、開始日と終了日は同じである必要があります。",
-    "current_password_incorect": "現在のパスワードが正しくありません。"
+    "current_password_incorect": "現在のパスワードが正しくありません。",
+    "upload_error": "ファイルのアップロードに失敗しました。"
   },
   "validation": {
     "required_input": "このフィールドは必須です。",

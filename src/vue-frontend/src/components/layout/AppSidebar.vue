@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import logoImg from "@/assets/images/logo.png";
 import { reactive, computed } from "vue";
-//import { useLocale } from 'vuetify';
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/store/userStore";
 import { ERole } from "@/constants/role";
@@ -19,7 +18,7 @@ const items = [
   { type: "divider", roles: [ERole.ADMIN] },
   { type: "subheader", title: t("admin"), roles: [ERole.ADMIN] },
   {
-    title: t("user_management"),
+    title: t("employee_management"),
     props: {
       prependIcon: "mdi-account-box-multiple-outline",
       link: true,
@@ -42,7 +41,7 @@ const items = [
   },
   { type: "subheader", title: t("manager"), roles: [ERole.MANAGER] },
   {
-    title: t("user_leave_management"),
+    title: t("employee_leave_management"),
     props: {
       prependIcon: "mdi-badge-account-horizontal-outline",
       link: true,
@@ -128,18 +127,6 @@ const handleDrawerWidth = () => {
       ? "mdi-arrow-expand-left  "
       : "mdi-arrow-expand-right";
 };
-
-// const menus = computed(() => {
-//   console.log(userStore.roles);
-
-//   if (drawerProps.railWidth === 256) {
-//     return items;
-//   } else {
-//     return items.filter((item) => {
-//       return item.type !== 'subheader';
-//     });
-//   }
-// });
 </script>
 
 <template>

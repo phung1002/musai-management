@@ -21,7 +21,7 @@ const visible = ref(props.isVisible);
 // テーブルのヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  { title: t("user_id"), key: "id" },
+  { title: t("employee_id"), key: "id" },
   { title: t("full_name"), key: "username" },
 ]);
 

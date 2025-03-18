@@ -9,7 +9,7 @@ import { getUserLeaves, searchUserLeave } from "@/api/leave";
 const { t } = useI18n();
 const addFrom = ref(false); // 追加プラグ
 const editForm = ref(false); //編集プラグ
-const activeTab = ref(" 有休"); // タブの初期値
+const activeTab = ref("有休"); // タブの初期値
 const userLeaves = ref<IUserLeaves[]>([]); // 休暇リスト
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
@@ -109,7 +109,7 @@ onMounted(() => {
           <VToolbar tag="div">
             <VToolbarTitle
               ><VIcon icon="mdi-badge-account-horizontal-outline" />
-              {{ t("user_leave_management") }}
+              {{ t("employee_leave_management") }}
             </VToolbarTitle>
             <!-- 追加　ボタン-->
             <VCardActions>
