@@ -9,6 +9,7 @@ import musai.app.repositories.LeaveTypeResposity;
 import musai.app.repositories.RoleRepository;
 import musai.app.repositories.UserRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.HashSet;
@@ -49,8 +50,7 @@ public class DataInitializer implements CommandLineRunner {
 			String encodedPassword = encoder.encode("admin");
 
 			User admin = new User("admin", "admin@gmail.com", encodedPassword, "Admin", "アドミン",
-					LocalDateTime.of(1990, Month.MARCH, 15, 10, 30, 0), "管理", "本社",
-					LocalDateTime.of(2020, Month.MARCH, 15, 10, 30, 0), "male");
+					LocalDate.of(1990, 1, 1), "管理", "本社", LocalDate.of(2023, 1, 1), "male");
 
 			Role roleAdmin = roleRepository.findByName(ERole.ADMIN)
 					.orElseThrow(() -> new RuntimeException("Error: Role ADMIN is not found."));
@@ -66,7 +66,19 @@ public class DataInitializer implements CommandLineRunner {
 			admin.setRoles(roles);
 			userRepository.save(admin);
 
-			// Create users
+			// management
+			User user1 = new User("nguyen", "nguyen@gmail.com", encoder.encode("nguyen"), "Nguyen Khanh Phung",
+					"グエンカンプン", LocalDate.of(1997, 2, 10), "IT", "本社", LocalDate.of(2024, 5, 1), "female");
+			User user2 = new User("chamith", "chamith@gmail.com", encoder.encode("chamith"), "Chamith",
+					"チャミット", LocalDate.of(1994, 1, 1), "IT", "本社", LocalDate.of(2024, 12, 1), "male");
+			roles.remove(roleAdmin);
+			user1.getRoles().add(roleManagement);	
+			user2.getRoles().add(roleManagement);
+			userRepository.save(user1);
+			userRepository.save(user2);
+
+
+			// member
 			for (int i = 1; i <= 10; i++) {
 				User user = createUser(i, encoder);
 				user.getRoles().add(roleMember);
@@ -84,7 +96,7 @@ public class DataInitializer implements CommandLineRunner {
 			leaveTypeResposity.save(new LeaveType("全休", paidLeave, ELeaveValue.FULL_DAY.name()));
 
 			LeaveType publicLeave = leaveTypeResposity.findByName("公休");
-			leaveTypeResposity.save(new LeaveType("特別休暇", publicLeave, null));
+			leaveTypeResposity.save(new LeaveType("特別休暇", publicLeave, ELeaveValue.SPECIAL_LEAVE.name()));
 			leaveTypeResposity.save(new LeaveType("年末年始", publicLeave, null));
 			leaveTypeResposity.save(new LeaveType("慶弔休暇", publicLeave, null));
 
@@ -109,8 +121,8 @@ public class DataInitializer implements CommandLineRunner {
 		String password = encoder.encode("user" + i);
 
 		return new User(username, email, password, "User " + i, generateRandomHiragana(5),
-				LocalDateTime.of(2000, Month.MARCH, 15, 10, 30, 0), "役職 " + i, "支店 " + i,
-				LocalDateTime.of(2022, Month.MARCH, 15, 10, 30, 0), "female");
+				LocalDate.of(1994, 1, 1), "役職 " + i, "支店 " + i,
+				LocalDate.of(2025, 1, 1), "male");
 	}
 
 	private static final int HIRAGANA_START = 0x3040;

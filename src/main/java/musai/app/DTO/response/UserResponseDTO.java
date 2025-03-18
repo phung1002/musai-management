@@ -1,9 +1,8 @@
 package musai.app.DTO.response;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Set;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,13 +24,13 @@ public class UserResponseDTO {
 
 	private String fullNameFurigana;
 
-	private LocalDateTime birthday;
+	private LocalDate birthday;
 
 	private String department;
 
 	private String workPlace;
 
-	private LocalDateTime joinDate;
+	private LocalDate joinDate;
 
 	private String gender;
 

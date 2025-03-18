@@ -131,9 +131,9 @@ const getStatusColor = (status: string) => {
             :items="userLeaves"
             item-value="id"
             density="compact"
-            class="small-text"
+            class="small-text table-user-leave"
             hide-default-footer
-            style="max-width: 40%; font-size: 0.8rem"
+            :no-data-text="t('no_leave_day')"
           />
         </VCardText>
 
@@ -288,5 +288,10 @@ const getStatusColor = (status: string) => {
 
 .action-btn:hover {
   background-color: #f5f5f5;
+}
+
+.table-user-leave {
+  max-width: 40%;
+  font-size: 0.8rem;
 }
 </style>

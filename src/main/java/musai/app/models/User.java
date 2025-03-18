@@ -1,5 +1,6 @@
 package musai.app.models;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,7 +44,7 @@ public class User {
 	private String fullNameFurigana;
 
 	@Column(name = "birthday")
-	private LocalDateTime birthday;
+	private LocalDate birthday;
 
 	@Column(name = "department")
 	private String department;
@@ -52,7 +53,7 @@ public class User {
 	private String workPlace;
 
 	@Column(name = "join_date")
-	private LocalDateTime joinDate;
+	private LocalDate joinDate;
 
 	@Column(name = "gender")
 	private String gender;
@@ -74,7 +75,7 @@ public class User {
 	private Set<Role> roles = new HashSet<>();
 
 	public User(String username, String email, String encode, String fullName, String fullNameFurigana,
-			LocalDateTime birthday, String department, String workPlace, LocalDateTime joinDate, String gender) {
+			LocalDate birthday, String department, String workPlace, LocalDate joinDate, String gender) {
 		this.username = username;
 		this.email = email;
 		this.password = encode;

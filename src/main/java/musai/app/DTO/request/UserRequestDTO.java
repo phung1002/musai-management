@@ -1,6 +1,6 @@
 package musai.app.DTO.request;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Set;
 
 import jakarta.validation.constraints.Email;
@@ -33,13 +33,13 @@ public class UserRequestDTO {
 
 	private String fullNameFurigana;
 
-	private LocalDateTime birthday;
+	private LocalDate birthday;
 
 	private String department;
 
 	private String workPlace;
 
-	private LocalDateTime joinDate;
+	private LocalDate joinDate;
 
 	private String gender;
 

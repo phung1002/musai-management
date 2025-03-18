@@ -105,6 +105,7 @@
   "responded_by": "承認・拒否者",
   "pdf_view": "PDF表示",
   "download": "ダウンロード",
+  "no_leave_day": "休暇はまだ発生されていない。",
   "message": {
     "list_failure": "データの取得に失敗しました。もう一度お試しください。",
     "add_success": "新規作成が正常に完了しました。",

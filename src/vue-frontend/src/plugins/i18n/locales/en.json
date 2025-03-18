@@ -105,6 +105,7 @@
   "responded_by": "responded by",
   "pdf_view": "PDF view",
   "download": "download",
+  "no_leave_day": "The leave has not yet been accrued.",
   "message": {
     "list_failure": "Failed to fetch data. Please try again.",
     "add_success": "addition successful!",

@@ -52,12 +52,12 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		return responseDTO;
 	}
 
-	// Service get list user leave for member
+	// Service get list user leave for member to show in screen
 	@Override
 	public List<UserLeaveResponseDTO> getUserLeaveForMember(Long userId) {
 		LocalDate today = LocalDate.now();
 		List<UserLeave> userLeaves = userLeaveRepository.findByUserId(userId).stream()
-				.filter(userLeave -> (userLeave.getRemainedDays() > 0) && !userLeave.getValidFrom().isAfter(today)
+				.filter(userLeave -> !userLeave.getValidFrom().isAfter(today)
 						&& !userLeave.getValidTo().isBefore(today))
 				.sorted(Comparator.comparing(UserLeave::getValidTo)).collect(Collectors.toList());
 		List<UserLeaveResponseDTO> responseDTO = userLeaves.stream().map(this::convertToDTO)
@@ -137,7 +137,8 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 
 		List<UserLeave> userLeaves = userLeaveRepository.findAll().stream()
 		// TODO いつまでの期間確認して追加
-//            .filter(userLeave -> !userLeave.getValidFrom().isAfter(today)
+            .filter(userLeave -> userLeave.getUser().getDeletedAt() == null)
+//            		&& !userLeave.getValidFrom().isAfter(today)
 //                && !userLeave.getValidTo().isBefore(today))
 				.sorted(Comparator.comparing(UserLeave::getValidTo))
 				.collect(Collectors.toList());
