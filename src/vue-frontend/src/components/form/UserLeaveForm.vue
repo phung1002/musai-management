@@ -69,7 +69,6 @@ const formModel = reactive<IUserLeaves>(
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
   fetchLeaveType();
-  onPublicLeaveChange(); // 自動的にSUMMER_DAYを表示
 });
 const publicLeaveChilden: Ref<ILeaveTypes | null> = ref(defaultLeave);
 const summerDayName = ref(""); // "SUMMER_DAY" の名前を格納する
@@ -102,7 +101,7 @@ const getLeaveTypeId = () => {
 };
 watch(activeTab, () => {
   getLeaveTypeId();
-  onPublicLeaveChange();
+  onPublicLeaveChange(); // 自動的にSUMMER_DAYを表示
 });
 
 // 親IDを設定
