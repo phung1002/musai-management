@@ -104,7 +104,7 @@
   "submit_date": "提出日", 
   "responded_by": "承認・拒否者",
   "pdf_view": "PDF表示",
-  "dawnload": "ダウンロード",
+  "download": "ダウンロード",
   "message": {
     "list_failure": "データの取得に失敗しました。もう一度お試しください。",
     "add_success": "新規作成が成功しました。",
@@ -148,7 +148,15 @@
     "can_only_be_update_if_pending_or_request_change": "ステータスが「保留中」または「変更要求」の場合のみ更新できます",
     "half_day_date_must_match": "半休を選択する場合、開始日と終了日は同じである必要があります。",
     "current_password_incorect": "現在のパスワードが正しくありません。",
-    "upload_error": "ファイルのアップロードに失敗しました。"
+    "upload_error": "ファイルのアップロードに失敗しました。",
+    "email_already_exists": "メールアドレスはすでに使用されています。",
+    "role_not_found": "権限が見つかりません。",
+    "role_invalid":"権限が無効です。",
+    "username_already_exist":"ユーザー名はすでに存在します。",
+    "cannot_remove_own_admin_role":"自身の管理者権限を削除することは許可されていません。",
+    "cannot_delete_your_self":"自分を削除することはできません。",
+    "user_leave_not_found":"社員の休暇が見つかりません。",
+    "leave_type_not_found": "休暇区分が見つかりません。"
   },
   "validation": {
     "required_input": "このフィールドは必須です。",

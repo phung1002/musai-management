@@ -13,7 +13,7 @@ public interface UserLeaveService {
 	
 	List<UserLeaveResponseDTO> getUserLeaveForMember(Long leaveTypeId, UserDetailsImpl principal);
 	
-	MessageResponse updateUsedDays(Long id, double usedDay);
+	void updateUsedDays(Long id, double usedDay);
 	
 	UserLeave createUserLeave(UserLeaveRequestDTO userLeaveRequestDTO);
 	

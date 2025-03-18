@@ -202,15 +202,11 @@ const handleSubmit = async () => {
     try {
       console.log(formModel);
       await addUserLeave(formModel);
-      toast.success(t("add_success"));
+      toast.success(t("message.add_success"));
       emit("refetch-data");
       handleCancel();
     } catch (error: any) {
-      const errorMessage = ["add_failure"];
-      if (error.status === 400) {
-        errorMessage.push("user_exists");
-      }
-      toast.error(errorMessage);
+      toast.error(t(error.message));
     } finally {
       isDialogVisible.value = false;
     }
@@ -225,17 +221,11 @@ const onConfirmed = async () => {
   try {
     if (formModel.id == null) return;
     await updateUserLeave(formModel.id, formModel);
-    toast.success(t("update_success"));
+    toast.success(t("message.update_success"));
     handleCancel();
     emit("refetch-data");
   } catch (error: any) {
-    const errorMessage = ["update_failure"];
-    if (error.status === 400) {
-      errorMessage.push("user_exists");
-    } else if (error.status == 403) {
-      errorMessage.push("cannot_remove_own_admin_role");
-    }
-    toast.error(errorMessage);
+    toast.error(t(error.message));
   } finally {
     isDialogVisible.value = false;
   }

@@ -91,11 +91,11 @@ onUnmounted(() => {
     <VCardActions>
       <VBtn
         @click="handleDownload"
-        type="dawnload"
+        type="download"
         variant="elevated"
         color="primary"
         ><v-icon icon="mdi-content-save" start></v-icon
-        >{{ t("dawnload") }}</VBtn
+        >{{ t("download") }}</VBtn
       >
     </VCardActions>
   </VCard>

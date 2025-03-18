@@ -6,7 +6,6 @@ import { deleteUser, getAllUsers, searchUser } from "@/api/user";
 import { IUser } from "@/types/type";
 import UserForm from "@/components/form/UserForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import { showSnackbar } from "@/composables/useSnackbar";
 import { toast } from "vue3-toastify";
 import { ERole } from "@/constants/role";
 
@@ -77,11 +76,7 @@ const handleDeleteUser = async () => {
     toast.success(t("message.delete_success"));
     fetchUsers();
   } catch (error: any) {
-    const errorMessage = ["delete_failure"];
-    if (error.status == 403) {
-      errorMessage.push("delete_your_self");
-    }
-    showSnackbar(errorMessage, "error");
+    toast.error(t(error.message));
   } finally {
     isConfirmDialogVisible.value = false;
   }

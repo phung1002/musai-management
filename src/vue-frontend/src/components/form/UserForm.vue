@@ -10,7 +10,6 @@ import {
   genders,
 } from "../../configs/userFormConfig";
 import { createUser, updateUser } from "@/api/user";
-import { showSnackbar } from "@/composables/useSnackbar";
 import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useUserStore } from "@/store/userStore";
@@ -105,11 +104,7 @@ const handleSubmit = async (toLogin: boolean) => {
       emit("refetch-data");
       handleCancel();
     } catch (error: any) {
-      const errorMessage = ["add_failure"];
-      if (error.status === 400) {
-        errorMessage.push("user_exists");
-      }
-      showSnackbar(errorMessage, "error");
+      toast.error(t(error.message));
     } finally {
       submiting.value = false;
     }
@@ -129,13 +124,7 @@ const handleSubmit = async (toLogin: boolean) => {
         emit("refetch-data");
       }
     } catch (error: any) {
-      const errorMessage = ["update_failure"];
-      if (error.status === 400) {
-        errorMessage.push("user_exists");
-      } else if (error.status == 403) {
-        errorMessage.push("cannot_remove_own_admin_role");
-      }
-      showSnackbar(errorMessage, "error");
+      toast.error(t(error.message));
     } finally {
       submiting.value = false;
     }
