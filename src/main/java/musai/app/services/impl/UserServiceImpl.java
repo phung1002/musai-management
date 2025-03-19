@@ -1,15 +1,17 @@
 package musai.app.services.impl;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import lombok.AllArgsConstructor;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.ChangePasswordRequestDTO;
 import musai.app.DTO.request.UserRequestDTO;
@@ -22,40 +24,42 @@ import musai.app.models.Role;
 import musai.app.models.User;
 import musai.app.repositories.RoleRepository;
 import musai.app.repositories.UserRepository;
-import musai.app.security.jwt.JwtUtils;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.UserService;
 
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder encoder;
-
-	@Autowired
-	public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder) {
-		this.userRepository = userRepository;
-		this.roleRepository = roleRepository;
-		this.encoder = encoder;
-	}
-
+	
 	/**
 	 * Service get all user
 	 * 
 	 * @return MessageResponse
 	 */
 	@Override
-	public List<UserResponseDTO> getAllUsers() {
-		List<UserResponseDTO> lstUser = userRepository.findAllByDeletedAtIsNull().stream()
-				.map(userResponseDTO -> new UserResponseDTO(userResponseDTO.getId(), userResponseDTO.getUsername(),
-						userResponseDTO.getEmail(),
-						userResponseDTO.getRoles().stream().map(role -> role.getName().name())
-								.collect(Collectors.toSet()),
-						userResponseDTO.getFullName(), userResponseDTO.getFullNameFurigana(),
-						userResponseDTO.getBirthday(), userResponseDTO.getDepartment(), userResponseDTO.getWorkPlace(),
-						userResponseDTO.getJoinDate(), userResponseDTO.getGender()))
+	public List<UserResponseDTO> getAllUsers(String keyword) {
+		List<User> users = StringUtils.hasText(keyword)
+				? userRepository.findActiveByKeyContaining(keyword)
+				: userRepository.findAllByDeletedAtIsNull();
+
+		// If the list is empty, return an empty list
+		if (users.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		// Map each User entity to UserResponseDTO using the convertToDTO method
+		return users.stream().map(this::convertToDTO) // Convert each user to DTO
 				.collect(Collectors.toList());
-		return lstUser;
+	}
+
+	private UserResponseDTO convertToDTO(User user) {
+		return new UserResponseDTO(user.getId(), user.getUsername(), user.getEmail(),
+				user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),
+				user.getFullName(), user.getFullNameFurigana(), user.getBirthday(), user.getDepartment(),
+				user.getWorkPlace(), user.getJoinDate(), user.getGender());
 	}
 
 	/**
@@ -216,8 +220,7 @@ public class UserServiceImpl implements UserService {
 	 * Get infor of role by name
 	 */
 	private Role getRoleByName(ERole roleName) {
-		return roleRepository.findByName(roleName)
-				.orElseThrow(() -> new BadRequestException("role_not_found"));
+		return roleRepository.findByName(roleName).orElseThrow(() -> new BadRequestException("role_not_found"));
 	}
 
 	// get detail
@@ -231,23 +234,6 @@ public class UserServiceImpl implements UserService {
 				existingUser.getFullName(), existingUser.getFullNameFurigana(), existingUser.getBirthday(),
 				existingUser.getDepartment(), existingUser.getWorkPlace(), existingUser.getJoinDate(),
 				existingUser.getGender());
-
-	}
-
-	// get search
-	@Override
-	public List<UserResponseDTO> searchUser(String keyword) {
-
-		List<UserResponseDTO> filteredUser = userRepository.findAllByDeletedAtIsNull().stream()
-				.filter(user -> user.getUsername().toLowerCase().contains(keyword.toLowerCase()))
-				.map(user -> new UserResponseDTO(user.getId(), user.getUsername(), user.getEmail(),
-						user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),
-						user.getFullName(), user.getFullNameFurigana(), user.getBirthday(), user.getDepartment(),
-						user.getWorkPlace(), user.getJoinDate(), user.getGender()
-
-				)).collect(Collectors.toList());
-
-		return filteredUser;
 
 	}
 

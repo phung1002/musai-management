@@ -2,10 +2,12 @@ package musai.app.services.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import jakarta.persistence.NoResultException;
 import musai.app.DTO.MessageResponse;
@@ -80,15 +82,26 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 
 	// get List
 	@Override
-	public List<LeaveTypeParentResponseDTO> getAllLeaveTypes() {
+	public List<LeaveTypeParentResponseDTO> getAllLeaveTypes(String keyword) {
 
-		// Fetch all LeaveType entities from the repository
-		List<LeaveType> leaveTypes = leaveTypeResposity.findAllByDeletedAtIsNull();
+	    // Fetch all LeaveType entities from the repository based on keyword or fetch all if no keyword
+	    List<LeaveType> leaveTypes = StringUtils.hasText(keyword)
+	            ? leaveTypeResposity.findActiveByKeywordContaining(keyword)
+	            : leaveTypeResposity.findAllActive();
 
-		// Map each LeaveType entity to LeaveTypeDTO
-		return leaveTypes.stream().map(leave -> new LeaveTypeParentResponseDTO(leave.getId(), leave.getName(),
-				leave.getParent() != null ? leave.getParent().getId() : null // Check if parent is null
-		)).collect(Collectors.toList());
+	    // If the list is empty, return an empty list or handle it in another way if needed
+	    if (leaveTypes.isEmpty()) {
+	        return Collections.emptyList();
+	    }
+
+	    // Map each LeaveType entity to LeaveTypeParentResponseDTO
+	    return leaveTypes.stream()
+	            .map(leave -> new LeaveTypeParentResponseDTO(
+	                    leave.getId(),
+	                    leave.getName(),
+	                    leave.getParent() != null ? leave.getParent().getId() : null // Safe check for parent
+	            ))
+	            .collect(Collectors.toList());
 	}
 
 	// Create API list tree

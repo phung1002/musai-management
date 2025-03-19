@@ -21,6 +21,7 @@ const isLoading = ref(false);
 const isError = ref(false);
 const isConfirmDialogVisible = ref(false);
 const userLeaves = ref([{ leaveTypeName: "", remainedDays: 0, validTo: "" }]);
+const keyWord = ref("");
 
 const convertDate = (date: Date | null): string | null => {
   if (date == null) return null;
@@ -31,7 +32,6 @@ const convertDate = (date: Date | null): string | null => {
   return `${year}-${month}-${day}`;
 };
 
-const handleSearch = async () => {};
 const openCreateDialog = () => {
   isEdit.value = false;
   isDialogVisible.value = true;
@@ -73,7 +73,7 @@ const fetchLeaveRequests = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await listLeaveRequestForMember(); //  API呼び出し
+    const response = await listLeaveRequestForMember(keyWord.value); //  API呼び出し
     leaveRequests.value = response.map((leaveRequestList: ILeaveRequest) => ({
       ...leaveRequestList,
     }));
@@ -165,17 +165,18 @@ const getStatusColor = (status: string) => {
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>
               <VTextField
+                v-model="keyWord"
                 :prepend-icon="'mdi-filter-variant'"
                 :placeholder="t('type_something')"
                 hide-details
                 clearable
                 variant="plain"
                 class="search"
-                @keyup.enter="handleSearch"
+                @keyup.enter="fetchLeaveRequests"
                 @click:prepend="showFilter = !showFilter"
-                @click:clear="handleSearch"
+                @click:clear="fetchLeaveRequests"
               />
-              <VBtn icon @click="handleSearch" density="comfortable">
+              <VBtn icon @click="fetchLeaveRequests" density="comfortable">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
             </VToolbar>

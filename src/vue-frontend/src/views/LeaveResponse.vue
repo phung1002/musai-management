@@ -6,12 +6,12 @@ import { ILeaveResponse } from "@/types/type";
 import { toast } from "vue3-toastify";
 import {
   getLeaveRequests,
-  searchLeaveRequest,
   updateLeaveRespond,
 } from "@/api/response";
 import { format } from "date-fns"; // 日付フォーマットライブラリ
 import LeaveResponseDetails from "@/components/ui/LeaveResponseDetails.vue";
 const { t } = useI18n();
+const keyWord = ref("");
 const LeaveRequests = ref<ILeaveResponse[]>([]); // 休暇リスト
 const selectedResponse = ref<ILeaveResponse>({} as ILeaveResponse);
 const detailsCard = ref(false);
@@ -41,28 +41,11 @@ const fetchLeaveType = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getLeaveRequests(); // API呼び出
-    console.log("response ss", response);
+    const response = await getLeaveRequests(keyWord.value); // API呼び出
     loadLeave(response); // リスト更新
   } catch (error) {
     isError.value = true;
     console.error("Error fetching leaves:", error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-// 検索
-const keyWord = ref("");
-const handleSearch = async () => {
-  if (keyWord.value == null) {
-    fetchLeaveType();
-    return;
-  }
-  try {
-    const response = await searchLeaveRequest(keyWord.value);
-    loadLeave(response);
-  } catch (error) {
-    isError.value = true;
   } finally {
     isLoading.value = false;
   }
@@ -136,10 +119,10 @@ onMounted(() => {
                 clearable
                 variant="plain"
                 class="search"
-                @click:clear="handleSearch"
-                @keydown.enter="handleSearch"
+                @click:clear="fetchLeaveType"
+                @keydown.enter="fetchLeaveType"
               />
-              <VBtn icon density="comfortable" @click="handleSearch">
+              <VBtn icon density="comfortable" @click="fetchLeaveType">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
             </VToolbar>

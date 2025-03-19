@@ -2,11 +2,13 @@ package musai.app.models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,7 +22,6 @@ import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@SQLRestriction("deleted_at IS NULL")
 @Data
 @NoArgsConstructor
 @Entity

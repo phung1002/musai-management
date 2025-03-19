@@ -3,7 +3,6 @@ package musai.app.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.ChangePasswordRequestDTO;
 import musai.app.DTO.request.UserRequestDTO;
@@ -26,23 +25,20 @@ import musai.app.services.UserService;
 import musai.app.validation.ValidationGroups;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
+@AllArgsConstructor
 //@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 	private final UserService userService;
-
-	public UserController(UserService userService) {
-		this.userService = userService;
-	}
 
 	/**
 	 * API get all user Only ADMIN can get all user
 	 * 
 	 * @return ResponseEntity
 	 */
-	@GetMapping("/list")
-	public ResponseEntity<?> getAllUser() {
-		List<UserResponseDTO> response = userService.getAllUsers();
+	@GetMapping
+	public ResponseEntity<?> getAllUser(@RequestParam String keyword) {
+		List<UserResponseDTO> response = userService.getAllUsers(keyword);
 		return ResponseEntity.ok(response);
 	}
 
@@ -52,7 +48,7 @@ public class UserController {
 	 * @paramater UserRequestDTO
 	 * @return ResponseEntity
 	 */
-	@PostMapping("/add")
+	@PostMapping
 	public ResponseEntity<?> addUser(
 			@Validated(ValidationGroups.CreateUser.class) @RequestBody UserRequestDTO userRequestDTO) {
 		MessageResponse response = userService.addUser(userRequestDTO);
@@ -65,7 +61,7 @@ public class UserController {
 	 * @paramater UserRequestDTO
 	 * @return ResponseEntity
 	 */
-	@PutMapping("/edit/{userId}")
+	@PutMapping("/{userId}")
 	public ResponseEntity<?> editUser(@PathVariable Long userId, @Validated @RequestBody UserRequestDTO userRequestDTO,
 			@AuthenticationPrincipal UserDetailsImpl principal) {
 		MessageResponse response = userService.editUser(userId, userRequestDTO, principal);
@@ -78,14 +74,14 @@ public class UserController {
 	 * parameter UserRequestDTO
 	 * @return ResponseEntity
 	 */
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteUser(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl principal) {
 		MessageResponse response = userService.deleteUser(id, principal);
 		return ResponseEntity.ok(response);
 	}
 
 	// Create User detail
-	@GetMapping("/detail/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<?> getUserDetail(@PathVariable Long id) {
 		UserResponseDTO response = userService.detailUser(id);
 
@@ -93,12 +89,6 @@ public class UserController {
 
 	}
 
-	// Search User
-	@GetMapping("/search")
-	public List<UserResponseDTO> searchUserResponse(@RequestParam String keyword) {
-
-		return userService.searchUser(keyword);
-	}
 	/**
 	 * API Change password 
 	 * 

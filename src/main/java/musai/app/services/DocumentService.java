@@ -14,7 +14,7 @@ public interface DocumentService {
 
 	List<DocumentResponseDTO> listAllFiles() throws IOException;
 	
-	List<DocumentResponseDTO> listFilesForMember(UserDetailsImpl principal);
+	List<DocumentResponseDTO> listFilesForMember(UserDetailsImpl principal) throws IOException;
 	
 	Document uploadFile(MultipartFile file, UserDetailsImpl principal) throws IOException;
 

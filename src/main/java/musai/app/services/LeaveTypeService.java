@@ -6,7 +6,6 @@ import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveTypeRequestDTO;
 import musai.app.DTO.response.LeaveTypeChildrenResponseDTO;
 import musai.app.DTO.response.LeaveTypeParentResponseDTO;
-import musai.app.DTO.response.LeaveTypeResponseDTO;
 
 public interface LeaveTypeService {
 	
@@ -16,7 +15,7 @@ public interface LeaveTypeService {
 
 	MessageResponse deleteLeaveType(Long id);
 
-	List<LeaveTypeParentResponseDTO> getAllLeaveTypes(); 
+	List<LeaveTypeParentResponseDTO> getAllLeaveTypes(String keyword); 
 	
 	List<LeaveTypeChildrenResponseDTO> getAllLeaveTypeTree(); 
 	

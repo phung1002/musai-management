@@ -11,7 +11,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import lombok.RequiredArgsConstructor;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveApplicationRequestDTO;
@@ -36,21 +39,25 @@ import musai.app.services.UserLeaveService;
 public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 
 	private final LeaveApplicationRepository leaveApplicationRepository;
+	@Autowired
 	private final UserRepository userRepository;
+	@Autowired
 	private final LeaveTypeResposity leaveTypeResposity;
+	@Autowired
 	private final UserLeaveService userLeaveService;
 
 	/**
 	 * Service get all leave applications
 	 */
 	@Override
-	public List<LeaveApplicationResponseDTO> getAllLeaveApplications() {
-		List<LeaveApplication> leaveApplications = leaveApplicationRepository.findAllByOrderByCreatedAtDesc();
-		List<LeaveApplicationResponseDTO> responseDTOs = leaveApplications.stream()
-				.filter(leaveApplication -> leaveApplication.getUser().getDeletedAt() == null)
-				.map(this::convertToDTO)
-				.collect(Collectors.toList());
-		return responseDTOs;
+	public List<LeaveApplicationResponseDTO> getAllLeaveApplications(String keyword) {
+	    List<LeaveApplication> leaveApplications = StringUtils.hasText(keyword)
+	        ? leaveApplicationRepository.findActiveByKeywordContaining(keyword)
+	        : leaveApplicationRepository.findAllActive();
+
+	    return leaveApplications.stream()
+	        .map(this::convertToDTO)
+	        .collect(Collectors.toList());
 	}
 
 	// Convert LeaveApplication to LeaveApplicationResponseDTO
@@ -69,12 +76,15 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	 * Service get leave applications of user are logging in
 	 */
 	@Override
-	public List<LeaveApplicationResponseDTO> getLeaveApplicationsForMember(UserDetailsImpl principal) {
+	public List<LeaveApplicationResponseDTO> getLeaveApplicationsForMember(UserDetailsImpl principal, String keyword) {
 		// Find leave application of user are logging in
-		List<LeaveApplication> leaveApplications = leaveApplicationRepository.findByUserId(principal.getId());
-		List<LeaveApplicationResponseDTO> responseDTOs = leaveApplications.stream().map(this::convertToDTO)
-				.collect(Collectors.toList());
-		return responseDTOs;
+		List<LeaveApplication> leaveApplications = StringUtils.hasText(keyword)
+		        ? leaveApplicationRepository.findActiveByUserIdByKeywordContaining(principal.getId(), keyword)
+		        : leaveApplicationRepository.findActiveByUserId(principal.getId());
+
+		    return leaveApplications.stream()
+		        .map(this::convertToDTO)
+		        .collect(Collectors.toList());
 	}
 
 	/**
