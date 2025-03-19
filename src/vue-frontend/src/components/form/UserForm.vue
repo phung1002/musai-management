@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, computed } from "vue";
+import { ref, computed, nextTick } from "vue";
 import { IUser } from "@/types/type";
 import { useI18n } from "vue-i18n";
 import { useValidator } from "@/utils/validation";
@@ -30,7 +30,7 @@ const activeTab = ref("account");
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const props = defineProps<{ user?: IUser; isEdit: boolean }>();
 
-const formModel = reactive<IUser>(
+const formModel = ref<IUser>(
   props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser }
 );
 
@@ -63,21 +63,24 @@ const convertDate = (date: string | null): string | null => {
   return `${year}-${month}-${day}`;
 };
 const formattedBirthday = computed({
-  get: () => convertDate(formModel.birthday),
+  get: () => convertDate(formModel.value.birthday),
   set: (newDate) => {
-    formModel.birthday = newDate;
+    formModel.value.birthday = newDate;
   },
 });
 const formattedJoinDate = computed({
-  get: () => convertDate(formModel.joinDate),
+  get: () => convertDate(formModel.value.joinDate),
   set: (newDate) => {
-    formModel.joinDate = newDate;
+    formModel.value.joinDate = newDate;
   },
 });
 
 const isChangeYourPassword = async () => {
   const toLogin = ref(false);
-  if (formModel.id == userStore.id && formModel.password.length > 0) {
+  if (
+    formModel.value.id == userStore.id &&
+    formModel.value.password.length > 0
+  ) {
     isDialogVisible.value = true;
     toLogin.value = true;
   } else {
@@ -93,9 +96,9 @@ const handleSubmit = async (toLogin: boolean) => {
     return;
   }
   const payload: IUser = {
-    ...formModel,
-    birthday: formatDate(formModel.birthday),
-    joinDate: formatDate(formModel.joinDate),
+    ...(formModel.value as IUser),
+    birthday: formatDate(formModel.value.birthday),
+    joinDate: formatDate(formModel.value.joinDate),
   };
   submiting.value = true;
   if (!props.isEdit) {
@@ -113,8 +116,8 @@ const handleSubmit = async (toLogin: boolean) => {
   } else {
     try {
       // if update user
-      if (formModel.id == null) return;
-      await updateUser(formModel.id, payload);
+      if (formModel.value.id == null) return;
+      await updateUser(formModel.value.id, payload);
       toast.success(t("message.update_success"));
       handleCancel();
       if (toLogin) {
@@ -132,13 +135,12 @@ const handleSubmit = async (toLogin: boolean) => {
     }
   }
 };
-
-const resetForm = () => {
-  Object.assign(
-    formModel,
-    props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser }
-  );
-  if (formRef.value && formRef.value.resetValidation) {
+const resetForm = async () => {
+  formModel.value = props.isEdit
+    ? { ...defaultUser, ...props.user }
+    : { ...defaultUser };
+  await nextTick();
+  if (formRef.value?.resetValidation) {
     formRef.value.resetValidation();
   }
   confirmPassword.value = "";
