@@ -5,8 +5,9 @@ import UserLeaveForm from "@/components/form/UserLeaveForm.vue";
 import { useI18n } from "vue-i18n";
 import { VTab } from "vuetify/lib/components/index.mjs";
 import { IUserLeaves } from "@/types/type";
-import { getUserLeaves, searchUserLeave } from "@/api/userLeave";
+import { getUserLeaves } from "@/api/userLeave";
 const { t } = useI18n();
+const keyWord = ref("");
 const addFrom = ref(false); // 追加プラグ
 const editForm = ref(false); //編集プラグ
 const activeTab = ref("有休"); // タブの初期値
@@ -53,7 +54,7 @@ const fetchLeaveType = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getUserLeaves(); // API呼び出
+    const response = await getUserLeaves(keyWord.value); // API呼び出
     console.log("response ss", response);
     loadLeave(response); // リスト更新
   } catch (error) {
@@ -64,22 +65,6 @@ const fetchLeaveType = async () => {
   }
 };
 
-// 検索
-const keyWord = ref("");
-const handleSearch = async () => {
-  if (keyWord.value == null) {
-    fetchLeaveType();
-    return;
-  }
-  try {
-    const response = await searchUserLeave(keyWord.value);
-    loadLeave(response);
-  } catch (error) {
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
 // 追加用ダイアログ表示
 const handleCreateItem = (leaveType: IUserLeaves) => {
   selectedLeave.value = leaveType; // 新規作成なのでリセット
@@ -144,10 +129,10 @@ onMounted(() => {
                     clearable
                     variant="plain"
                     class="search"
-                    @click:clear="handleSearch"
-                    @keydown.enter="handleSearch"
+                    @click:clear="fetchLeaveType"
+                    @keydown.enter="fetchLeaveType"
                   />
-                  <VBtn icon density="comfortable" @click="handleSearch">
+                  <VBtn icon density="comfortable" @click="fetchLeaveType">
                     <VIcon>mdi-magnify</VIcon>
                   </VBtn>
                 </VToolbar>

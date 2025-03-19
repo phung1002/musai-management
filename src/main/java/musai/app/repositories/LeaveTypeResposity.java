@@ -15,8 +15,6 @@ public interface LeaveTypeResposity extends JpaRepository<LeaveType, Long> {
 
 	Boolean existsByName(String name);
 
-	Optional<LeaveType> findById(Long id);
-
 	Optional<LeaveType> findByIdAndDeletedAtIsNull(Long id);
 	
 	LeaveType findByName(String name);

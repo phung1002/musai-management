@@ -16,7 +16,6 @@ import musai.app.DTO.response.LeaveTypeChildrenResponseDTO;
 import musai.app.DTO.response.LeaveTypeParentResponseDTO;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
-import musai.app.models.LeaveApplication;
 import musai.app.models.LeaveType;
 import musai.app.repositories.LeaveTypeResposity;
 import musai.app.services.LeaveTypeService;

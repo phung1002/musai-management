@@ -2,9 +2,11 @@ import axiosIns from "@/plugins/axios";
 import { IUserLeaves } from "@/types/type";
 // 社員休暇管理
 // 社員休暇リスト取得
-export async function getUserLeaves(): Promise<IUserLeaves[]> {
+export async function getUserLeaves(key: string): Promise<IUserLeaves[]> {
   try {
-    const response = await axiosIns.get<IUserLeaves[]>("/user-leaves/all");
+    const response = await axiosIns.get<IUserLeaves[]>("/user-leaves/all", {
+      params: { keyword: key },
+    });
     console.log("response.data", response.data);
 
     return response.data;
@@ -28,29 +30,17 @@ export async function updateUserLeave(
   params: IUserLeaves
 ): Promise<void> {
   try {
-    await axiosIns.put(`/user-leaves/update/${id}`, params);
+    await axiosIns.put(`/user-leaves/${id}`, params);
     console.log("Update user successfully");
   } catch (error: any) {
     console.error("Update user failed:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
-// 社員休暇検索API呼び出し
-export async function searchUserLeave(key: string): Promise<IUserLeaves[]> {
-  try {
-    const response = await axiosIns.get<IUserLeaves[]>("/user-leaves/search", {
-      params: { keyword: key },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Search Userleave failed:", error);
-    throw error;
-  }
-}
 // 社員休暇追加API呼び出し
 export async function addUserLeave(params: IUserLeaves): Promise<void> {
   try {
-    await axiosIns.post("/user-leaves/add", params);
+    await axiosIns.post("/user-leaves", params);
     console.log("Add leave successfully");
   } catch (error: any) {
     console.error("Add leave failed:", error);

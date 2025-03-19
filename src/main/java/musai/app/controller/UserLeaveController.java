@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.AllArgsConstructor;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.UserLeaveRequestDTO;
 import musai.app.DTO.response.UserLeaveResponseDTO;
@@ -23,20 +24,19 @@ import musai.app.services.UserLeaveService;
 
 @RestController
 @RequestMapping("/api/user-leaves")
+@AllArgsConstructor
 public class UserLeaveController {
 	@Autowired
 	private UserLeaveService userLeaveService;
 
-	public UserLeaveController(UserLeaveService userLeaveService) {
-		this.userLeaveService = userLeaveService;
+	// List All
+	@GetMapping("/all")
+	public ResponseEntity<?> getAllUserLeaves(@RequestParam String keyword) {
+		List<UserLeaveResponseDTO> userLeave = userLeaveService.getAllUserLeaves(keyword);
+		return ResponseEntity.ok(userLeave);
 	}
-
-	/**
-	 * get list user leave for member
-	 * 
-	 * @param principal
-	 * @return
-	 */
+	
+	// List user leave for member
 	@PreAuthorize("hasRole('MEMBER')")
 	@GetMapping
 	public ResponseEntity<?> getUserLeaveForMember(@AuthenticationPrincipal UserDetailsImpl principal) {
@@ -45,34 +45,17 @@ public class UserLeaveController {
 	}
 
 	// add
-	@PostMapping("/add")
+	@PostMapping
 	public ResponseEntity<?> createLeave(@RequestBody UserLeaveRequestDTO request) {
 		userLeaveService.createUserLeave(request);
-
 		return ResponseEntity.ok(new MessageResponse("Add user leaves successfully"));
 	}
 
 	// update
-	@PutMapping("/update/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<?> editUserLeave(@PathVariable Long id, @RequestBody UserLeaveRequestDTO request) {
 		userLeaveService.editUserLeave(request);
-
 		return ResponseEntity.ok(new MessageResponse("Update user leaves successfully"));
 	}
 
-	// List All
-	@GetMapping("/all")
-	public ResponseEntity<?> getAllUserLeaves() {
-		List<UserLeaveResponseDTO> userLeave = userLeaveService.getAllUserLeaves();
-
-		return ResponseEntity.ok(userLeave);
-
-	}
-
-	// Search
-	@GetMapping("/search")
-	public List<UserLeaveResponseDTO> searchUserLeaves(@RequestParam String keyword) {
-
-		return userLeaveService.searchUserLeaves(keyword);
-	}
 }

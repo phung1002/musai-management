@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import lombok.AllArgsConstructor;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.ChangePasswordRequestDTO;
 import musai.app.DTO.request.UserRequestDTO;
@@ -25,23 +24,16 @@ import musai.app.models.Role;
 import musai.app.models.User;
 import musai.app.repositories.RoleRepository;
 import musai.app.repositories.UserRepository;
-import musai.app.security.jwt.JwtUtils;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.UserService;
 
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder encoder;
-
-	@Autowired
-	public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder) {
-		this.userRepository = userRepository;
-		this.roleRepository = roleRepository;
-		this.encoder = encoder;
-	}
-
+	
 	/**
 	 * Service get all user
 	 * 
@@ -50,7 +42,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<UserResponseDTO> getAllUsers(String keyword) {
 		List<User> users = StringUtils.hasText(keyword)
-				? userRepository.findByFullNameContainingAndDeletedAtIsNull(keyword)
+				? userRepository.findActiveByKeyContaining(keyword)
 				: userRepository.findAllByDeletedAtIsNull();
 
 		// If the list is empty, return an empty list

@@ -9,7 +9,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -44,56 +44,38 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Override
 	public List<DocumentResponseDTO> listAllFiles() throws IOException {
-		List<DocumentResponseDTO> response = new ArrayList<>();
-
-		try {
-			// Step into each child folder
-			Files.walk(Paths.get(uploadDir)).filter(Files::isRegularFile) // Just take file
-					.forEach(filePath -> {
-						String fileName = filePath.getFileName().toString();
-
-						Optional<Document> document = documentRepository.findByTitleAndDeletedAtIsNull(fileName);
-						if (document.isPresent()) {
-							DocumentResponseDTO documentDTO = new DocumentResponseDTO();
-							documentDTO.setId(document.get().getId());
-							documentDTO.setTitle(cleanFileName(fileName));
-							documentDTO.setPath(filePath.toString());
-							documentDTO.setUploadBy(document.get().getUploadBy().getFullName());
-							documentDTO.setUploadAt(document.get().getUploadAt());
-							response.add(documentDTO);
-						}
-					});
-		} catch (IOException e) {
-			throw new IOException("error_saving_file_to_server");
-		}
-		return response;
+	    return processFiles(Paths.get(uploadDir));
 	}
 
 	@Override
-	public List<DocumentResponseDTO> listFilesForMember(UserDetailsImpl principal) {
-		String uploadDirMember = uploadDir + principal.getId();
-		File directory = new File(uploadDirMember);
-		File[] files = directory.listFiles();
-		List<DocumentResponseDTO> response = new ArrayList<>();
+	public List<DocumentResponseDTO> listFilesForMember(UserDetailsImpl principal) throws IOException {
+	    Path userDir = Paths.get(uploadDir, String.valueOf(principal.getId()));
+	    return processFiles(userDir);
+	}
 
-		if (files != null) {
-			for (File file : files) {
-				if (file.isFile()) { // Only list files (not directories)
-					// Get file name and infor with deleteAt is null
-					Optional<Document> document = documentRepository.findByTitleAndDeletedAtIsNull(file.getName());
-					if (document.isPresent()) {
-						DocumentResponseDTO documentDTO = new DocumentResponseDTO();
-						documentDTO.setId(document.get().getId());
-						documentDTO.setTitle(cleanFileName(file.getName()));
-						documentDTO.setPath(file.getPath());
-						documentDTO.setUploadBy(document.get().getUploadBy().getFullName());
-						documentDTO.setUploadAt(document.get().getUploadAt());
-						response.add(documentDTO);
-					}
-				}
-			}
-		}
-		return response;
+	private List<DocumentResponseDTO> processFiles(Path directoryPath) throws IOException {
+	    List<DocumentResponseDTO> response = new ArrayList<>();
+	    
+	    try (Stream<Path> paths = Files.walk(directoryPath)) {
+	        paths.filter(Files::isRegularFile)
+	             .map(Path::toFile)
+	             .forEach(file -> documentRepository.findByTitleAndDeletedAtIsNull(file.getName())
+	                 .ifPresent(document -> response.add(mapToDTO(document, file))));
+	    } catch (IOException e) {
+	        throw new IOException("error_saving_file_to_server", e);
+	    }
+	    
+	    return response;
+	}
+
+	private DocumentResponseDTO mapToDTO(Document document, File file) {
+	    return new DocumentResponseDTO(
+	        document.getId(),
+	        cleanFileName(file.getName()),
+	        file.getPath(),
+	        document.getUploadBy().getFullName(),
+	        document.getUploadAt()
+	    );
 	}
 
 	private String cleanFileName(String fileName) {

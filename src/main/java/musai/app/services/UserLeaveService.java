@@ -16,9 +16,7 @@ public interface UserLeaveService {
 
 	UserLeave editUserLeave(UserLeaveRequestDTO userLeaveRequestDTO);
 
-	List<UserLeaveResponseDTO> getAllUserLeaves();
-
-	List<UserLeaveResponseDTO> searchUserLeaves(String keyword);
+	List<UserLeaveResponseDTO> getAllUserLeaves(String keyword);
 
 	List<UserLeaveResponseDTO> getUserLeaveForMember(Long userId);
 

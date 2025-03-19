@@ -29,6 +29,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			+ "OR LOWER(u.fullNameFurigana) LIKE LOWER(CONCAT('%', :keyword, '%'))"
 			+ "OR LOWER(u.department) LIKE LOWER(CONCAT('%', :keyword, '%'))"
 			+ "OR LOWER(u.workPlace) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-	List<User> findByFullNameContainingAndDeletedAtIsNull(@Param("keyword") String keyword);
+	List<User> findActiveByKeyContaining(@Param("keyword") String keyword);
 
 }

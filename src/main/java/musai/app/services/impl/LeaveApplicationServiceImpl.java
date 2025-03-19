@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -38,8 +39,11 @@ import musai.app.services.UserLeaveService;
 public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 
 	private final LeaveApplicationRepository leaveApplicationRepository;
+	@Autowired
 	private final UserRepository userRepository;
+	@Autowired
 	private final LeaveTypeResposity leaveTypeResposity;
+	@Autowired
 	private final UserLeaveService userLeaveService;
 
 	/**
