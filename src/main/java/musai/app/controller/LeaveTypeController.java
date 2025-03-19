@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,25 +14,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.AllArgsConstructor;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveTypeRequestDTO;
 import musai.app.DTO.response.LeaveTypeChildrenResponseDTO;
 import musai.app.DTO.response.LeaveTypeParentResponseDTO;
-import musai.app.DTO.response.LeaveTypeResponseDTO;
 import musai.app.services.LeaveTypeService;
 
 @RestController
 @RequestMapping("/api/leave-types")
+@AllArgsConstructor
 public class LeaveTypeController {
 
 	private final LeaveTypeService leaveTypeService;
 
-	public LeaveTypeController(LeaveTypeService LeaveTypeService) {
-		this.leaveTypeService = LeaveTypeService;
-	}
-
 	// add a new paid leave request
-	@PostMapping("/add")
+	@PostMapping
 	public ResponseEntity<?> addLeaveType(@RequestBody LeaveTypeRequestDTO request) {
 
 		MessageResponse addResponse = leaveTypeService.createAddLeaveType(request);
@@ -43,7 +38,7 @@ public class LeaveTypeController {
 	}
 
 	// update paid leave request
-	@PutMapping("/update/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<?> updateLeaveType(@PathVariable Long id, @RequestBody LeaveTypeRequestDTO request) {
 
 		MessageResponse updateResponse = leaveTypeService.updateLeaveType(id, request);
@@ -52,7 +47,7 @@ public class LeaveTypeController {
 	}
 
 	// delete paid leave request
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteLeaveType(@PathVariable Long id) {
 
 		MessageResponse deleteResponse = leaveTypeService.deleteLeaveType(id);
@@ -61,11 +56,11 @@ public class LeaveTypeController {
 	}
 
 	// Create API list
-	@GetMapping("/list")
+	@GetMapping
 //	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> getAllLeaveTypes() {
+	public ResponseEntity<?> getAllLeaveTypes(@RequestParam String keyword) {
 
-		List<LeaveTypeParentResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypes();
+		List<LeaveTypeParentResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypes(keyword);
 
 		return new ResponseEntity<>(leaveTypes, HttpStatus.OK);
 	}
@@ -80,19 +75,11 @@ public class LeaveTypeController {
 	}
 
 	// Get Detail
-	@GetMapping("/detail/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<?> getLeaveTypeDetail(@PathVariable Long id) {
 
 		LeaveTypeParentResponseDTO getLeaveTypeDetail = leaveTypeService.getLeaveTypeDetail(id);
 
 		return new ResponseEntity<>(getLeaveTypeDetail, HttpStatus.OK);
 	}
-
-	// Get search
-	@GetMapping("/search")
-	public List<LeaveTypeChildrenResponseDTO> searchLeaveTypes(@RequestParam String keyword) {
-		
-		return leaveTypeService.searchLeaveType(keyword);
-	}
-
 }

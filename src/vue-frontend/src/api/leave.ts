@@ -2,9 +2,11 @@ import axiosIns from "@/plugins/axios";
 import { ILeaveTypes } from "@/types/type";
 // 休暇管理
 // 休暇リスト取得API呼び出し
-export async function getLeaves(): Promise<ILeaveTypes[]> {
+export async function getLeaves(key: string): Promise<ILeaveTypes[]> {
   try {
-    const response = await axiosIns.get<ILeaveTypes[]>("/leave-types/list");
+    const response = await axiosIns.get<ILeaveTypes[]>("/leave-types", {
+      params: { keyword: key },
+    });
     return response.data;
   } catch (error) {
     console.error("List user failed:", error);
@@ -24,7 +26,7 @@ export async function getLeavesTree(): Promise<ILeaveTypes[]> {
 // 休暇追加API呼び出し
 export async function addLeave(params: ILeaveTypes): Promise<void> {
   try {
-    await axiosIns.post("/leave-types/add", params);
+    await axiosIns.post("/leave-types", params);
     console.log("Add leave successfully");
   } catch (error: any) {
     if (error.response) {
@@ -41,7 +43,7 @@ export async function updateLeave(
   params: ILeaveTypes
 ): Promise<void> {
   try {
-    await axiosIns.put(`/leave-types/update/${id}`, params);
+    await axiosIns.put(`/leave-types/${id}`, params);
     console.log("Update user successfully");
   } catch (error: any) {
     if (error.response) {
@@ -56,7 +58,7 @@ export async function updateLeave(
 export async function deleteLeave(id: number): Promise<void> {
   try {
     console.log("Delete leave id:", id);
-    await axiosIns.delete(`/leave-types/delete/${id}`);
+    await axiosIns.delete(`/leave-types/${id}`);
     console.log("Delete leave successfully");
   } catch (error: any) {
     if (error.response) {
@@ -64,18 +66,6 @@ export async function deleteLeave(id: number): Promise<void> {
     } else {
       console.error("Unexpected error:", error);
     }
-    throw error;
-  }
-}
-// 休暇検索API呼び出し
-export async function searchLeave(key: string): Promise<ILeaveTypes[]> {
-  try {
-    const response = await axiosIns.get<ILeaveTypes[]>("/leave-types/search", {
-      params: { keyword: key },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Search leave failed:", error);
     throw error;
   }
 }

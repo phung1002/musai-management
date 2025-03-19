@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import musai.app.models.User;
@@ -19,4 +21,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	List<User> findAllByDeletedAtIsNull();
 
 	Optional<User> findByIdAndDeletedAtIsNull(Long id);
+
+	@Query("SELECT u FROM User u WHERE u.deletedAt IS NULL "
+			+ "AND LOWER(u.username) LIKE LOWER(CONCAT('%', :keyword, '%'))"
+			+ "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))"
+			+ "OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))"
+			+ "OR LOWER(u.fullNameFurigana) LIKE LOWER(CONCAT('%', :keyword, '%'))"
+			+ "OR LOWER(u.department) LIKE LOWER(CONCAT('%', :keyword, '%'))"
+			+ "OR LOWER(u.workPlace) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+	List<User> findByFullNameContainingAndDeletedAtIsNull(@Param("keyword") String keyword);
+
 }

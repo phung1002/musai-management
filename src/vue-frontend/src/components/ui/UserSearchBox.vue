@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { getAllUsers, searchUser } from "@/api/user";
+import { getAllUsers } from "@/api/user";
 import { IUser } from "@/types/type";
 const { t } = useI18n();
 
@@ -25,7 +25,8 @@ const headers = reactive([
   { title: t("full_name"), key: "username" },
 ]);
 
-// Status
+// 検索
+const keyWord = ref("");
 const users = ref<IUser[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
@@ -35,7 +36,7 @@ const fetchUsers = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getAllUsers();
+    const response = await getAllUsers(keyWord.value);
     loadUser(response);
     console.log("response", response);
   } catch (error) {
@@ -49,23 +50,6 @@ const loadUser = (lst: any) => {
   users.value = lst.map((user: IUser) => ({
     ...user,
   }));
-};
-
-// 検索
-const keyWord = ref("");
-const handleSearch = async () => {
-  if (keyWord.value == null) {
-    fetchUsers();
-    return;
-  }
-  try {
-    const response = await searchUser(keyWord.value);
-    loadUser(response);
-  } catch (error) {
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
 };
 
 // 行がクリックされたときの処理
@@ -103,10 +87,10 @@ onMounted(() => {
           clearable
           variant="plain"
           class="search"
-          @click:clear="handleSearch"
-          @keydown.enter="handleSearch"
+          @click:clear="fetchUsers"
+          @keydown.enter="fetchUsers"
         />
-        <VBtn icon density="comfortable" @click="handleSearch">
+        <VBtn icon density="comfortable" @click="fetchUsers">
           <VIcon>mdi-magnify</VIcon>
         </VBtn>
       </VToolbar>
