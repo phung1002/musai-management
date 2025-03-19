@@ -20,7 +20,6 @@ import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@SQLRestriction("deleted_at IS NULL")
 @Data
 @NoArgsConstructor
 @Entity

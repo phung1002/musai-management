@@ -1,5 +1,5 @@
 import axiosIns from "@/plugins/axios";
-import { ILeaveTypes, IUserLeaves } from "@/types/type";
+import { IUserLeaves } from "@/types/type";
 // 社員休暇管理
 // 社員休暇リスト取得
 export async function getUserLeaves(): Promise<IUserLeaves[]> {
@@ -16,8 +16,6 @@ export async function getUserLeaves(): Promise<IUserLeaves[]> {
 export async function getUserLeavesForMember(): Promise<IUserLeaves[]> {
   try {
     const response = await axiosIns.get<IUserLeaves[]>("/user-leaves");
-    console.log("response.data", response.data);
-
     return response.data;
   } catch (error) {
     console.error("List user failed:", error);

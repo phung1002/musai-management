@@ -1,8 +1,10 @@
 package musai.app.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.AllArgsConstructor;
 import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveApplicationRequestDTO;
 import musai.app.DTO.response.LeaveApplicationResponseDTO;
@@ -24,21 +26,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api")
+@AllArgsConstructor
 public class LeaveApplicationController {
 	private final LeaveApplicationService leaveApplicationService;
-
-	public LeaveApplicationController(LeaveApplicationService leaveApplicationService) {
-		super();
-		this.leaveApplicationService = leaveApplicationService;
-	}
-
+	
 	/**
 	 * API management get all leave application
 	 */
 	@PreAuthorize("hasRole('MANAGER')")
-	@GetMapping("/leave-applications")
-	public ResponseEntity<?> getAllLeaveApplications() {
-		List<LeaveApplicationResponseDTO> response = leaveApplicationService.getAllLeaveApplications();
+	@GetMapping("/leave-applications/all")
+	public ResponseEntity<?> getAllLeaveApplications(@RequestParam(required = false) String keyword) {
+		List<LeaveApplicationResponseDTO> response = leaveApplicationService.getAllLeaveApplications(keyword);
 		return ResponseEntity.ok(response);
 	}
 
@@ -46,9 +44,10 @@ public class LeaveApplicationController {
 	 * API member get their leave application
 	 */
 	@PreAuthorize("hasRole('MEMBER')")
-	@GetMapping("/member/leave-applications")
-	public ResponseEntity<?> getLeaveApplicationOfMember(@AuthenticationPrincipal UserDetailsImpl principal) {
-		List<LeaveApplicationResponseDTO> response = leaveApplicationService.getLeaveApplicationsForMember(principal);
+	@GetMapping("/leave-applications")
+	public ResponseEntity<?> getLeaveApplicationOfMember(@AuthenticationPrincipal UserDetailsImpl principal,
+			@RequestParam(required = false) String keyword) {
+		List<LeaveApplicationResponseDTO> response = leaveApplicationService.getLeaveApplicationsForMember(principal, keyword);
 		return ResponseEntity.ok(response);
 	}
 
