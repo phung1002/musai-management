@@ -40,7 +40,7 @@ export interface IPasswordChange {
 export interface ILeaveTypes {
   id: number | null; // 一意のID
   name: string; // 休暇の名前
-  value?: string;
+  value: string | null;
   // leave_type: string; // 休暇のタイプ
   parentId: number | null; // 親カテゴリのID（ルートカテゴリなら省略）
   children?: ILeaveTypes[]; // 子カテゴリ（サブカテゴリー）

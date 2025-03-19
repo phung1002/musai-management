@@ -1,6 +1,6 @@
 <!-- 休暇タイプ　フォーム -->
 <script lang="ts" setup>
-import { ref, Ref, onMounted, reactive, watch } from "vue";
+import { ref, Ref, onMounted, reactive, watch, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { VTab } from "vuetify/lib/components/index.mjs";
 import { useValidator } from "@/utils/validation";
@@ -40,7 +40,7 @@ const tabs = ref([
   { title: "", icon: "mdi-pine-tree-box", tab: "public" },
 ]);
 // フォームデータの初期化
-const formModel = reactive<ILeaveTypes>(
+const formModel = ref<ILeaveTypes>(
   props.isEdit ? { ...defaultLeave, ...props.leave } : { ...defaultLeave }
 );
 // コンポーネントがマウントされたときAPI呼び出し修理実行
@@ -57,21 +57,21 @@ watch(parentPublicLeave, (item) => {
 // 親IDを設定
 const setParentId = (selectedTab: string) => {
   if (selectedTab === "paid") {
-    formModel.parentId = paid_leave.value.id;
+    formModel.value.parentId = paid_leave.value.id;
   } else {
     if (parentPublicLeave.value == undefined) {
-      formModel.parentId = public_leave.value.id;
-    } else formModel.parentId = parentPublicLeave.value;
+      formModel.value.parentId = public_leave.value.id;
+    } else formModel.value.parentId = parentPublicLeave.value;
   }
 };
 // 編集用の初期化処理
 const initializeFormForEdit = () => {
   // 編集中のタブを親IDに基づいて設定
-  if (formModel.parentId === paid_leave.value.id) {
+  if (formModel.value.parentId === paid_leave.value.id) {
     activeTab.value = "paid";
   } else {
     activeTab.value = "public";
-    console.log("1", formModel.parentId, props.leave?.parentId);
+    console.log("1", formModel.value.parentId, props.leave?.parentId);
     // 編集中の公休を親IDに基づいて設定
     if (props.leave?.parentId) {
       if (props.leave.parentId == public_leave.value.id) {
@@ -83,15 +83,13 @@ const initializeFormForEdit = () => {
   }
 };
 // 入力初期化
-const handleResetForm = () => {
-  Object.assign(
-    formModel,
-    props.isEdit ? { ...defaultLeave, ...props.leave } : { ...defaultLeave }
-  );
-  // if (formRef.value && formRef.value.resetValidation) {
-  //   formRef.value.resetValidation();
-  if (formRef.value && formRef.value) {
-    formRef.value;
+const handleResetForm = async() => {
+  formModel.value = props.isEdit
+    ? { ...defaultLeave, ...props.leave }
+    : { ...defaultLeave };
+  await nextTick();
+  if (formRef.value?.resetValidation) {
+    formRef.value.resetValidation();
   }
   // 編集際activeTab現在ままにする
   if (!props.isEdit) {
@@ -164,7 +162,7 @@ const handleSubmit = async () => {
     console.log("新しいデータを登録します...");
     // 登録処理を実行
     try {
-      await addLeave(formModel);
+      await addLeave(formModel.value);
       toast.success(t("message.add_success"));
       emit("refetch-data");
       handleCancel();
@@ -182,8 +180,8 @@ const handleSubmit = async () => {
 const onConfirmed = async () => {
   console.log("データを更新します...");
   try {
-    if (formModel.id == null) return;
-    await updateLeave(formModel.id, formModel);
+    if (formModel.value.id == null) return;
+    await updateLeave(formModel.value.id, formModel.value);
     toast.success(t("message.update_success"));
     handleCancel();
     emit("refetch-data");
