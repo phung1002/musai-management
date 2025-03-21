@@ -49,9 +49,14 @@ public class DocumentController {
 
 	// API Get document of member
 	@GetMapping
-	public ResponseEntity<List<DocumentResponseDTO>> listFiles(@AuthenticationPrincipal UserDetailsImpl principal) {
-		List<DocumentResponseDTO> files = documentService.listFilesForMember(principal);
-		return ResponseEntity.ok(files);
+	public ResponseEntity<Object> listFiles(@AuthenticationPrincipal UserDetailsImpl principal) {
+		try {
+			List<DocumentResponseDTO> files;
+			files = documentService.listFilesForMember(principal);
+			return ResponseEntity.ok(files);
+		} catch (IOException e) {
+			return ResponseEntity.internalServerError().body("file_upload_failed");
+		}
 	}
 
 	// API endpoint to upload a document
