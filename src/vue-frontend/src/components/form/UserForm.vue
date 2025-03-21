@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, computed } from "vue";
+import { ref, computed, nextTick } from "vue";
 import { IUser } from "@/types/type";
 import { useI18n } from "vue-i18n";
 import { useValidator } from "@/utils/validation";
@@ -26,11 +26,11 @@ const { t } = useI18n();
 const submiting = ref(false);
 const validator = useValidator(t);
 const isDialogVisible = ref(false);
-const activeTab = ref("account");
+const activeTab = ref("detail_information");
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const props = defineProps<{ user?: IUser; isEdit: boolean }>();
 
-const formModel = reactive<IUser>(
+const formModel = ref<IUser>(
   props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser }
 );
 
@@ -63,21 +63,24 @@ const convertDate = (date: string | null): string | null => {
   return `${year}-${month}-${day}`;
 };
 const formattedBirthday = computed({
-  get: () => convertDate(formModel.birthday),
+  get: () => convertDate(formModel.value.birthday),
   set: (newDate) => {
-    formModel.birthday = newDate;
+    formModel.value.birthday = newDate;
   },
 });
 const formattedJoinDate = computed({
-  get: () => convertDate(formModel.joinDate),
+  get: () => convertDate(formModel.value.joinDate),
   set: (newDate) => {
-    formModel.joinDate = newDate;
+    formModel.value.joinDate = newDate;
   },
 });
 
 const isChangeYourPassword = async () => {
   const toLogin = ref(false);
-  if (formModel.id == userStore.id && formModel.password.length > 0) {
+  if (
+    formModel.value.id == userStore.id &&
+    formModel.value.password.length > 0
+  ) {
     isDialogVisible.value = true;
     toLogin.value = true;
   } else {
@@ -93,9 +96,9 @@ const handleSubmit = async (toLogin: boolean) => {
     return;
   }
   const payload: IUser = {
-    ...formModel,
-    birthday: formatDate(formModel.birthday),
-    joinDate: formatDate(formModel.joinDate),
+    ...(formModel.value as IUser),
+    birthday: formatDate(formModel.value.birthday),
+    joinDate: formatDate(formModel.value.joinDate),
   };
   submiting.value = true;
   if (!props.isEdit) {
@@ -113,8 +116,8 @@ const handleSubmit = async (toLogin: boolean) => {
   } else {
     try {
       // if update user
-      if (formModel.id == null) return;
-      await updateUser(formModel.id, payload);
+      if (formModel.value.id == null) return;
+      await updateUser(formModel.value.id, payload);
       toast.success(t("message.update_success"));
       handleCancel();
       if (toLogin) {
@@ -132,18 +135,17 @@ const handleSubmit = async (toLogin: boolean) => {
     }
   }
 };
-
-const resetForm = () => {
-  Object.assign(
-    formModel,
-    props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser }
-  );
-  if (formRef.value && formRef.value.resetValidation) {
+const resetForm = async () => {
+  formModel.value = props.isEdit
+    ? { ...defaultUser, ...props.user }
+    : { ...defaultUser };
+  await nextTick();
+  if (formRef.value?.resetValidation) {
     formRef.value.resetValidation();
   }
   confirmPassword.value = "";
   formValid.value = false;
-  activeTab.value = "account";
+  activeTab.value = "detail_information";
 };
 const handleCancel = () => {
   emit("form-cancel");
@@ -159,16 +161,18 @@ const handleCancel = () => {
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
     <VForm ref="formRef" v-model="formValid" lazy-validation="false">
-      <VTabs v-model="activeTab" color="primary">
-        <VTab value="account">{{ t("account") }}</VTab>
-        <VTab value="security">{{ t("detail_information") }}</VTab>
-      </VTabs>
+      <VCardText>
+        <VTabs v-model="activeTab" color="primary">
+          <VTab value="detail_information">{{ t("detail_information") }}</VTab>
+          <VTab value="account">{{ t("account") }}</VTab>
+        </VTabs>
+      </VCardText>
       <VCardText>
         <VWindow v-model="activeTab" eager>
           <VWindowItem value="account">
             <VRow>
               <VCol cols="6">
-                <VLabel>{{ t("employee_name") }}</VLabel>
+                <VLabel>{{ t("login_id") }}</VLabel>
                 <VTextField
                   v-model="formModel.username"
                   :rules="formRulesConfig.username"
@@ -226,7 +230,7 @@ const handleCancel = () => {
               </VCol>
             </VRow>
           </VWindowItem>
-          <VWindowItem value="security" eager>
+          <VWindowItem value="detail_information" eager>
             <VRow class="d-flex mb-3">
               <VCol cols="6">
                 <VLabel>{{ t("full_name") }}</VLabel>

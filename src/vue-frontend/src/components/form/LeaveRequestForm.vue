@@ -1,6 +1,6 @@
 <!-- 休暇申請　フォーム -->
 <script lang="ts" setup>
-import { Ref, ref, reactive, onMounted, watch } from "vue";
+import { Ref, ref, onMounted, watch, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
@@ -36,7 +36,7 @@ const defaultRequest: ILeaveRequest = {
   reason: "",
   status: "",
 };
-const formModel = reactive<ILeaveRequest>(
+const formModel = ref<ILeaveRequest>(
   props.isEdit
     ? { ...defaultRequest, ...props.application }
     : { ...defaultRequest }
@@ -99,7 +99,7 @@ const onPublicLeaveChange = (newValue) => {
 };
 
 const getLeaveTypeId = () => {
-  formModel.leaveTypeId =
+  formModel.value.leaveTypeId =
     activeTab.value === ELeaveType.PAID_LEAVE && paidLeave.value.id
       ? paidBox.value
       : childBox.value || publicBox.value;
@@ -119,7 +119,7 @@ const handleSubmit = async () => {
   if (!props.isEdit) {
     // create
     try {
-      await requestLeave(formModel);
+      await requestLeave(formModel.value);
       toast.success(t("message.add_success"));
       emit("refetch-data");
       handleCancel();
@@ -130,8 +130,8 @@ const handleSubmit = async () => {
     //update
     try {
       // if update user
-      if (formModel.id == null) return;
-      await updateLeaveRequest(formModel.id, formModel);
+      if (formModel.value.id == null) return;
+      await updateLeaveRequest(formModel.value.id, formModel.value);
       toast.success(t("message.update_success"));
       handleCancel();
       emit("refetch-data");
@@ -167,15 +167,15 @@ const onConfirm = async () => {
     }
   }
   if (halfDayId == paidBox.value) {
-    if (formModel.startDate != formModel.endDate) {
+    if (formModel.value.startDate != formModel.value.endDate) {
       toast.error(t("error.half_day_date_must_match"));
       return;
     }
     requestDays = 0.5;
   } else
     requestDays = calculateWorkingDays(
-      parseDate(formModel.startDate),
-      parseDate(formModel.endDate)
+      parseDate(formModel.value.startDate),
+      parseDate(formModel.value.endDate)
     );
   // 入力バリデーション
   const isValid = await formRef.value?.validate();
@@ -188,14 +188,12 @@ const onConfirm = async () => {
   isDialogVisible.value = true;
 };
 
-const resetForm = () => {
-  Object.assign(
-    formModel,
-    props.isEdit
-      ? { ...defaultRequest, ...props.application }
-      : { ...defaultRequest }
-  );
-  if (formRef.value && formRef.value.resetValidation) {
+const resetForm = async () => {
+  formModel.value = props.isEdit
+    ? { ...defaultRequest, ...props.application }
+    : { ...defaultRequest };
+  await nextTick();
+  if (formRef.value?.resetValidation) {
     formRef.value.resetValidation();
   }
   paidBox.value = null;

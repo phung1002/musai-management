@@ -1,6 +1,6 @@
 <!-- 社員休暇　フォーム -->
 <script lang="ts" setup>
-import { ref, Ref, onMounted, reactive, watch } from "vue";
+import { ref, Ref, onMounted, watch, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 import { VSelect, VTab } from "vuetify/lib/components/index.mjs";
 import { useValidator } from "@/utils/validation";
@@ -37,7 +37,7 @@ const defaultUserLeave = {
   leaveTypeId: 0,
   leaveTypeName: "",
   leaveTypeValue: "",
-  userName: "",
+  userFullName: "",
   userId: 0,
   remainedDays: 0,
   totalDays: 0,
@@ -63,7 +63,7 @@ const childBox = ref(null);
 const numberOptions = Array.from({ length: 21 }, (_, i) => i + 5);
 
 // フォームデータの初期化
-const formModel = reactive<IUserLeaves>(
+const formModel = ref<IUserLeaves>(
   props.isEdit
     ? { ...defaultUserLeave, ...props.userLeave }
     : { ...defaultUserLeave }
@@ -96,7 +96,7 @@ const onPublicLeaveChange = () => {
   getLeaveTypeId();
 };
 const getLeaveTypeId = () => {
-  formModel.leaveTypeId =
+  formModel.value.leaveTypeId =
     activeTab.value === ELeaveType.PAID_LEAVE && paidLeave.value.id
       ? paidBox.value ?? 0
       : (childBox.value ?? 0) || (publicBox.value ?? 0);
@@ -109,17 +109,29 @@ watch(activeTab, () => {
 // 親IDを設定
 const setleaveTypeId = (selectedTab: string) => {
   if (selectedTab === ELeaveType.PAID_LEAVE) {
-    formModel.leaveTypeId = paidLeave.value.id ?? 0;
-    formModel.leaveTypeName = paidLeave.value.name;
-    console.log("setleaveTypeId", formModel.leaveTypeId, paidLeave.value.id);
-    console.log("leaveTypeName", formModel.leaveTypeName, paidLeave.value.name);
-  } else {
-    formModel.leaveTypeId = summerDayId.value ?? 0;
-    formModel.leaveTypeName = summerDayName.value;
-    console.log("setleaveTypeId", formModel.leaveTypeId, publicLeave.value.id);
+    formModel.value.leaveTypeId = paidLeave.value.id ?? 0;
+    formModel.value.leaveTypeName = paidLeave.value.name;
+    console.log(
+      "setleaveTypeId",
+      formModel.value.leaveTypeId,
+      paidLeave.value.id
+    );
     console.log(
       "leaveTypeName",
-      formModel.leaveTypeName,
+      formModel.value.leaveTypeName,
+      paidLeave.value.name
+    );
+  } else {
+    formModel.value.leaveTypeId = summerDayId.value ?? 0;
+    formModel.value.leaveTypeName = summerDayName.value;
+    console.log(
+      "setleaveTypeId",
+      formModel.value.leaveTypeId,
+      publicLeave.value.id
+    );
+    console.log(
+      "leaveTypeName",
+      formModel.value.leaveTypeName,
       publicLeave.value.name
     );
   }
@@ -130,22 +142,17 @@ const showUserList = () => {
 };
 // 子コンポーネントから受け取る処理
 const handleUserSelect = (user: { id: number; name: string }) => {
-  formModel.userId = user.id;
-  formModel.userName = user.name;
+  formModel.value.userId = user.id;
+  formModel.value.userFullName = user.name;
 };
 // 入力初期化
-const handleResetForm = () => {
-  Object.assign(
-    formModel,
-    props.isEdit
-      ? { ...defaultUserLeave, ...props.userLeave }
-      : { ...defaultUserLeave }
-  );
-  if (formRef.value && formRef.value.resetValidation) {
+const handleResetForm = async () => {
+  formModel.value = props.isEdit
+    ? { ...defaultUserLeave, ...props.userLeave }
+    : { ...defaultUserLeave };
+  await nextTick();
+  if (formRef.value?.resetValidation) {
     formRef.value.resetValidation();
-  }
-  if (formRef.value && formRef.value) {
-    formRef.value;
   }
   // 追加際activeTab現在ままにする
   if (!props.isEdit) {
@@ -201,6 +208,7 @@ const fetchLeaveType = async () => {
 const handleSubmit = async () => {
   // 入力バリデーション
   const isValid = await formRef.value?.validate();
+  console.log("isValid", isValid);
   if (!isValid?.valid) {
     toast.error(t("error.validation_error"));
     return;
@@ -210,11 +218,10 @@ const handleSubmit = async () => {
     console.log("新しいデータを登録します...");
     // 登録処理を実行
     try {
-      console.log(formModel);
-      await addUserLeave(formModel);
+      console.log(formModel.value);
+      await addUserLeave(formModel.value);
       toast.success(t("message.add_success"));
       handleCancel();
-      setTimeout(() => handleResetForm(), 200); // リセットを遅延させる
       emit("refetch-data");
     } catch (error: any) {
       toast.error(t(error.message));
@@ -230,8 +237,10 @@ const handleSubmit = async () => {
 const onConfirmed = async () => {
   console.log("データを更新します...");
   try {
-    if (formModel.id == null) return;
-    await updateUserLeave(formModel.id, formModel);
+    if (formModel.value.id == null) return;
+    console.log("formModel.value", formModel.value);
+    console.log("formModel.value ID", formModel.value.id);
+    await updateUserLeave(formModel.value.id, formModel.value);
     toast.success(t("message.update_success"));
     handleCancel();
     emit("refetch-data");
@@ -305,13 +314,13 @@ const onConfirmed = async () => {
               <VCol>
                 <VToolbar tag="div" color="transparent" flat>
                   <VTextField
-                    v-model="formModel.userName"
+                    v-model="formModel.userFullName"
                     :rules="[validator.required]"
                     variant="outlined"
                     color="primary"
                     clearable
                     class="search"
-                    name="userName"
+                    name="userFullName"
                     :disabled="isEdit"
                     readonly
                   >

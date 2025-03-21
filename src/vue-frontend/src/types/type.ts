@@ -40,8 +40,7 @@ export interface IPasswordChange {
 export interface ILeaveTypes {
   id: number | null; // 一意のID
   name: string; // 休暇の名前
-  value?: string;
-  // leave_type: string; // 休暇のタイプ
+  value: string | null; // 休暇の値
   parentId: number | null; // 親カテゴリのID（ルートカテゴリなら省略）
   children?: ILeaveTypes[]; // 子カテゴリ（サブカテゴリー）
 }
@@ -51,9 +50,9 @@ export interface IUserLeaves {
   leaveTypeName: string; //
   leaveTypeValue: string;
   userId: number; // 一意のID
-  userName: string; // 休暇の名前
-  totalDays: number ;
-  usedDays: number ;
+  userFullName: string; // 休暇の名前
+  totalDays: number;
+  usedDays: number;
   remainedDays: number;
   validFrom: string;
   validTo: string;

@@ -41,7 +41,7 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 
 	private UserLeaveResponseDTO convertToDTOAll(UserLeave userLeave) {
 		return UserLeaveResponseDTO.builder().id(userLeave.getId()).userId(userLeave.getUser().getId())
-				.userFullName(userLeave.getUser().getUsername()).leaveTypeId(userLeave.getLeaveType().getId())
+				.userFullName(userLeave.getUser().getFullName()).leaveTypeId(userLeave.getLeaveType().getId())
 				.leaveTypeName(userLeave.getLeaveType().getName()).leaveTypeValue(userLeave.getLeaveType().getValue())
 				.totalDays(userLeave.getTotalDays()).usedDays(userLeave.getUsedDays())
 				.remainedDays(userLeave.getRemainedDays()).validFrom(userLeave.getValidFrom())
