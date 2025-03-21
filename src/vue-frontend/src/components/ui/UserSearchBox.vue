@@ -21,8 +21,8 @@ const visible = ref(props.isVisible);
 // テーブルのヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  { title: t("employee_id"), key: "id" },
-  { title: t("full_name"), key: "username" },
+  // { title: t("employee_id"), key: "id" },
+  { title: t("full_name"), key: "fullName" },
 ]);
 
 // Status
@@ -125,8 +125,8 @@ onMounted(() => {
         <template v-slot:item="{ item, index }">
           <tr @click="onRowClick(item)" class="selectrow-btn">
             <td>{{ index + 1 }}</td>
-            <td>{{ item.id }}</td>
-            <td>{{ item.username }}</td>
+            <!-- <td>{{ item.id }}</td> -->
+            <td>{{ item.fullName }}</td>
           </tr>
         </template>
       </VDataTable>

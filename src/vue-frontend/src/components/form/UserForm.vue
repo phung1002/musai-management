@@ -26,7 +26,7 @@ const { t } = useI18n();
 const submiting = ref(false);
 const validator = useValidator(t);
 const isDialogVisible = ref(false);
-const activeTab = ref("account");
+const activeTab = ref("detail_information");
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const props = defineProps<{ user?: IUser; isEdit: boolean }>();
 
@@ -145,7 +145,7 @@ const resetForm = async () => {
   }
   confirmPassword.value = "";
   formValid.value = false;
-  activeTab.value = "account";
+  activeTab.value = "detail_information";
 };
 const handleCancel = () => {
   emit("form-cancel");
@@ -161,16 +161,18 @@ const handleCancel = () => {
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
     <VForm ref="formRef" v-model="formValid" lazy-validation="false">
-      <VTabs v-model="activeTab" color="primary">
-        <VTab value="account">{{ t("account") }}</VTab>
-        <VTab value="security">{{ t("detail_information") }}</VTab>
-      </VTabs>
+      <VCardText>
+        <VTabs v-model="activeTab" color="primary">
+          <VTab value="detail_information">{{ t("detail_information") }}</VTab>
+          <VTab value="account">{{ t("account") }}</VTab>
+        </VTabs>
+      </VCardText>
       <VCardText>
         <VWindow v-model="activeTab" eager>
           <VWindowItem value="account">
             <VRow>
               <VCol cols="6">
-                <VLabel>{{ t("employee_name") }}</VLabel>
+                <VLabel>{{ t("login_id") }}</VLabel>
                 <VTextField
                   v-model="formModel.username"
                   :rules="formRulesConfig.username"
@@ -228,7 +230,7 @@ const handleCancel = () => {
               </VCol>
             </VRow>
           </VWindowItem>
-          <VWindowItem value="security" eager>
+          <VWindowItem value="detail_information" eager>
             <VRow class="d-flex mb-3">
               <VCol cols="6">
                 <VLabel>{{ t("full_name") }}</VLabel>
