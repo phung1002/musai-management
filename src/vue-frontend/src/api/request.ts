@@ -1,10 +1,14 @@
 import { ILeaveRequest } from "@/types/type";
 import axiosIns from "@/plugins/axios";
 
-export async function listLeaveRequestForMember(): Promise<ILeaveRequest[]> {
+// 申請リストと検索API呼び出し
+export async function listLeaveRequestForMember(
+  key: string
+): Promise<ILeaveRequest[]> {
   try {
     const response = await axiosIns.get<ILeaveRequest[]>(
-      "/member/leave-applications"
+      "/leave-applications",
+      { params: { keyword: key } }
     );
     return response.data;
   } catch (error: any) {

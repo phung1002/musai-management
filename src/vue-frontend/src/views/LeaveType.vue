@@ -5,9 +5,10 @@ import LeaveTypeForm from "@/components/form/LeaveTypeForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useI18n } from "vue-i18n";
 import { ILeaveTypes } from "@/types/type";
-import { deleteLeave, getLeaves, searchLeave } from "@/api/leave";
+import { deleteLeave, getLeaves } from "@/api/leave";
 import { toast } from "vue3-toastify";
 const { t } = useI18n(); // 日本語にローカル変更用
+const keyWord = ref("");
 const addLeaves = ref(false); // 休暇追加・編集フォーム表示
 const isDialogVisible = ref(false); // 削除確認ダイアログ表示
 const errorMessage = ref(""); // エラーメッセージ管理
@@ -34,7 +35,7 @@ const fetchLeaveType = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getLeaves(); // API呼び出
+    const response = await getLeaves(keyWord.value); // API呼び出
     console.log("response", response);
     loadLeave(response); // リスト更新
   } catch (error) {
@@ -51,22 +52,6 @@ const handleCreateItem = (leaveType: ILeaveTypes) => {
   console.log(isEdit.value);
   addLeaves.value = true;
   isEdit.value = false;
-};
-// 検索
-const keyWord = ref("");
-const handleSearch = async () => {
-  if (keyWord.value == null) {
-    fetchLeaveType();
-    return;
-  }
-  try {
-    const response = await searchLeave(keyWord.value);
-    loadLeave(response);
-  } catch (error) {
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
 };
 // 編集
 const handleEditItem = (leave: ILeaveTypes) => {
@@ -137,10 +122,10 @@ onMounted(() => {
                 clearable
                 variant="plain"
                 class="search"
-                @click:clear="handleSearch"
-                @keydown.enter="handleSearch"
+                @click:clear="fetchLeaveType"
+                @keydown.enter="fetchLeaveType"
               />
-              <VBtn icon density="comfortable" @click="handleSearch">
+              <VBtn icon density="comfortable" @click="fetchLeaveType">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
             </VToolbar>

@@ -16,7 +16,7 @@ public interface LeaveApplicationService {
 
 	MessageResponse updateLeaveApplication(Long id, LeaveApplicationRequestDTO request, UserDetailsImpl principal);
 
-	List<LeaveApplicationResponseDTO> getAllLeaveApplications();
+	List<LeaveApplicationResponseDTO> getAllLeaveApplications(String keyword);
 
-	List<LeaveApplicationResponseDTO> getLeaveApplicationsForMember(UserDetailsImpl principal);
+	List<LeaveApplicationResponseDTO> getLeaveApplicationsForMember(UserDetailsImpl principal, String keyword);
 }

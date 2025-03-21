@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { deleteUser, getAllUsers, searchUser } from "@/api/user";
+import { deleteUser, getAllUsers } from "@/api/user";
 import { IUser } from "@/types/type";
 import UserForm from "@/components/form/UserForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
@@ -25,7 +25,7 @@ const headers = reactive([
   { title: t("action"), key: "action" },
 ]);
 
-// Status
+const keyWord = ref("");
 const users = ref<IUser[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
@@ -51,7 +51,7 @@ const fetchUsers = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getAllUsers();
+    const response = await getAllUsers(keyWord.value);
     loadUser(response);
     console.log("response", response);
   } catch (error) {
@@ -79,21 +79,6 @@ const handleDeleteUser = async () => {
     toast.error(t(error.message));
   } finally {
     isConfirmDialogVisible.value = false;
-  }
-};
-const keyWord = ref("");
-const handleSearch = async () => {
-  if (keyWord.value == null) {
-    fetchUsers();
-    return;
-  }
-  try {
-    const response = await searchUser(keyWord.value);
-    loadUser(response);
-  } catch (error) {
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
   }
 };
 const getRoleColor = (roles: string) => {
@@ -151,10 +136,10 @@ onMounted(() => {
                 clearable
                 variant="plain"
                 class="search"
-                @click:clear="handleSearch"
-                @keydown.enter="handleSearch"
+                @click:clear="fetchUsers"
+                @keydown.enter="fetchUsers"
               />
-              <VBtn icon density="comfortable" @click="handleSearch">
+              <VBtn icon density="comfortable" @click="fetchUsers">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
             </VToolbar>
