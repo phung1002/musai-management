@@ -106,6 +106,8 @@
   "pdf_view": "PDF表示",
   "download": "ダウンロード",
   "no_leave_day": "休暇はまだ発生されていない。",
+  "back_home": "ホームへ戻る",
+  "back_login": "ログインへ戻る",
   "message": {
     "list_failure": "データの取得に失敗しました。もう一度お試しください。",
     "add_success": "新規作成が正常に完了しました。",
@@ -134,7 +136,11 @@
     "no_file_selected": "ファイルが選択されていません。",
     "upload_success": "アップロードが正常に完了しました。",
     "download_success": "ダウンロードが正常に完了しました。",
-    "download_failure": "ダウンロードに失敗しました。"
+    "download_failure": "ダウンロードに失敗しました。",
+    "page_not_found": "ページが見つかりません。",
+    "page_not_found_description": "申し訳ありませんが、お探しのページは存在しません、削除されました。名前が変更されたか、一時的に利用できません",
+    "unauthorized": "権限がありません。",
+    "unauthorized_description": "このページにアクセスする権限がありません。"
   },
   "error": {
     "validation_error": "送信前にエラーを修正してください。",
