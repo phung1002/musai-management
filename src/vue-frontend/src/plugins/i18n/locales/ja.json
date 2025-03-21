@@ -29,14 +29,14 @@
   "reset": "リセット",
   "submit": "提出",
   "upload": "アップロード",
-  "pdf_file_upload":"PDFファイル添付",
+  "pdf_file_upload": "PDFファイル添付",
   "logout": "ログアウト",
   "profile": "プロファイル",
   "employee_management": "社員管理",
   "leave_management": "休暇管理",
   "employee_leave_management": "社員休暇管理",
-  "employee_leave_register":"社員休暇登録",
-  "employee_leave_edit":"社員休暇編集",
+  "employee_leave_register": "社員休暇登録",
+  "employee_leave_edit": "社員休暇編集",
   "request_confirm": "申請確認",
   "leave_request": "休暇申請",
   "calendar": "カレンダー",
@@ -101,7 +101,7 @@
   "update": "更新",
   "parent_id": "親番号",
   "title": "タイトル",
-  "submit_date": "提出日", 
+  "submit_date": "提出日",
   "responded_by": "承認・拒否者",
   "pdf_view": "PDF表示",
   "download": "ダウンロード",
@@ -152,11 +152,11 @@
     "upload_error": "ファイルのアップロードに失敗しました。",
     "email_already_exists": "メールアドレスはすでに使用されています。",
     "role_not_found": "権限が見つかりません。",
-    "role_invalid":"権限が無効です。",
-    "username_already_exist":"ユーザー名はすでに存在します。",
-    "cannot_remove_own_admin_role":"自身の管理者権限を削除することは許可されていません。",
-    "cannot_delete_your_self":"自分を削除することはできません。",
-    "user_leave_not_found":"社員の休暇が見つかりません。",
+    "role_invalid": "権限が無効です。",
+    "username_already_exist": "ユーザー名はすでに存在します。",
+    "cannot_remove_own_admin_role": "自身の管理者権限を削除することは許可されていません。",
+    "cannot_delete_your_self": "自分を削除することはできません。",
+    "user_leave_not_found": "社員の休暇が見つかりません。",
     "leave_type_not_found": "休暇区分が見つかりません。"
   },
   "validation": {
@@ -175,5 +175,6 @@
     "CANCELED": "キャンセル済み",
     "REQUESTED_CHANGE": "変更依頼",
     "REVOKED": "取り消し"
-  }
+  },
+  "calendar.today": "今日"
 }

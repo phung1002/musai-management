@@ -19,4 +19,6 @@ public interface LeaveApplicationService {
 	List<LeaveApplicationResponseDTO> getAllLeaveApplications(String keyword);
 
 	List<LeaveApplicationResponseDTO> getLeaveApplicationsForMember(UserDetailsImpl principal, String keyword);
+
+	List<LeaveApplicationResponseDTO> getApprovedLeaveApplications();
 }

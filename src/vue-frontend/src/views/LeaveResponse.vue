@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n";
 import { ILeaveResponse } from "@/types/type";
 import { toast } from "vue3-toastify";
 import {
-  getLeaveRequests,
+  allLeaveRequests,
   updateLeaveRespond,
 } from "@/api/response";
 import { format } from "date-fns"; // 日付フォーマットライブラリ
@@ -29,10 +29,10 @@ const headers = reactive([
 ]);
 // 申請リストをロード
 const loadLeave = (lst: any) => {
-  LeaveRequests.value = lst.map((LeaveRequest: ILeaveResponse) => ({
-    ...LeaveRequest,
-    createdAt: LeaveRequest.createdAt
-      ? format(new Date(LeaveRequest.createdAt), "yyyy-MM-dd")
+  LeaveRequests.value = lst.map((leaveResponse: ILeaveResponse) => ({
+    ...leaveResponse,
+    createdAt: leaveResponse.createdAt
+      ? format(new Date(leaveResponse.createdAt), "yyyy-MM-dd")
       : "",
   }));
 };
@@ -41,7 +41,7 @@ const fetchLeaveType = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getLeaveRequests(keyWord.value); // API呼び出
+    const response = await allLeaveRequests(keyWord.value); // API呼び出
     loadLeave(response); // リスト更新
   } catch (error) {
     isError.value = true;

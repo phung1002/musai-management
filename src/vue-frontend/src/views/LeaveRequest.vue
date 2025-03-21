@@ -6,7 +6,7 @@ import LeaveRequestForm from "@/components/form/LeaveRequestForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { listLeaveRequestForMember, cancelRequest } from "@/api/request";
 import { getUserLeavesForMember } from "@/api/userLeave";
-import { ILeaveRequest, IUserLeaves } from "@/types/type";
+import { ILeaveRequest } from "@/types/type";
 import { toast } from "vue3-toastify";
 import { ELeaveStatus } from "@/constants/leaveStatus";
 
@@ -99,6 +99,7 @@ const handleCancel = async () => {
     await cancelRequest(selectedRequest.value.id);
     toast.success(t("message.delete_success"));
     fetchLeaveRequests();
+    loadUserLeave();
   } catch (error: any) {
     toast.error(t("message.cancel_only_pending"));
   } finally {
@@ -248,6 +249,7 @@ const getStatusColor = (status: string) => {
       :application="selectedRequest"
       @form:cancel="isDialogVisible = false"
       @refetch-data="fetchLeaveRequests"
+      @refetch-userleave="loadUserLeave"
     />
   </VDialog>
   <VDialog v-model="isConfirmDialogVisible" width="auto">

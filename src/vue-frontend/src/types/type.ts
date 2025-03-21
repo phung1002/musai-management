@@ -63,6 +63,7 @@ export interface ILeaveResponse {
   id: number;
   userFullName: string;
   leaveTypeName: string;
+  leaveTypeValue: string;
   createdAt: string;
   startDate: string;
   endDate: string;
@@ -77,4 +78,12 @@ export interface IDocument {
   title: string;
   filePath: string;
   submitDate: string;
+}
+
+export interface IEvent {
+  title: string;
+  start: Date;
+  end: Date;
+  color: string;
+  allDay: boolean;
 }
