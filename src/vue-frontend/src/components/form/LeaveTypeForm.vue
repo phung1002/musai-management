@@ -13,7 +13,6 @@ import type { VForm } from "vuetify/lib/components/index.mjs";
 const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const { t } = useI18n(); //日本語にローカル変更用
 const emit = defineEmits(["form-cancel", "refetch-data"]);
-const errors = ref<{ leave_type?: string; leave_name?: string }>({});
 const props = defineProps<{ leave?: ILeaveTypes; isEdit: boolean }>(); // 編集対象情報
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
 const validator = useValidator(t); // バリデーション
@@ -106,16 +105,9 @@ const handleResetForm = async () => {
     }
   }
 };
-// エラーメッセージ初期化
-const resetErrors = () => {
-  errors.value = {
-    leave_type: "",
-    leave_name: "",
-  };
-};
+
 const handleCancel = () => {
   handleResetForm();
-  resetErrors();
   emit("form-cancel");
 };
 // 休暇リスト取得　API呼び出し
@@ -214,7 +206,7 @@ const onConfirmed = async () => {
       lazy-validation="false"
       @submit.prevent="() => {}"
     >
-      <v-container>
+      <VContainer>
         <VTable>
           <VTabs v-model="activeTab" color="primary">
             <VTab
@@ -227,18 +219,16 @@ const onConfirmed = async () => {
               {{ item.title }}
             </VTab>
           </VTabs>
-          <VCardText>
+          <VCardText class="mt-3">
             <VWindow v-model="activeTab">
-              <span v-if="errors.leave_type" class="error" style="color: red">{{
-                errors.leave_type
-              }}</span>
               <VWindowItem value="paid"> </VWindowItem>
               <VWindowItem value="public">
-                <VRow class="pb-4">
+                <VRow class="pt-2 pb-4">
                   <VCol :cols="12" class="dropdown-box">
                     <VAutocomplete
                       v-model="parentPublicLeave"
                       :items="public_leave.children"
+                      :disabled="isEdit"
                       :label="t('public_leave')"
                       item-title="name"
                       item-value="id"
@@ -262,7 +252,7 @@ const onConfirmed = async () => {
           </VCardText>
         </VTable>
         <VDivider />
-      </v-container>
+      </VContainer>
     </VForm>
     <VCardActions>
       <VBtn
