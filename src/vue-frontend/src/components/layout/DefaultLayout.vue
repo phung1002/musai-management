@@ -3,8 +3,6 @@
 import { RouterView, useRoute } from "vue-router";
 import AppSidebar from "@/components/layout/AppSidebar.vue";
 import AppToolbar from "@/components/layout/AppToolbar.vue";
-// import { snackbar } from '@/composables/useSnackbar';
-// import SnackBar from '@/components/common/SnackBar.vue';
 
 const route = useRoute();
 </script>
@@ -19,7 +17,6 @@ const route = useRoute();
     <VMain class="app-main">
       <VContainer class="app-container">
         <div class="page-wrapper">
-          <!-- <SnackBar :snackbar="snackbar"></SnackBar> -->
           <RouterView />
         </div>
       </VContainer>

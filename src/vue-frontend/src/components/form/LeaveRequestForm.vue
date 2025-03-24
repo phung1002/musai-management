@@ -358,11 +358,11 @@ const handleCancel = () => {
     </VForm>
     <VCardActions>
       <VBtn @click="onConfirm" type="submit" variant="elevated" color="primary">
-        {{ t("submit") }}
+        {{ isEdit ? t("update") : t("submit") }}
       </VBtn>
-      <VBtn @click="resetForm" type="reset" variant="tonal">{{
-        t("reset")
-      }}</VBtn>
+      <VBtn @click="resetForm" type="reset" variant="tonal">
+        {{ t("reset") }}
+      </VBtn>
     </VCardActions>
     <!-- 確認ダイアログ表示 -->
     <VDialog v-model="isDialogVisible" width="auto" eager>

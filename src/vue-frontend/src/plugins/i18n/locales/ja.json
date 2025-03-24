@@ -50,7 +50,7 @@
   "roles": {
     "ADMIN": "管理者",
     "MANAGER": "担当者",
-    "MEMBER": "ユーザー"
+    "MEMBER": "一般社員"
   },
   "leave_type": "休暇名",
   "valid_leaves": "有効休暇日数",

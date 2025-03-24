@@ -319,11 +319,12 @@ const handleCancel = () => {
         variant="elevated"
         color="primary"
         @click="isChangeYourPassword()"
-        >{{ t("register") }}</VBtn
       >
-      <VBtn type="reset" variant="tonal" @click="resetForm">{{
-        t("reset")
-      }}</VBtn>
+        {{ isEdit ? t("update") : t("register") }}
+      </VBtn>
+      <VBtn type="reset" variant="tonal" @click="resetForm">
+        {{ t("reset") }}
+      </VBtn>
     </VCardActions>
   </VCard>
   <VDialog v-model="isDialogVisible" width="auto">

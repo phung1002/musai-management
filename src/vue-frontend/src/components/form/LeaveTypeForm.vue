@@ -270,11 +270,11 @@ const onConfirmed = async () => {
         type="submit"
         variant="elevated"
         color="primary"
-        >{{ isEdit ? t("update") : t("submit") }}
+        >{{ isEdit ? t("update") : t("add") }}
       </VBtn>
-      <VBtn @click="handleResetForm" type="reset" variant="tonal">{{
-        t("reset")
-      }}</VBtn>
+      <VBtn @click="handleResetForm" type="reset" variant="tonal">
+        {{ t("reset") }}
+      </VBtn>
     </VCardActions>
     <!-- 確認ダイアログ表示 -->
     <VDialog v-model="isDialogVisible" width="auto" eager>
