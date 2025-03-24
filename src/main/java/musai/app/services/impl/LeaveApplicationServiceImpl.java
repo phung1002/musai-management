@@ -66,6 +66,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 				Optional.ofNullable(leaveApplication.getUser()).map(User::getFullName).orElse("Unknown"),
 				leaveApplication.getLeaveType().getId(),
 				Optional.ofNullable(leaveApplication.getLeaveType()).map(LeaveType::getName).orElse("Unknown"),
+				Optional.ofNullable(leaveApplication.getLeaveType()).map(LeaveType::getValue).orElse("Unknown"),
 				leaveApplication.getStartDate(), leaveApplication.getEndDate(), leaveApplication.getReason(),
 				leaveApplication.getStatus(), leaveApplication.getRespondedAt(),
 				Optional.ofNullable(leaveApplication.getRespondedBy()).map(User::getFullName).orElse(null),
@@ -264,5 +265,14 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 				|| leaveValue.equals(ELeaveValue.FULL_DAY.name()))
 						? userLeaveService.getUserLeaveForMember(leaveType.getParent().getId(), userId)
 						: userLeaveService.getUserLeaveForMember(leaveType.getId(), userId);
+	}
+
+	@Override
+	public List<LeaveApplicationResponseDTO> getApprovedLeaveApplications() {
+		List<LeaveApplication> leaveApplications =  leaveApplicationRepository.getApprovedLeaveApplications();
+
+		    return leaveApplications.stream()
+		        .map(this::convertToDTO)
+		        .collect(Collectors.toList());
 	}
 }

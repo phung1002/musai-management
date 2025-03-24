@@ -14,6 +14,7 @@ public class LeaveApplicationResponseDTO {
     private String userFullName;
     private Long leaveTypeId;
     private String leaveTypeName;
+    private String leaveTypeValue;
     private LocalDate startDate;
     private LocalDate endDate;
     private String reason;

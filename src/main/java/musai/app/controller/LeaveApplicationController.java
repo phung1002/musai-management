@@ -50,7 +50,15 @@ public class LeaveApplicationController {
 		List<LeaveApplicationResponseDTO> response = leaveApplicationService.getLeaveApplicationsForMember(principal, keyword);
 		return ResponseEntity.ok(response);
 	}
-
+	/**
+	 * API leave application approved to show in calendar
+	 */
+	@GetMapping("/approved")
+	public ResponseEntity<?> getApprovedLeaveApplications() {
+		List<LeaveApplicationResponseDTO> response = leaveApplicationService.getApprovedLeaveApplications();
+		return ResponseEntity.ok(response);
+	}
+	
 	/**
 	 * API member apply leave application
 	 */

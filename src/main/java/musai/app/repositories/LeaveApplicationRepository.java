@@ -32,4 +32,7 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 			+ "OR LOWER(la.leaveType.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) " + "ORDER BY la.createdAt DESC")
 	List<LeaveApplication> findActiveByUserIdByKeywordContaining(@Param("userId") Long id,
 			@Param("keyword") String keyword);
+	
+	@Query("SELECT la FROM LeaveApplication la WHERE la.user.deletedAt IS NULL AND la.status = 'APPROVED'")
+	public List<LeaveApplication> getApprovedLeaveApplications();
 }

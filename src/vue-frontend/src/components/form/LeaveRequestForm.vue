@@ -19,7 +19,7 @@ const { t } = useI18n();
 
 const isLoading = ref(false);
 const isError = ref(false);
-const emit = defineEmits(["form:cancel", "refetch-data"]);
+const emit = defineEmits(["form:cancel", "refetch-data", "refetch-userleave"]);
 const validator = useValidator(t);
 const formValid = ref(false);
 const props = defineProps<{
@@ -122,6 +122,7 @@ const handleSubmit = async () => {
       await requestLeave(formModel.value);
       toast.success(t("message.add_success"));
       emit("refetch-data");
+      emit("refetch-userleave");
       handleCancel();
     } catch (error: any) {
       toast.error(t(error.message));
@@ -135,6 +136,7 @@ const handleSubmit = async () => {
       toast.success(t("message.update_success"));
       handleCancel();
       emit("refetch-data");
+      emit("refetch-userleave");
     } catch (error: any) {
       toast.error(t(error.message));
     } finally {
