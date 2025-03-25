@@ -109,11 +109,12 @@ onUnmounted(() => {
         type="submit"
         variant="elevated"
         color="primary"
-        >{{ t("submit") }}</VBtn
       >
-      <VBtn @click="resetFile" type="reset" variant="tonal">{{
-        t("reset")
-      }}</VBtn>
+        {{ t("submit") }}
+      </VBtn>
+      <VBtn @click="resetFile" type="reset" variant="tonal">
+        {{ t("reset") }}
+      </VBtn>
     </VCardActions>
 
     <!-- 確認ダイアログ表示 -->

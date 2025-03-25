@@ -1,45 +1,25 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ref, onMounted } from "vue";
-import { IUser } from "@/types/type";
-import { profile } from "@/api/auth";
+import { ref } from "vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import ProfileDropdown from "@/components/auth/ProfileCard.vue";
 import { logout } from "@/api/auth";
+import { useUserStore } from '@/store/userStore';
+
+const userStore = useUserStore();
 const isDialogVisible = ref(false);
 const showProfileView = ref(false);
 const { t } = useI18n();
-const router = useRouter();
 const handleSubmit = () => {
   isDialogVisible.value = true;
 };
 const showProfile = () => {
   showProfileView.value = true;
 };
-// APIからプロフィール情報取得
-const infor = ref<IUser>({} as IUser);
-const getProfile = async () => {
-  try {
-    const response = await profile();
-    if (!response || !response.data) {
-      console.log("No profile data received");
-      return;
-    }
-    infor.value = response.data;
-  } catch (error) {
-    console.log(error);
-  }
-};
-// コンポーネントがマウントされたときAPI呼び出し修理実行
-onMounted(() => {
-  getProfile();
-});
+const gender = userStore.gender;
+
 const onConfirmed = () => {
   logout();
-  router.push({
-    path: "/login",
-  });
   sessionStorage.clear();
 };
 </script>
@@ -55,7 +35,7 @@ const onConfirmed = () => {
       >
         <VBadge dot color="success" offset-x="0" offset-y="3">
           <!-- 性別　男性の場合写真表示設定 -->
-          <VAvatar size="35" v-if="infor.gender === 'male'">
+          <VAvatar size="35" v-if="gender === 'male'">
             <img
               src="@\assets\images\users\avatar-4.png"
               height="35"
@@ -63,7 +43,7 @@ const onConfirmed = () => {
             />
           </VAvatar>
           <!-- 性別　女性の場合写真表示設定 -->
-          <VAvatar size="35" v-if="infor.gender === 'female'">
+          <VAvatar size="35" v-if="gender === 'female'">
             <img
               src="@\assets\images\users\avatar-2.png"
               height="35"
@@ -71,7 +51,7 @@ const onConfirmed = () => {
             />
           </VAvatar>
           <!-- 性別　未登録の場合写真表示設定 -->
-          <VAvatar size="35" v-if="infor.gender === ''">
+          <VAvatar size="35" v-if="gender === ''">
             <img src="@\assets\images\users\user.png" height="35" alt="user" />
           </VAvatar>
         </VBadge>

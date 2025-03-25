@@ -384,7 +384,7 @@ const onConfirmed = async () => {
         type="submit"
         variant="elevated"
         color="primary"
-        >{{ isEdit ? t("update") : t("register") }}
+        >{{ isEdit ? t("update") : t("add") }}
       </VBtn>
       <VBtn @click="handleResetForm" type="reset" variant="tonal">{{
         t("reset")

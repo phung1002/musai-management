@@ -1,35 +1,32 @@
-import { ERole } from '@/constants/role';
-import { defineStore } from 'pinia';
+import { ERole } from "@/constants/role";
+import { defineStore } from "pinia";
 
-export const useUserStore = defineStore('user', {
+export const useUserStore = defineStore("user", {
   state: () => ({
-    id: '',
-    token: '',
-    username: '',
-    fullName: '',
+    id: "",
+    username: "",
+    fullName: "",
     roles: [],
-    authenticated: false
+    gender: "",
+    authenticated: false,
   }),
 
   // Getters
   getters: {
     isAdmin() {
-      return this.roles.some(role => role.value === ERole.ADMIN);
+      return this.roles.some((role) => role.value === ERole.ADMIN);
     },
     isManager() {
-      return this.roles.some(role => role.value === ERole.MANAGER);
+      return this.roles.some((role) => role.value === ERole.MANAGER);
     },
     isMember() {
-      return this.roles.some(role => role.value === ERole.MEMBER);
-    }
+      return this.roles.some((role) => role.value === ERole.MEMBER);
+    },
   },
   // Actions
   actions: {
     setId(id) {
       this.id = id;
-    },
-    setToken(token) {
-      this.token = token;
     },
     setUsername(username) {
       this.username = username;
@@ -37,15 +34,18 @@ export const useUserStore = defineStore('user', {
     setRoles(roles) {
       this.roles = roles;
     },
+    setGender(gender) {
+      this.gender = gender;
+    },
     setAuthenticated(auth) {
       this.authenticated = auth;
     },
     setFullName(fullName) {
       this.fullName = fullName;
-    }
+    },
   },
   persist: {
-    key: 'user-store',
+    key: "user-store",
     storage: window.localStorage,
   },
 });

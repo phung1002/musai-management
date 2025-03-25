@@ -133,34 +133,20 @@ const hasRequiredRoles = (userRoles, requiredRoles) => {
 };
 
 // Navigation guard
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
-  // If don't need to check auth
-  if (!to.meta.requiresAuth) {
-    return next();
-  }
-  // If authenticated
-  if (userStore.authenticated) {
-    if (!hasRequiredRoles(userStore.roles, to.meta.requiredRoles)) {
+
+  // If authentication is not required for this route, or the user is authenticated
+  if (!to.meta.requiresAuth || userStore.authenticated) {
+    // If authenticated, check if the user has the required roles for the route
+    if (userStore.authenticated && !hasRequiredRoles(userStore.roles, to.meta.requiredRoles)) {
       return next({ name: "unauthorized" });
     }
+    // Allow navigation if no auth is required or if user is authenticated
     return next();
   }
-  // If not authenticated yet -> Call API validate token with timeout
-  try {
-    const response = await validate();
-    const { status, data } = response;
 
-    if (status === 200 && data.authenticated) {
-      if (!hasRequiredRoles(data.roles, to.meta.requiredRoles)) {
-        return next({ name: "unauthorized" });
-      }
-      return next();
-    }
-  } catch (error) {
-    console.error("Error during token validation:", error);
-  }
-  // If error when call API (timeout/connect), direct to login
+  // If not authenticated, redirect to login page and preserve the original route
   next({ name: "login", query: { to: to.fullPath } });
 });
 
