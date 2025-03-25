@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ref } from "vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
@@ -11,7 +10,6 @@ const userStore = useUserStore();
 const isDialogVisible = ref(false);
 const showProfileView = ref(false);
 const { t } = useI18n();
-const router = useRouter();
 const handleSubmit = () => {
   isDialogVisible.value = true;
 };
@@ -22,9 +20,6 @@ const gender = userStore.gender;
 
 const onConfirmed = () => {
   logout();
-  router.push({
-    path: "/login",
-  });
   sessionStorage.clear();
 };
 </script>

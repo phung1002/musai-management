@@ -14,7 +14,6 @@ import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useUserStore } from "@/store/userStore";
 import { logout } from "@/api/auth";
-import router from "@/router";
 import type { VForm } from "vuetify/lib/components/index.mjs";
 
 const formRef = ref<InstanceType<typeof VForm> | null>(null);
@@ -122,9 +121,6 @@ const handleSubmit = async (toLogin: boolean) => {
       handleCancel();
       if (toLogin) {
         logout();
-        router.push({
-          path: "/login",
-        });
       } else {
         emit("refetch-data");
       }

@@ -23,6 +23,7 @@ export async function login(params: LoginParams): Promise<IAccessToken> {
     userStore.setFullName(data.fullName);
     userStore.setGender(data.gender);
 
+    startSessionTimer();
     // return data
     return response.data;
   } catch (error: any) {
@@ -34,19 +35,29 @@ export async function login(params: LoginParams): Promise<IAccessToken> {
     throw error;
   }
 }
+let logoutTimer;
+// set time out 1 hour
+function startSessionTimer() {
+  clearTimeout(logoutTimer);
+  logoutTimer = setTimeout(() => {
+    logout();
+  }, 60 * 60 * 1000);
+}
 
 // call to api logout
 export async function logout() {
   const userStore = useUserStore();
   try {
     await axiosIns.post("/auth/logout");
-    console.log("Logged out successfully");
 
     // Reset user state
+    userStore.setId("");
     userStore.setAuthenticated(false);
     userStore.setRoles([]);
     userStore.setUsername("");
     userStore.setFullName("");
+
+    window.location.href = "/login";
   } catch (error) {
     console.error("Logout failed", error);
   }
