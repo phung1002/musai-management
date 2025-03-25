@@ -1,4 +1,4 @@
-<!-- ページ　見つからない　画面 -->
+<!-- 権限 認証されてない　画面-->
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
@@ -20,9 +20,9 @@ const backLogin = () => {
   <div class="page-notfound">
     <div class="notfound">
       <div class="notfound-emoji"></div>
-      <h2>{{ t("message.page_not_found") }}</h2>
+      <h2>{{ t("message.unauthorized") }}</h2>
       <!-- <h2>Oops! Page Not Be Found</h2> -->
-      <p>{{ t("message.page_not_found_description") }}</p>
+      <p>{{ t("message.unauthorized_description") }}</p>
       <VBtn @click="backHome()" class="mr-4">{{ t("back_home") }}</VBtn>
       <VBtn @click="backLogin()">{{ t("back_login") }}</VBtn>
     </div>

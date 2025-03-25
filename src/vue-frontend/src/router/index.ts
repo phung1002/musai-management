@@ -4,6 +4,7 @@ import { validate } from "@/api/auth";
 import LoginVue from "@/components/auth/Login.vue";
 import DefaultLayoutVue from "@/components/layout/DefaultLayout.vue";
 import NotFoundVue from "@/components/auth/NotFound.vue";
+import UnauthorizedVue from "@/components/auth/unauthorized.vue";
 import UserVue from "@/views/User.vue";
 import { ERole } from "@/constants/role";
 
@@ -15,11 +16,18 @@ import DocumentVue from "@/views/Document.vue";
 import LeaveType from "@/views/LeaveType.vue";
 import LeaveRequestVue from "@/views/LeaveRequest.vue";
 
-const publicRoutes = {
-  path: "/login",
-  name: "login",
-  component: LoginVue,
-};
+const publicRoutes = [
+  {
+    path: "/login",
+    name: "login",
+    component: LoginVue,
+  },
+  {
+    path: "/unauthorized",
+    name: "unauthorized",
+    component: UnauthorizedVue,
+  },
+];
 
 const routes = {
   path: "/",
@@ -30,11 +38,6 @@ const routes = {
   redirect: "/calendar",
   component: DefaultLayoutVue,
   children: [
-    {
-      path: "/not-found",
-      name: "not-found",
-      component: NotFoundVue,
-    },
     // Admin routes
     {
       path: "/admin/users",
@@ -121,7 +124,7 @@ const router = createRouter({
       component: NotFoundVue,
     },
     routes,
-    publicRoutes,
+    ...publicRoutes,
   ],
 });
 

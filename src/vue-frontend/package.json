@@ -38,6 +38,7 @@
     "sass-embedded": "^1.83.4",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0",
+    "unplugin-vue-define-options": "^3.0.0-beta.7",
     "vite": "^6.0.5",
     "vite-plugin-vue-devtools": "^7.6.8",
     "vue-loader": "^17.4.2"
