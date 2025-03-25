@@ -21,6 +21,7 @@ export async function login(params: LoginParams): Promise<IAccessToken> {
     userStore.setRoles(data.roles);
     userStore.setUsername(data.username);
     userStore.setFullName(data.fullName);
+    userStore.setGender(data.gender);
 
     // return data
     return response.data;

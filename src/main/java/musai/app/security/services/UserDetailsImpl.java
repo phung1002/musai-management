@@ -20,10 +20,11 @@ public class UserDetailsImpl implements UserDetails {
 	@JsonIgnore
 	private String password;
 	private String fullName;
+	private String gender;
 	private LocalDateTime deletedAt;
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(Long id, String username, String email, String password, String fullName,
+	public UserDetailsImpl(Long id, String username, String email, String password, String fullName, String gender,
 			LocalDateTime deletedAt, Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
@@ -32,13 +33,14 @@ public class UserDetailsImpl implements UserDetails {
 		this.deletedAt = deletedAt;
 		this.authorities = authorities;
 		this.fullName = fullName;
+		this.gender = gender;
 	}
 
 	public static UserDetailsImpl build(User user) {
 		List<GrantedAuthority> authorities = user.getRoles().stream()
 				.map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
 
-		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getFullName(),
+		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getFullName(), user.getGender(),
 				user.getDeletedAt(), authorities);
 	}
 
@@ -64,9 +66,13 @@ public class UserDetailsImpl implements UserDetails {
 	public String getPassword() {
 		return password;
 	}
-	
+
 	public String getFullName() {
 		return fullName;
+	}
+
+	public String getGender() {
+		return gender;
 	}
 
 	public LocalDateTime getDeletedAt() {
