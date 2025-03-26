@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import jakarta.persistence.NoResultException;
-import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveTypeRequestDTO;
 import musai.app.DTO.response.LeaveTypeChildrenResponseDTO;
 import musai.app.DTO.response.LeaveTypeParentResponseDTO;
+import musai.app.DTO.response.MessageResponse;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.LeaveType;

@@ -1,4 +1,4 @@
-package musai.app.DTO;
+package musai.app.DTO.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

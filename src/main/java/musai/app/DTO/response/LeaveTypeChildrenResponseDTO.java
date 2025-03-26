@@ -4,7 +4,6 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import musai.app.models.LeaveType;
 
 @Data
 @AllArgsConstructor
@@ -13,7 +12,7 @@ public class LeaveTypeChildrenResponseDTO {
 	private Long id;
 
 	private String name;
-	
+
 	private String value;
 
 	private List<LeaveTypeChildrenResponseDTO> children;

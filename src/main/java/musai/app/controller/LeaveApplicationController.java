@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.AllArgsConstructor;
-import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.LeaveApplicationRequestDTO;
 import musai.app.DTO.response.LeaveApplicationResponseDTO;
+import musai.app.DTO.response.MessageResponse;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.LeaveApplicationService;
 

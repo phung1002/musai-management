@@ -1,12 +1,3 @@
-export interface ApiResp<T = never> {
-  data: T;
-}
-
-export interface IAccessToken {
-  access_token: string;
-  expire_in: number;
-}
-
 export interface ILeaveRequest {
   id: number | null;
   leaveTypeId: number | null;
@@ -16,7 +7,6 @@ export interface ILeaveRequest {
   reason: string;
   status: string;
 }
-export type confrimStatus = "pending" | "accepted";
 
 export interface IUser {
   id: number | null;
