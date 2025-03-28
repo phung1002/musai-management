@@ -13,7 +13,7 @@ import { createUser, updateUser } from "@/api/user";
 import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useUserStore } from "@/store/userStore";
-import { logout } from "@/api/auth";
+import { handleLogout } from "@/api/auth";
 import type { VForm } from "vuetify/lib/components/index.mjs";
 
 const formRef = ref<InstanceType<typeof VForm> | null>(null);
@@ -120,7 +120,7 @@ const handleSubmit = async (toLogin: boolean) => {
       toast.success(t("message.update_success"));
       handleCancel();
       if (toLogin) {
-        logout();
+        handleLogout();
       } else {
         emit("refetch-data");
       }

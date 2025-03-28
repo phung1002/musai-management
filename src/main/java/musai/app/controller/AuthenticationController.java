@@ -1,11 +1,5 @@
 package musai.app.controller;
 
-import musai.app.DTO.JwtResponse;
-import musai.app.DTO.LoginRequest;
-import musai.app.DTO.MessageResponse;
-import musai.app.DTO.response.UserResponseDTO;
-import musai.app.security.jwt.JwtUtils;
-import musai.app.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import musai.app.DTO.request.LoginRequest;
+import musai.app.DTO.response.MessageResponse;
+import musai.app.DTO.response.UserResponseDTO;
+import musai.app.security.jwt.JwtUtils;
+import musai.app.services.AuthenticationService;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -33,26 +32,26 @@ public class AuthenticationController {
 	JwtUtils jwtUtils;
 	
 	@PostMapping("/login")
-	public ResponseEntity<?> authenticateUser(@Validated @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+	public ResponseEntity<?> login(@Validated @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 		try {
-			JwtResponse jwtResponse = authenticationService.login(loginRequest, response);
-            return ResponseEntity.ok(jwtResponse);
+			authenticationService.login(loginRequest, response);
+            return ResponseEntity.ok("login_success");
 		} catch (BadCredentialsException ex) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(new MessageResponse("Invalid username or password."));
+					.body(new MessageResponse("invalid_username_or_password."));
 		}
 	}
 	
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout(HttpServletResponse response) {
 		authenticationService.logout(response);
-        return ResponseEntity.ok(new MessageResponse("Logged out successfully"));
+        return ResponseEntity.ok(new MessageResponse("logout_success"));
 	}
 
 	@GetMapping("/validate")
     public ResponseEntity<?> validateUser(HttpServletRequest request) {
-		JwtResponse jwtResponse = authenticationService.validateUser(request);
-        return ResponseEntity.ok(jwtResponse);
+		authenticationService.validateUser(request);
+        return ResponseEntity.ok("validate_success");
     }
 
 	@GetMapping("/profile")

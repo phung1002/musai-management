@@ -77,17 +77,6 @@ const items = [
   },
   { type: "divider" },
   {
-    title: t("calendar"),
-    props: {
-      prependIcon: "mdi-calendar-month-outline",
-      link: true,
-      to: "/calendar",
-      exact: true,
-    },
-    value: "/calendar",
-    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN],
-  },
-  {
     title: t("submit_document"),
     props: {
       prependIcon: "mdi-invoice-text-multiple-outline",
@@ -96,6 +85,17 @@ const items = [
       exact: true,
     },
     value: "/document",
+    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN],
+  },
+  {
+    title: t("calendar"),
+    props: {
+      prependIcon: "mdi-calendar-month-outline",
+      link: true,
+      to: "/calendar",
+      exact: true,
+    },
+    value: "/calendar",
     roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN],
   },
   {

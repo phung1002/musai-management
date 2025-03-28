@@ -3,7 +3,7 @@ import { useI18n } from "vue-i18n";
 import { ref } from "vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import ProfileDropdown from "@/components/auth/ProfileCard.vue";
-import { logout } from "@/api/auth";
+import { handleLogout } from "@/api/auth";
 import { useUserStore } from '@/store/userStore';
 
 const userStore = useUserStore();
@@ -19,7 +19,7 @@ const showProfile = () => {
 const gender = userStore.gender;
 
 const onConfirmed = () => {
-  logout();
+  handleLogout();
   sessionStorage.clear();
 };
 </script>

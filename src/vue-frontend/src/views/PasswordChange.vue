@@ -8,7 +8,7 @@ import { changePassword } from "@/api/user"; // API追加
 import { useValidator } from "@/utils/validation";
 import { formRules } from "../configs/userFormConfig";
 import { toast } from "vue3-toastify";
-import { logout } from "@/api/auth";
+import { handleLogout } from "@/api/auth";
 const { t } = useI18n();
 const validator = useValidator(t);
 // formModel を IPasswordChange 型として一元管理
@@ -55,7 +55,7 @@ const onSubmit = async () => {
     });
     toast.success(t("message.add_success"));
     handleResetFilter();
-    logout();
+    handleLogout();
   } catch (error: any) {
     toast.error(t(error.message));
   } finally {

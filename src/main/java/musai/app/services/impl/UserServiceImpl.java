@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import lombok.AllArgsConstructor;
-import musai.app.DTO.MessageResponse;
 import musai.app.DTO.request.ChangePasswordRequestDTO;
 import musai.app.DTO.request.UserRequestDTO;
+import musai.app.DTO.response.MessageResponse;
 import musai.app.DTO.response.UserResponseDTO;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.ForbiddenException;

@@ -54,7 +54,7 @@ export const changePassword = async (
 ): Promise<void> => {
   console.log("OK", payload);
   try {
-    await axiosIns.put(`/user/change-password`, payload);
+    await axiosIns.put(`/users/change-password`, payload);
   } catch (error: any) {
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }

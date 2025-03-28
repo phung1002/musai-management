@@ -6,7 +6,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import musai.app.DTO.MessageResponse;
+import musai.app.DTO.response.MessageResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

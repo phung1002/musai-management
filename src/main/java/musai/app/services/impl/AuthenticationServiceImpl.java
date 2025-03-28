@@ -1,27 +1,24 @@
 package musai.app.services.impl;
 
-import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import musai.app.DTO.JwtResponse;
-import musai.app.DTO.LoginRequest;
+import musai.app.DTO.request.LoginRequest;
 import musai.app.DTO.response.UserResponseDTO;
 import musai.app.exception.BadRequestException;
 import musai.app.models.User;
 import musai.app.repositories.UserRepository;
 import musai.app.security.jwt.JwtUtils;
 import musai.app.security.services.UserDetailsImpl;
-import musai.app.security.services.UserDetailsServiceImpl;
 import musai.app.services.AuthenticationService;
 
 @Service
@@ -34,9 +31,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private JwtUtils jwtUtils;
 
 	@Autowired
-	private UserDetailsServiceImpl userDetailsService;
-
-	@Autowired
 	private UserRepository userRepository;
 
 	/**
@@ -44,10 +38,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	 *
 	 * @param loginRequest The login request containing username and password.
 	 * @param response     The HTTP response to set the cookie.
-	 * @return JwtResponse containing user information and token details.
 	 */
 	@Override
-	public JwtResponse login(LoginRequest loginRequest, HttpServletResponse response) {
+	public void login(LoginRequest loginRequest, HttpServletResponse response) {
 		// Authenticate user credentials
 		Authentication authentication = authenticateUser(loginRequest);
 
@@ -61,8 +54,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		// Set JWT cookie manually
 		setJwtCookie(response, jwt);
 
-		// Build and return JWT response
-		return buildJwtResponse(userDetails, jwt);
 	}
 
 	/**
@@ -84,20 +75,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	 * Validate the current user based on the JWT token in the cookies.
 	 *
 	 * @param request The HTTP request containing the cookies.
-	 * @return JwtResponse containing user information if validation is successful.
 	 */
 	@Override
-	public JwtResponse validateUser(HttpServletRequest request) {
+	public void validateUser(HttpServletRequest request) {
 		String jwt = jwtUtils.getJwtFromCookies(request);
 
-		if (jwt == null || !jwtUtils.validateJwtToken(jwt)) {
-			throw new BadRequestException("Invalid or expired token.");
+		if (jwt == null) {
+		    throw new BadRequestException("Token not found.");
+		}
+		if (!jwtUtils.isTokenExpired(jwt)) {
+		    throw new BadRequestException("Token has expired.");
+		}
+		if (!jwtUtils.validateJwtToken(jwt)) {
+		    throw new BadRequestException("Invalid token.");
 		}
 
-		String username = jwtUtils.getUserNameFromJwtToken(jwt);
-		UserDetailsImpl userDetails = loadUserDetails(username);
-
-		return buildJwtResponse(userDetails, jwt);
 	}
 
 	/**
@@ -127,34 +119,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	/**
-	 * Load user details by username.
-	 *
-	 * @param username The username.
-	 * @return UserDetailsImpl object.
-	 */
-	private UserDetailsImpl loadUserDetails(String username) {
-		UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-		if (!(userDetails instanceof UserDetailsImpl)) {
-			throw new IllegalArgumentException("User details implementation mismatch.");
-		}
-		return (UserDetailsImpl) userDetails;
-	}
-
-	/**
-	 * Build a JwtResponse object.
-	 *
-	 * @param userDetails The user details.
-	 * @param jwt         The JWT token.
-	 * @return JwtResponse object.
-	 */
-	private JwtResponse buildJwtResponse(UserDetailsImpl userDetails, String jwt) {
-		List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-				.collect(Collectors.toList());
-		return new JwtResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles,
-				userDetails.getFullName(), userDetails.getGender());
-	}
-
-	/**
 	 * Get profile of user logging in
 	 * 
 	 * @param request
@@ -173,6 +137,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
 		UserResponseDTO userResponseDTO = new UserResponseDTO();
+		userResponseDTO.setId(user.getId());
 		userResponseDTO.setUsername(user.getUsername());
 		userResponseDTO.setFullName(user.getFullName());
 		userResponseDTO.setFullNameFurigana(user.getFullNameFurigana());

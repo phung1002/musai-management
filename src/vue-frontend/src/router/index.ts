@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useUserStore } from "@/store/userStore";
-import { validate } from "@/api/auth";
 import LoginVue from "@/components/auth/Login.vue";
 import DefaultLayoutVue from "@/components/layout/DefaultLayout.vue";
 import NotFoundVue from "@/components/auth/NotFound.vue";
-import UnauthorizedVue from "@/components/auth/unauthorized.vue";
+import UnauthorizedVue from "@/components/auth/Unauthorized.vue";
 import UserVue from "@/views/User.vue";
 import { ERole } from "@/constants/role";
 
@@ -15,6 +14,7 @@ import CalendarVue from "@/views/Calendar.vue";
 import DocumentVue from "@/views/Document.vue";
 import LeaveType from "@/views/LeaveType.vue";
 import LeaveRequestVue from "@/views/LeaveRequest.vue";
+import { logout, validateToken } from "@/api/auth";
 
 const publicRoutes = [
   {
@@ -136,21 +136,31 @@ const hasRequiredRoles = (userRoles, requiredRoles) => {
 };
 
 // Navigation guard
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
+  const isAuthenticated = userStore.authenticated;
 
-  // If authentication is not required for this route, or the user is authenticated
-  if (!to.meta.requiresAuth || userStore.authenticated) {
-    // If authenticated, check if the user has the required roles for the route
-    if (userStore.authenticated && !hasRequiredRoles(userStore.roles, to.meta.requiredRoles)) {
-      return next({ name: "unauthorized" });
+  // Check if authentication is required or if the user is authenticated
+  if (!to.meta.requiresAuth || isAuthenticated) {
+    try {
+      // Validate token if authenticated
+      if (isAuthenticated && !(await validateToken())) {
+        await logout();
+      }
+      // Check if user has required roles
+      if (
+        isAuthenticated &&
+        !hasRequiredRoles(userStore.roles, to.meta.requiredRoles)
+      ) {
+        return next({ name: "unauthorized" });
+      }
+      return next();
+    } catch (error) {
+      console.error("Token validation failed:", error);
+      await logout();
     }
-    // Allow navigation if no auth is required or if user is authenticated
-    return next();
   }
-
-  // If not authenticated, redirect to login page and preserve the original route
-  next({ name: "login", query: { to: to.fullPath } });
+  return next({ name: "login", query: { to: to.fullPath } });
 });
 
 export default router;
