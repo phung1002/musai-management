@@ -101,7 +101,7 @@ onMounted(() => {
             <VCardActions>
               <VSpacer />
               <VBtn color="primary" @click="handleCreateItem" variant="elevated"
-                ><v-icon icon="mdi-plus" start></v-icon>{{ t("add") }}
+                ><v-icon icon="mdi-plus" start></v-icon>{{ t("register") }}
               </VBtn>
             </VCardActions>
           </VToolbar>

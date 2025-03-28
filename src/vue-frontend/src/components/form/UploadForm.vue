@@ -121,7 +121,7 @@ onUnmounted(() => {
     <VDialog v-model="isDialogVisible" width="auto" eager>
       <ConfimDialogView
         :title="t('confirm')"
-        :message="t('leave_apply_confirm_message')"
+        :message="t('apply_confirm_message')"
         :isVisible="isDialogVisible"
         @update:isVisible="isDialogVisible = $event"
         @confirmed="onConfirmed"

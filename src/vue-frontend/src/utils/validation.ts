@@ -1,7 +1,10 @@
 // validation.ts
 export const useValidator = (t: Function) => ({
-  required: (value) =>
-    value !== null && value !== undefined && value !== ""
+  required: (value: any) =>
+    value !== null &&
+    value !== undefined &&
+    value !== "" &&
+    (!Array.isArray(value) || value.length > 0) // 配列の空チェックを追加
       ? true
       : t("validation.required_input"),
 
@@ -39,6 +42,16 @@ export const useValidator = (t: Function) => ({
     if (password != value) {
       return t("validation.password_confirm");
     }
+    return true;
+  },
+  checkDateRange: (startDate: string) => (endDate: string) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (start > end) {
+      return t("validation.invalid_date_range"); // 開始日が終了日より未来
+    }
+
     return true;
   },
 });

@@ -134,7 +134,7 @@ const onRevoked = async () => {
   <VDialog v-model="isDialogVisible" width="auto" eager>
     <ConfimDialogView
       :title="t('confirm')"
-      :message="t('cancel_confirm_message')"
+      :message="t('revoked_confirm_message')"
       :isVisible="isDialogVisible"
       @update:isVisible="isDialogVisible = $event"
       @confirmed="onRevoked"

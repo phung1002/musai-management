@@ -220,6 +220,7 @@ const getStatusColor = (status: string) => {
               <template v-slot:item.action="{ item }">
                 <div class="action-buttons">
                   <VBtn
+                    :disabled="item.status != 'PENDING'"
                     icon
                     variant="plain"
                     class="action-btn"
@@ -228,12 +229,13 @@ const getStatusColor = (status: string) => {
                     <VIcon color="blue">mdi-pencil</VIcon>
                   </VBtn>
                   <VBtn
+                    :disabled="item.status != 'PENDING'"
                     icon
                     variant="plain"
                     class="action-btn"
                     @click="openConfirmCancelDialog(item)"
                   >
-                    <VIcon color="red">mdi-delete</VIcon>
+                    <VIcon color="red">mdi-close-thick</VIcon>
                   </VBtn>
                 </div>
               </template>
@@ -255,7 +257,7 @@ const getStatusColor = (status: string) => {
   <VDialog v-model="isConfirmDialogVisible" width="auto">
     <ConfimDialogView
       :title="t('confirm')"
-      :message="t('delete_confirm_message')"
+      :message="t('cancel_confirm_message')"
       :isVisible="isConfirmDialogVisible"
       @update:isVisible="isConfirmDialogVisible = $event"
       @confirmed="handleCancel"

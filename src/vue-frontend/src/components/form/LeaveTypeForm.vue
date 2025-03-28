@@ -151,8 +151,19 @@ const handleSubmit = async () => {
   }
   if (!props.isEdit) {
     setParentId(activeTab.value);
+    isDialogVisible.value = true;
     console.log("新しいデータを登録します...");
     // 登録処理を実行
+  } else {
+    isDialogVisible.value = true;
+    console.log("データを更新しますか？...");
+  }
+};
+// 確認ダイアログで許可されたらイベント発火
+const onConfirmed = async () => {
+  if (!props.isEdit) {
+    // 新規登録処理を実行
+    console.log("新しいデータを登録します...");
     try {
       await addLeave(formModel.value);
       toast.success(t("message.add_success"));
@@ -164,23 +175,19 @@ const handleSubmit = async () => {
       isDialogVisible.value = false;
     }
   } else {
-    isDialogVisible.value = true;
+    // 更新処理を実行
     console.log("データを更新しますか？...");
-  }
-};
-// 確認ダイアログで許可されたらイベント発火
-const onConfirmed = async () => {
-  console.log("データを更新します...");
-  try {
-    if (formModel.value.id == null) return;
-    await updateLeave(formModel.value.id, formModel.value);
-    toast.success(t("message.update_success"));
-    handleCancel();
-    emit("refetch-data");
-  } catch (error: any) {
-    toast.error(t(error.message));
-  } finally {
-    isDialogVisible.value = false;
+    try {
+      if (formModel.value.id == null) return;
+      await updateLeave(formModel.value.id, formModel.value);
+      toast.success(t("message.update_success"));
+      handleCancel();
+      emit("refetch-data");
+    } catch (error: any) {
+      toast.error(t(error.message));
+    } finally {
+      isDialogVisible.value = false;
+    }
   }
   handleCancel(); // フォームを閉じる
 };
@@ -271,9 +278,7 @@ const onConfirmed = async () => {
       <ConfimDialogView
         :title="t('confirm')"
         :message="
-          isEdit
-            ? t('leave_update_confirm_message')
-            : t('leave_apply_confirm_message')
+          isEdit ? t('update_confirm_message') : t('register_confirm_message')
         "
         :isVisible="isDialogVisible"
         @update:isVisible="isDialogVisible = $event"
