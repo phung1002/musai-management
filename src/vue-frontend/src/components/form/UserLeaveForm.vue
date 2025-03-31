@@ -1,6 +1,6 @@
 <!-- 社員休暇　フォーム -->
 <script lang="ts" setup>
-import { ref, Ref, onMounted, watch, nextTick } from "vue";
+import { ref, Ref, onMounted, watch, nextTick, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { VSelect, VTab } from "vuetify/lib/components/index.mjs";
 import { useValidator } from "@/utils/validation";
@@ -67,6 +67,11 @@ const formModel = ref<IUserLeaves>(
   props.isEdit
     ? { ...defaultUserLeave, ...props.userLeave }
     : { ...defaultUserLeave }
+);
+// `validFrom` を動的に取得して `validTo` のバリデーションを実行
+const checkDateRange = computed(
+  () => (value: string) =>
+    validator.checkDateRange(formModel.value.validFrom)(value)
 );
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
@@ -214,9 +219,20 @@ const handleSubmit = async () => {
     return;
   }
   if (!props.isEdit) {
-    setleaveTypeId(activeTab.value);
+    isDialogVisible.value = true;
     console.log("新しいデータを登録します...");
     // 登録処理を実行
+  } else {
+    isDialogVisible.value = true;
+    console.log("データを更新しますか？...");
+  }
+};
+// 確認ダイアログで許可されたらイベント発火
+const onConfirmed = async () => {
+  if (!props.isEdit) {
+    // 新規登録処理を実行
+    setleaveTypeId(activeTab.value);
+    console.log("新しいデータを登録します...");
     try {
       console.log(formModel.value);
       await addUserLeave(formModel.value);
@@ -229,25 +245,21 @@ const handleSubmit = async () => {
       isDialogVisible.value = false;
     }
   } else {
-    isDialogVisible.value = true;
-    console.log("データを更新しますか？...");
-  }
-};
-// 確認ダイアログで許可されたらイベント発火
-const onConfirmed = async () => {
-  console.log("データを更新します...");
-  try {
-    if (formModel.value.id == null) return;
-    console.log("formModel.value", formModel.value);
-    console.log("formModel.value ID", formModel.value.id);
-    await updateUserLeave(formModel.value.id, formModel.value);
-    toast.success(t("message.update_success"));
-    handleCancel();
-    emit("refetch-data");
-  } catch (error: any) {
-    toast.error(t(error.message));
-  } finally {
-    isDialogVisible.value = false;
+    // 更新処理を実行
+    console.log("データを更新します...");
+    try {
+      if (formModel.value.id == null) return;
+      console.log("formModel.value", formModel.value);
+      console.log("formModel.value ID", formModel.value.id);
+      await updateUserLeave(formModel.value.id, formModel.value);
+      toast.success(t("message.update_success"));
+      handleCancel();
+      emit("refetch-data");
+    } catch (error: any) {
+      toast.error(t(error.message));
+    } finally {
+      isDialogVisible.value = false;
+    }
   }
   handleCancel(); // フォームを閉じる
 };
@@ -364,7 +376,7 @@ const onConfirmed = async () => {
                 <VLabel>{{ t("leave_expired") }}</VLabel>
                 <VTextField
                   v-model="formModel.validTo"
-                  :rules="[validator.required]"
+                  :rules="[validator.required, checkDateRange]"
                   variant="outlined"
                   color="primary"
                   name="validTo"
@@ -384,20 +396,18 @@ const onConfirmed = async () => {
         type="submit"
         variant="elevated"
         color="primary"
-        >{{ isEdit ? t("update") : t("add") }}
+        >{{ isEdit ? t("update") : t("register") }}
       </VBtn>
       <VBtn @click="handleResetForm" type="reset" variant="tonal">{{
         t("reset")
       }}</VBtn>
     </VCardActions>
     <!-- 確認ダイアログ表示 -->
-    <VDialog v-model="isDialogVisible" width="auto" eager>
+    <VDialog v-model="isDialogVisible" width="auto" eager persistent>
       <ConfimDialogView
         :title="t('confirm')"
         :message="
-          isEdit
-            ? t('leave_update_confirm_message')
-            : t('leave_apply_confirm_message')
+          isEdit ? t('update_confirm_message') : t('register_confirm_message')
         "
         :isVisible="isDialogVisible"
         @update:isVisible="isDialogVisible = $event"
@@ -405,7 +415,7 @@ const onConfirmed = async () => {
       />
     </VDialog>
     <!-- ユーザー一覧ポップアップ -->
-    <VDialog v-model="userListVisible" width="auto" eager>
+    <VDialog v-model="userListVisible" width="auto" eager persistent>
       <UserList
         v-if="userListVisible"
         :title="t('user_lists')"

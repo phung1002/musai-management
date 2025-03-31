@@ -67,6 +67,7 @@ export interface IDocument {
   title: string;
   filePath: string;
   submitDate: string;
+  userId: string;
 }
 
 export interface IEvent {

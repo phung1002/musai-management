@@ -44,9 +44,11 @@ const onRevoked = async () => {
 
 <template>
   <VCard min-width="600">
-    <VCardActions>
+    <VToolbar tag="div">
+      <VCardTitle>{{ t("detail_information") }}</VCardTitle>
+      <VSpacer />
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
-    </VCardActions>
+    </VToolbar>
     <VCardItem>
       <VList>
         <VListItem>
@@ -131,10 +133,10 @@ const onRevoked = async () => {
     </VCardActions>
   </VCard>
   <!-- キャンセル確認 -->
-  <VDialog v-model="isDialogVisible" width="auto" eager>
+  <VDialog v-model="isDialogVisible" width="auto" eager persistent>
     <ConfimDialogView
       :title="t('confirm')"
-      :message="t('cancel_confirm_message')"
+      :message="t('revoked_confirm_message')"
       :isVisible="isDialogVisible"
       @update:isVisible="isDialogVisible = $event"
       @confirmed="onRevoked"

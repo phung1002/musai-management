@@ -74,26 +74,37 @@ const formattedJoinDate = computed({
   },
 });
 
-const isChangeYourPassword = async () => {
-  const toLogin = ref(false);
-  if (
-    formModel.value.id == userStore.id &&
-    formModel.value.password.length > 0
-  ) {
-    isDialogVisible.value = true;
-    toLogin.value = true;
-  } else {
-    handleSubmit(toLogin.value);
-  }
-};
-
-const handleSubmit = async (toLogin: boolean) => {
+const toLogin = ref(false);
+const messageConfirm = ref("");
+const handleSubmit = async () => {
   // 入力バリデーション
   const isValid = await formRef.value?.validate();
   if (!isValid?.valid) {
     toast.error(t("error.validation_error"));
     return;
   }
+  if (!props.isEdit) {
+    messageConfirm.value = t("apply_confirm_message");
+    isDialogVisible.value = true;
+    // 登録処理を実行
+  } else {
+    if (formModel.value.id == userStore.id) {
+      if (
+        formModel.value.password.length > 0 ||
+        JSON.stringify(formModel.value.roles) !==
+          JSON.stringify(userStore.roles)
+      ) {
+        toLogin.value = true;
+      }
+    }
+    messageConfirm.value = toLogin.value
+      ? t("message.admin_change_their_password_or_role")
+      : t("update_confirm_message");
+    isDialogVisible.value = true;
+  }
+};
+// 確認ダイアログで許可されたらイベント発火
+const onConfirmed = async (toLogin: boolean) => {
   const payload: IUser = {
     ...(formModel.value as IUser),
     birthday: formatDate(formModel.value.birthday),
@@ -139,6 +150,7 @@ const resetForm = async () => {
   if (formRef.value?.resetValidation) {
     formRef.value.resetValidation();
   }
+  toLogin.value = false;
   confirmPassword.value = "";
   formValid.value = false;
   activeTab.value = "detail_information";
@@ -314,7 +326,7 @@ const handleCancel = () => {
         type="submit"
         variant="elevated"
         color="primary"
-        @click="isChangeYourPassword()"
+        @click="handleSubmit()"
       >
         {{ isEdit ? t("update") : t("register") }}
       </VBtn>
@@ -323,13 +335,13 @@ const handleCancel = () => {
       </VBtn>
     </VCardActions>
   </VCard>
-  <VDialog v-model="isDialogVisible" width="auto">
+  <VDialog v-model="isDialogVisible" width="auto" persistent>
     <ConfimDialogView
       :title="t('confirm')"
-      :message="t('message.admin_change_their_password')"
+      :message="messageConfirm"
       :isVisible="isDialogVisible"
       @update:isVisible="isDialogVisible = $event"
-      @confirmed="handleSubmit(true)"
+      @confirmed="onConfirmed(true)"
     />
   </VDialog>
 </template>

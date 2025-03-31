@@ -4,7 +4,7 @@ import { ref } from "vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import ProfileDropdown from "@/components/auth/ProfileCard.vue";
 import { handleLogout } from "@/api/auth";
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from "@/store/userStore";
 
 const userStore = useUserStore();
 const isDialogVisible = ref(false);
@@ -71,7 +71,7 @@ const onConfirmed = () => {
       </div>
     </VSheet>
   </VMenu>
-  <VDialog v-model="isDialogVisible" width="auto">
+  <VDialog v-model="isDialogVisible" width="auto" persistent>
     <ConfimDialogView
       :title="t('confirm')"
       :message="t('logout_confirm_message')"
@@ -80,7 +80,7 @@ const onConfirmed = () => {
       @confirmed="onConfirmed"
     />
   </VDialog>
-  <VDialog v-model="showProfileView" width="auto">
+  <VDialog v-model="showProfileView" width="auto" persistent>
     <ProfileDropdown @form:cancel="showProfileView = false" />
   </VDialog>
 </template>

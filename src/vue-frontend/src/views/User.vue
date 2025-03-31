@@ -47,11 +47,12 @@ const openConfirmDialog = (user: IUser) => {
   isConfirmDialogVisible.value = true;
 };
 // Get list user from api API
-const fetchUsers = async () => {
+const fetchUsers = async (searchQuery: string = "") => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getAllUsers(keyWord.value);
+    // 検索キーワードが空でも呼び出せる
+    const response = await getAllUsers(searchQuery);
     loadUser(response);
     console.log("response", response);
   } catch (error) {
@@ -60,7 +61,19 @@ const fetchUsers = async () => {
     isLoading.value = false;
   }
 };
-
+const handleSearch = () => {
+  if (!keyWord.value.trim()) {
+    // 入力が空の場合、リストを再表示（全データを取得）
+    fetchUsers();
+  } else {
+    // 入力がある場合は検索を実行
+    fetchUsers(keyWord.value);
+  }
+};
+const handleClear = () => {
+  keyWord.value = ""; // 検索ボックスをクリア
+  fetchUsers(); // 全ユーザーを再表示
+};
 const loadUser = (lst: any) => {
   users.value = lst.map((user: IUser) => ({
     ...user,
@@ -136,10 +149,10 @@ onMounted(() => {
                 clearable
                 variant="plain"
                 class="search"
-                @click:clear="fetchUsers"
-                @keydown.enter="fetchUsers"
+                @click:clear="handleClear"
+                @keydown.enter="handleSearch"
               />
-              <VBtn icon density="comfortable" @click="fetchUsers">
+              <VBtn icon density="comfortable" @click="handleSearch">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
             </VToolbar>
@@ -209,7 +222,7 @@ onMounted(() => {
       @refetch-data="fetchUsers"
     />
   </VDialog>
-  <VDialog v-model="isConfirmDialogVisible" width="auto">
+  <VDialog v-model="isConfirmDialogVisible" width="auto" persistent>
     <ConfimDialogView
       :title="t('confirm')"
       :message="t('delete_confirm_message')"

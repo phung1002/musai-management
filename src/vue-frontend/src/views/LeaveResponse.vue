@@ -4,10 +4,7 @@ import { ref, reactive, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { ILeaveResponse } from "@/types/type";
 import { toast } from "vue3-toastify";
-import {
-  allLeaveRequests,
-  updateLeaveRespond,
-} from "@/api/response";
+import { allLeaveRequests, updateLeaveRespond } from "@/api/response";
 import { format } from "date-fns"; // 日付フォーマットライブラリ
 import LeaveResponseDetails from "@/components/ui/LeaveResponseDetails.vue";
 const { t } = useI18n();
@@ -37,11 +34,12 @@ const loadLeave = (lst: any) => {
   }));
 };
 // 申請リスト取得 API呼び出し
-const fetchLeaveType = async () => {
+const fetchLeaveType = async (searchQuery: string = "") => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await allLeaveRequests(keyWord.value); // API呼び出
+    // 検索キーワードが空でも呼び出せる
+    const response = await allLeaveRequests(searchQuery); // API呼び出
     loadLeave(response); // リスト更新
   } catch (error) {
     isError.value = true;
@@ -49,6 +47,19 @@ const fetchLeaveType = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+const handleSearch = () => {
+  if (keyWord.value.trim()) {
+    // キーワードがある場合は検索実行
+    fetchLeaveType(); // 入力がある場合はAPIでリストを取得
+  } else {
+    // キーワードが空の場合、リストを再表示
+    fetchLeaveType(keyWord.value);
+  }
+};
+const handleClear = () => {
+  keyWord.value = ""; // 検索ボックスをクリア
+  fetchLeaveType(); // 全ユーザーを再表示
 };
 // 許可処理
 const approve = async (id: number) => {
@@ -119,10 +130,10 @@ onMounted(() => {
                 clearable
                 variant="plain"
                 class="search"
-                @click:clear="fetchLeaveType"
-                @keydown.enter="fetchLeaveType"
+                @click:clear="handleClear"
+                @keydown.enter="handleSearch"
               />
-              <VBtn icon density="comfortable" @click="fetchLeaveType">
+              <VBtn icon density="comfortable" @click="handleSearch">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
             </VToolbar>
@@ -141,12 +152,14 @@ onMounted(() => {
                 {{ index + 1 }}
               </template>
               <template v-slot:item.status="{ item }">
-                <span
-                  :style="{ color: getStatusColor(item.status) }"
-                  class="status-text"
-                >
-                  {{ t(`application_status.${item.status}`) }}
-                </span>
+                <VChipGroup column active-class="bg-primary text-white">
+                  <VChip
+                    :style="{ color: getStatusColor(item.status) }"
+                    text-color="white"
+                  >
+                    {{ t(`application_status.${item.status}`) }}
+                  </VChip>
+                </VChipGroup>
               </template>
               <!-- アクション　設定  -->
               <template v-slot:item.action="{ item }">
@@ -189,7 +202,7 @@ onMounted(() => {
       </VContainer>
     </VCol>
   </VRow>
-  <VDialog v-model="detailsCard" width="auto">
+  <VDialog v-model="detailsCard" width="auto" persistent>
     <LeaveResponseDetails
       @form:cancel="detailsCard = false"
       @fetch="fetchLeaveType"

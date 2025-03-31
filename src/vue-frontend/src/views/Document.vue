@@ -27,6 +27,7 @@ const pdfUrl = ref<string>(""); // PDFファイルURL
 const isLoading = ref(false); // ローディング
 const isError = ref(false); // エラープラグ
 const userRoles = computed(() => userStore.roles || []);
+const isUser = computed(() => userStore.id); // ユーザーかどうかの判定
 // // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
@@ -146,7 +147,7 @@ onMounted(() => {
                 @click="handleCreateItem"
                 variant="elevated"
                 ><v-icon icon="mdi-plus" start></v-icon>{{ t("upload") }}
-                <VDialog v-model="applyFrom" width="auto" eager>
+                <VDialog v-model="applyFrom" width="auto" eager persistent>
                   <UploadForm
                     @form:cancel="applyFrom = false"
                     @fetch="fetchDocuments"
@@ -177,6 +178,7 @@ onMounted(() => {
                     v-if="userRoles.includes(ERole.MEMBER)"
                     variant="plain"
                     class="action-btn"
+                    :disabled="item.userId !== isUser"
                     @click="handleDeleteItem(item.id)"
                   >
                     <VIcon color="red">mdi-delete</VIcon>
@@ -197,7 +199,7 @@ onMounted(() => {
       </VContainer>
     </VCol>
   </VRow>
-  <VDialog v-model="isDialogVisible" width="auto">
+  <VDialog v-model="isDialogVisible" width="auto" persistent>
     <ConfimDialogView
       :title="t('confirm')"
       :message="t('delete_confirm_message')"
@@ -207,7 +209,7 @@ onMounted(() => {
     />
   </VDialog>
   <!-- PDFプレビュー表示ダイアログ -->
-  <VDialog v-model="isPreviewDialogVisible" width="auto">
+  <VDialog v-model="isPreviewDialogVisible" width="auto" persistent>
     <PdfPreview
       :pdfUrl="pdfUrl"
       :pdfTitle="pdfTitle"

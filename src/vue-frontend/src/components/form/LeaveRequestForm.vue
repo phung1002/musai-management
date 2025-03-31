@@ -1,6 +1,6 @@
 <!-- 休暇申請　フォーム -->
 <script lang="ts" setup>
-import { Ref, ref, onMounted, watch, nextTick } from "vue";
+import { Ref, ref, onMounted, watch, nextTick, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
@@ -55,6 +55,31 @@ const defaultLeave = {
   value: "",
   children: [],
 };
+
+const disableWeekends = (date: string) => {
+  const day = new Date(date).getDay();
+  return day !== 0 && day !== 6; // 0:日曜日, 6:土曜日
+};
+// checkDateRange メソッド定義
+const checkDateRange = (startDate: Date | null) => (endDate: Date | null) => {
+  // startDate と endDate が両方とも null でない場合に処理を行う
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (start > end) {
+      return t("validation.invalid_date_range"); // 開始日が終了日より未来の場合
+    }
+  }
+
+  return true; // バリデーションが通った場合
+};
+
+// endDate のバリデーション
+const endDateValidation = computed(() => {
+  return checkDateRange(formModel.value.startDate)(formModel.value.endDate);
+});
+
 const paidLeave: Ref<ILeaveTypes> = ref(defaultLeave);
 const publicLeave: Ref<ILeaveTypes> = ref(defaultLeave);
 const paidBox = ref(null);
@@ -185,9 +210,21 @@ const onConfirm = async () => {
     toast.error(t("error.validation_error"));
     return;
   }
-  messageConfirm.value = t("message.confirm_leave_application", requestDays);
+  // 確認ダイアログ表示
+  if (!props.isEdit) {
+    messageConfirm.value = t("message.confirm_leave_application", requestDays);
+    console.log("messageConfirm.value", messageConfirm.value);
 
-  isDialogVisible.value = true;
+    isDialogVisible.value = true;
+  } else {
+    messageConfirm.value = t(
+      "message.confirm_leave_application_change",
+      requestDays
+    );
+    console.log("messageConfirm.value", messageConfirm.value);
+
+    isDialogVisible.value = true;
+  }
 };
 
 const resetForm = async () => {
@@ -320,7 +357,7 @@ const handleCancel = () => {
               <VCol cols="9">
                 <VTextField
                   v-model="formModel.startDate"
-                  :rules="[validator.required]"
+                  :rules="[validator.required, validator.validateNoWeekend]"
                   input
                   type="date"
                 />
@@ -333,7 +370,11 @@ const handleCancel = () => {
               <VCol cols="9">
                 <VTextField
                   v-model="formModel.endDate"
-                  :rules="[validator.required]"
+                  :rules="[
+                    validator.required,
+                    checkDateRange(formModel.startDate),
+                    validator.validateNoWeekend,
+                  ]"
                   input
                   type="date"
                 />
@@ -365,7 +406,7 @@ const handleCancel = () => {
       </VBtn>
     </VCardActions>
     <!-- 確認ダイアログ表示 -->
-    <VDialog v-model="isDialogVisible" width="auto" eager>
+    <VDialog v-model="isDialogVisible" width="auto" eager persistent>
       <ConfimDialogView
         :title="t('confirm')"
         :message="messageConfirm"
