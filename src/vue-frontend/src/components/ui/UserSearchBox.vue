@@ -32,11 +32,12 @@ const isLoading = ref(false);
 const isError = ref(false);
 
 // ユーザーリスト取得API呼び出
-const fetchUsers = async () => {
+const fetchUsers = async (searchQuery: string = "") => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getAllUsers(keyWord.value);
+    // 検索キーワードが空でも呼び出せる
+    const response = await getAllUsers(searchQuery);
     loadUser(response);
     console.log("response", response);
   } catch (error) {
@@ -45,7 +46,19 @@ const fetchUsers = async () => {
     isLoading.value = false;
   }
 };
-
+const handleSearch = () => {
+  if (!keyWord.value.trim()) {
+    // 入力が空の場合、リストを再表示（全データを取得）
+    fetchUsers();
+  } else {
+    // 入力がある場合は検索を実行
+    fetchUsers(keyWord.value);
+  }
+};
+const handleClear = () => {
+  keyWord.value = ""; // キーワードを空に設定
+  fetchUsers(); // 空の検索でリストを再表示
+};
 const loadUser = (lst: any) => {
   users.value = lst.map((user: IUser) => ({
     ...user,
@@ -87,10 +100,10 @@ onMounted(() => {
           clearable
           variant="plain"
           class="search"
-          @click:clear="fetchUsers"
-          @keydown.enter="fetchUsers"
+          @click:clear="handleClear"
+          @keydown.enter="handleSearch"
         />
-        <VBtn icon density="comfortable" @click="fetchUsers">
+        <VBtn icon density="comfortable" @click="handleSearch">
           <VIcon>mdi-magnify</VIcon>
         </VBtn>
       </VToolbar>

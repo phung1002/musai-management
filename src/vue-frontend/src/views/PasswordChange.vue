@@ -123,7 +123,7 @@ const onSubmit = async () => {
               {{ t("reset") }}
             </VBtn>
           </VCardActions>
-          <VDialog v-model="isDialogVisible" width="auto" eager>
+          <VDialog v-model="isDialogVisible" width="auto" eager persistent>
             <ConfimDialogView
               :title="t('confirm')"
               :message="t('message.password_change_confirm_message')"

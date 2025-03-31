@@ -24,11 +24,11 @@ const infor = ref<IUser>({} as IUser);
 const getProfile = async () => {
   try {
     const response = await profile();
-    if (!response || !response.data) {
+    if (!response) {
       console.log("No profile data received");
       return;
     }
-    infor.value = response.data;
+    infor.value = response;
   } catch (error) {
     console.log(error);
   }

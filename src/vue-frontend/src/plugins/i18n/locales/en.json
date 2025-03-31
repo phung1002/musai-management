@@ -178,7 +178,8 @@
     "password_format": "password must include uppercase, lowercase, and numbers.",
     "furigana_format": "please enter the furigana in the correct format.",
     "half_size": "please enter half-size characters only.",
-    "invalid_date_range":"selected date does not match."
+    "invalid_date_range":"selected date does not match.",
+    "invalid_date":"invalid date"
   },
   "application_status": {
     "PENDING": "PENDING",

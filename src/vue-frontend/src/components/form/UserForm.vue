@@ -335,7 +335,7 @@ const handleCancel = () => {
       </VBtn>
     </VCardActions>
   </VCard>
-  <VDialog v-model="isDialogVisible" width="auto">
+  <VDialog v-model="isDialogVisible" width="auto" persistent>
     <ConfimDialogView
       :title="t('confirm')"
       :message="messageConfirm"

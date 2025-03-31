@@ -31,11 +31,12 @@ const loadLeave = (lst: any) => {
   }));
 };
 // 休暇リスト取得　API呼び出し
-const fetchLeaveType = async () => {
+const fetchLeaveType = async (searchQuery: string = "") => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getLeaves(keyWord.value); // API呼び出
+    // 検索キーワードが空でも呼び出せる
+    const response = await getLeaves(searchQuery); // API呼び出
     console.log("response", response);
     loadLeave(response); // リスト更新
   } catch (error) {
@@ -44,6 +45,19 @@ const fetchLeaveType = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+const handleSearch = () => {
+  if (!keyWord.value.trim()) {
+    // 入力が空の場合、リストを再表示（全データを取得）
+    fetchLeaveType();
+  } else {
+    // 入力がある場合は検索を実行
+    fetchLeaveType(keyWord.value);
+  }
+};
+const handleClear = () => {
+  keyWord.value = ""; // 検索ボックスをクリア
+  fetchLeaveType(); // 全ユーザーを再表示
 };
 // 新規作成
 const handleCreateItem = (leaveType: ILeaveTypes) => {
@@ -122,10 +136,10 @@ onMounted(() => {
                 clearable
                 variant="plain"
                 class="search"
-                @click:clear="fetchLeaveType"
-                @keydown.enter="fetchLeaveType"
+                @click:clear="handleClear"
+                @keydown.enter="handleSearch"
               />
-              <VBtn icon density="comfortable" @click="fetchLeaveType">
+              <VBtn icon density="comfortable" @click="handleSearch">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
             </VToolbar>
@@ -180,7 +194,7 @@ onMounted(() => {
     />
   </VDialog>
   <!-- 削除確認 -->
-  <VDialog v-model="isDialogVisible" width="auto" eager>
+  <VDialog v-model="isDialogVisible" width="auto" eager persistent>
     <ConfimDialogView
       :title="t('confirm')"
       :message="t('delete_confirm_message')"

@@ -177,7 +177,8 @@
     "password_format": "パスワードには大文字、小文字、数字が含まれている必要があります。",
     "furigana_format": "正しいふりがなの形式で入力してください。",
     "half_size": "半角文字のみを入力してください。",
-    "invalid_date_range":"選択された日付が一致しません。"
+    "invalid_date_range":"選択された日付が一致しません。",
+    "invalid_date":"正しい日付を入力してください。"
   },
   "application_status": {
     "PENDING": "承認待ち",

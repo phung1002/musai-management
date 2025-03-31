@@ -118,7 +118,7 @@ onUnmounted(() => {
     </VCardActions>
 
     <!-- 確認ダイアログ表示 -->
-    <VDialog v-model="isDialogVisible" width="auto" eager>
+    <VDialog v-model="isDialogVisible" width="auto" eager persistent>
       <ConfimDialogView
         :title="t('confirm')"
         :message="t('apply_confirm_message')"

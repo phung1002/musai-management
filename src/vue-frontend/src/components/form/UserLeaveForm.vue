@@ -403,7 +403,7 @@ const onConfirmed = async () => {
       }}</VBtn>
     </VCardActions>
     <!-- 確認ダイアログ表示 -->
-    <VDialog v-model="isDialogVisible" width="auto" eager>
+    <VDialog v-model="isDialogVisible" width="auto" eager persistent>
       <ConfimDialogView
         :title="t('confirm')"
         :message="
@@ -415,7 +415,7 @@ const onConfirmed = async () => {
       />
     </VDialog>
     <!-- ユーザー一覧ポップアップ -->
-    <VDialog v-model="userListVisible" width="auto" eager>
+    <VDialog v-model="userListVisible" width="auto" eager persistent>
       <UserList
         v-if="userListVisible"
         :title="t('user_lists')"

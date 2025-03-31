@@ -55,6 +55,11 @@ const defaultLeave = {
   value: "",
   children: [],
 };
+
+const disableWeekends = (date: string) => {
+  const day = new Date(date).getDay();
+  return day !== 0 && day !== 6; // 0:日曜日, 6:土曜日
+};
 // checkDateRange メソッド定義
 const checkDateRange = (startDate: Date | null) => (endDate: Date | null) => {
   // startDate と endDate が両方とも null でない場合に処理を行う
@@ -352,7 +357,7 @@ const handleCancel = () => {
               <VCol cols="9">
                 <VTextField
                   v-model="formModel.startDate"
-                  :rules="[validator.required]"
+                  :rules="[validator.required, validator.validateNoWeekend]"
                   input
                   type="date"
                 />
@@ -368,6 +373,7 @@ const handleCancel = () => {
                   :rules="[
                     validator.required,
                     checkDateRange(formModel.startDate),
+                    validator.validateNoWeekend,
                   ]"
                   input
                   type="date"
@@ -400,7 +406,7 @@ const handleCancel = () => {
       </VBtn>
     </VCardActions>
     <!-- 確認ダイアログ表示 -->
-    <VDialog v-model="isDialogVisible" width="auto" eager>
+    <VDialog v-model="isDialogVisible" width="auto" eager persistent>
       <ConfimDialogView
         :title="t('confirm')"
         :message="messageConfirm"

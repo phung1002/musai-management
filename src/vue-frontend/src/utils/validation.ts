@@ -54,4 +54,14 @@ export const useValidator = (t: Function) => ({
 
     return true;
   },
+  validateNoWeekend: (value: string) => {
+    if (!value) return true; // 空の状態ではバリデーションを通す
+    const day = new Date(value).getDay();
+
+    if (day === 0 || day === 6) {
+      return t("validation.invalid_date"); // i18n のエラーメッセージ
+    }
+
+    return true;
+  },
 });

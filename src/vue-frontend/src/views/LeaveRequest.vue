@@ -69,11 +69,12 @@ const loadUserLeave = async () => {
   } catch (error) {}
 };
 // GET申請リスト　API
-const fetchLeaveRequests = async () => {
+const fetchLeaveRequests = async (searchQuery: string = "") => {
   isLoading.value = true;
   isError.value = false;
+  // 検索キーワードが空でも呼び出せる
   try {
-    const response = await listLeaveRequestForMember(keyWord.value); //  API呼び出し
+    const response = await listLeaveRequestForMember(searchQuery); //  API呼び出し
     leaveRequests.value = response.map((leaveRequestList: ILeaveRequest) => ({
       ...leaveRequestList,
     }));
@@ -82,6 +83,19 @@ const fetchLeaveRequests = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+const handleSearch = () => {
+  if (!keyWord.value.trim()) {
+    // 入力が空の場合、リストを再表示（全データを取得）
+    fetchLeaveRequests();
+  } else {
+    // 入力がある場合は検索を実行
+    fetchLeaveRequests(keyWord.value);
+  }
+};
+const handleClear = () => {
+  keyWord.value = ""; // 検索ボックスをクリア
+  fetchLeaveRequests(); // 全ユーザーを再表示
 };
 // Call API when component is mounted
 onMounted(() => {
@@ -150,15 +164,8 @@ const getStatusColor = (status: string) => {
             <!-- 申請入力フォーム　ボタン-->
             <VCardActions>
               <VSpacer />
-              <VBtn
-                color="primary"
-                variant="elevated"
-                @click="openCreateDialog"
-              >
-                <VIcon>mdi-plus</VIcon>
-                <span class="text-lg font-medium ml-2">{{
-                  t("leave_request")
-                }}</span>
+              <VBtn color="primary" variant="elevated" @click="openCreateDialog"
+                ><v-icon icon="mdi-plus" start></v-icon>{{ t("leave_request") }}
               </VBtn>
             </VCardActions>
           </VToolbar>
@@ -173,11 +180,11 @@ const getStatusColor = (status: string) => {
                 clearable
                 variant="plain"
                 class="search"
-                @keyup.enter="fetchLeaveRequests"
+                @keyup.enter="handleSearch"
                 @click:prepend="showFilter = !showFilter"
-                @click:clear="fetchLeaveRequests"
+                @click:clear="handleClear"
               />
-              <VBtn icon @click="fetchLeaveRequests" density="comfortable">
+              <VBtn icon @click="handleSearch" density="comfortable">
                 <VIcon>mdi-magnify</VIcon>
               </VBtn>
             </VToolbar>
@@ -198,15 +205,15 @@ const getStatusColor = (status: string) => {
               </template>
               <!--   -->
               <template v-slot:item.status="{ item }">
-                <span
-                  :style="{ color: getStatusColor(item.status) }"
-                  class="status-text"
-                >
-                  {{ t(`application_status.${item.status}`) }}
-                </span>
+                <VChipGroup column active-class="bg-primary text-white">
+                  <VChip
+                    :style="{ color: getStatusColor(item.status) }"
+                    text-color="white"
+                  >
+                    {{ t(`application_status.${item.status}`) }}
+                  </VChip>
+                </VChipGroup>
               </template>
-
-              <!--   -->
               <template v-slot:item.startDate="{ item }">
                 {{ convertDate(item.startDate) }}
               </template>
@@ -245,7 +252,7 @@ const getStatusColor = (status: string) => {
       </VContainer>
     </VCol>
   </VRow>
-  <VDialog v-model="isDialogVisible" width="auto">
+  <VDialog v-model="isDialogVisible" width="auto" persistent>
     <LeaveRequestForm
       :isEdit="isEdit"
       :application="selectedRequest"
@@ -254,7 +261,7 @@ const getStatusColor = (status: string) => {
       @refetch-userleave="loadUserLeave"
     />
   </VDialog>
-  <VDialog v-model="isConfirmDialogVisible" width="auto">
+  <VDialog v-model="isConfirmDialogVisible" width="auto" persistent>
     <ConfimDialogView
       :title="t('confirm')"
       :message="t('cancel_confirm_message')"

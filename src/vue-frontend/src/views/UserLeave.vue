@@ -50,11 +50,11 @@ const loadLeave = (lst: any) => {
   }));
 };
 // ユーザー休暇リスト取得 API呼び出し
-const fetchLeaveType = async () => {
+const fetchLeaveType = async (searchQuery: string = "") => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getUserLeaves(keyWord.value); // API呼び出
+    const response = await getUserLeaves(searchQuery); // API呼び出
     console.log("response ss", response);
     loadLeave(response); // リスト更新
   } catch (error) {
@@ -64,7 +64,19 @@ const fetchLeaveType = async () => {
     isLoading.value = false;
   }
 };
-
+const handleSearch = () => {
+  if (!keyWord.value.trim()) {
+    // 入力が空の場合、リストを再表示（全データを取得）
+    fetchLeaveType();
+  } else {
+    // 入力がある場合は検索を実行
+    fetchLeaveType(keyWord.value);
+  }
+};
+const handleClear = () => {
+  keyWord.value = ""; // 検索ボックスをクリア
+  fetchLeaveType(); // 全ユーザーを再表示
+};
 // 追加用ダイアログ表示
 const handleCreateItem = (leaveType: IUserLeaves) => {
   selectedLeave.value = leaveType; // 新規作成なのでリセット
@@ -129,10 +141,10 @@ onMounted(() => {
                     clearable
                     variant="plain"
                     class="search"
-                    @click:clear="fetchLeaveType"
-                    @keydown.enter="fetchLeaveType"
+                    @click:clear="handleClear"
+                    @keyup.enter="handleSearch"
                   />
-                  <VBtn icon density="comfortable" @click="fetchLeaveType">
+                  <VBtn icon density="comfortable" @click="handleSearch">
                     <VIcon>mdi-magnify</VIcon>
                   </VBtn>
                 </VToolbar>
@@ -161,7 +173,12 @@ onMounted(() => {
                         @click="handleEditItem(item)"
                       >
                         <VIcon color="blue">mdi-pencil</VIcon>
-                        <VDialog v-model="editForm" width="auto" eager>
+                        <VDialog
+                          v-model="editForm"
+                          width="auto"
+                          eager
+                          persistent
+                        >
                         </VDialog>
                       </VBtn>
                     </div>
