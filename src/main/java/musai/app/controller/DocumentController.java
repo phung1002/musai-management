@@ -43,7 +43,7 @@ public class DocumentController {
 			List<DocumentResponseDTO> files = documentService.listAllFiles();
 			return ResponseEntity.ok(files);
 		} catch (IOException e) {
-			return ResponseEntity.internalServerError().body("file_upload_failed");
+			return ResponseEntity.internalServerError().body(e.getMessage());
 		}
 	}
 
@@ -55,7 +55,7 @@ public class DocumentController {
 			files = documentService.listFilesForMember(principal);
 			return ResponseEntity.ok(files);
 		} catch (IOException e) {
-			return ResponseEntity.internalServerError().body("file_upload_failed");
+			return ResponseEntity.internalServerError().body(e.getMessage());
 		}
 	}
 
