@@ -84,7 +84,7 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 	@Override
 	public void updateUsedDaysRemainedDays(Long id, double usedDay) {
 		UserLeave userLeave = userLeaveRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("user_leave_not_foun"));
+				.orElseThrow(() -> new NotFoundException("user_leave_not_found"));
 		userLeave.setUsedDays(usedDay);
 		userLeave.setRemainedDays(userLeave.getTotalDays() - usedDay);
 	}

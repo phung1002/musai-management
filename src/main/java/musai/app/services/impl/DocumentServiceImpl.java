@@ -73,6 +73,7 @@ public class DocumentServiceImpl implements DocumentService {
 	        document.getId(),
 	        cleanFileName(file.getName()),
 	        file.getPath(),
+	        document.getUploadBy().getId(),
 	        document.getUploadBy().getFullName(),
 	        document.getUploadAt()
 	    );
