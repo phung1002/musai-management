@@ -18,8 +18,8 @@ public interface DocumentService {
 	
 	Document uploadFile(MultipartFile file, UserDetailsImpl principal) throws IOException;
 
-	void deleteDocument(Long id, Long deletedBy) throws IOException;
+	void deleteDocument(Long id, Long deletedBy) throws Exception;
 
-	Resource previewDocument(Long documentId) throws IOException;
+	Resource previewDocument(Long documentId) throws Exception;
 
 }

@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -137,12 +136,11 @@ public class DocumentServiceImpl implements DocumentService {
 		document.setUploadBy(user);
 		document.setUploadAt(LocalDateTime.now());
 
-		// Save the document metadata to the database
 		return documentRepository.save(document);
 	}
 
 	@Override
-	public void deleteDocument(Long documentId, Long userId) throws IOException {
+	public void deleteDocument(Long documentId, Long userId) throws Exception {
 		Document document = documentRepository.findById(documentId)
 				.orElseThrow(() -> new NotFoundException("file_not_found"));
 
@@ -166,7 +164,7 @@ public class DocumentServiceImpl implements DocumentService {
 	}
 
 	@Override
-	public Resource previewDocument(Long documentId) throws IOException {
+	public Resource previewDocument(Long documentId) throws Exception {
 		Document document = documentRepository.findById(documentId)
 				.orElseThrow(() -> new NotFoundException("file_not_found"));
 
