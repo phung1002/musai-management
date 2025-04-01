@@ -92,10 +92,10 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 	// Create new leave user_leaves
 	public UserLeave createUserLeave(UserLeaveRequestDTO userLeaveRequestDTO) {
 		// userId
-		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getUserId())
+		User existingUser = userRepository.findById(userLeaveRequestDTO.getUserId())
 				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 		// leaveTypeId
-		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getLeaveTypeId())
+		LeaveType leaveType = leaveTypeResposity.findById(userLeaveRequestDTO.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
 
 		UserLeave userLeave = new UserLeave();
@@ -120,10 +120,10 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		UserLeave existingUserLeave = userLeaveRepository.findById(userLeaveRequestDTO.getId())
 				.orElseThrow(() -> new NotFoundException("user_leave_not_found"));
 		// userId
-		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getUserId())
+		User existingUser = userRepository.findById(userLeaveRequestDTO.getUserId())
 				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 		// leaveTypeId
-		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(userLeaveRequestDTO.getLeaveTypeId())
+		LeaveType leaveType = leaveTypeResposity.findById(userLeaveRequestDTO.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
 		// update information of user
 		existingUserLeave.setUser(existingUser);

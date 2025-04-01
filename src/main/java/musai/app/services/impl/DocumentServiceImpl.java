@@ -65,13 +65,11 @@ public class DocumentServiceImpl implements DocumentService {
 			documents = documentRepository.findByUploadById(userId);
 		} else {
 			// Get all, if don't have user id
-			documents = documentRepository.findAll();
+			documents = documentRepository.findAllActive();
 		}
 
 		for (Document document : documents) {
 			Path filePath = Paths.get(uploadDir + document.getPath());
-			System.out.println(filePath);
-			System.out.println(document.getTitle());
 			if (Files.exists(filePath)) {
 				// If exist, add to response
 				response.add(mapToDTO(document, filePath.toFile()));
@@ -109,7 +107,7 @@ public class DocumentServiceImpl implements DocumentService {
 		if (contentType == null || !contentType.equals("application/pdf")) {
 			throw new IllegalArgumentException("only_pdf_allowed");
 		}
-		User user = userRepository.findByIdAndDeletedAtIsNull(principal.getId())
+		User user = userRepository.findById(principal.getId())
 				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		// Check if the file size exceeds the maximum limit of 5MB

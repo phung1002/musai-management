@@ -14,14 +14,14 @@ public interface UserLeaveRepository extends JpaRepository<UserLeave, Long> {
 
 	List<UserLeave> findByLeaveTypeId(Long leaveTypeId);
 
-	UserLeave findByIdAndDeletedAtIsNull(Long id);
-
 	List<UserLeave> findByUserId(Long id);
 
-	@Query("SELECT ul FROM UserLeave ul WHERE ul.deletedAt IS NULL ORDER BY ul.validTo DESC")
+	@Query("SELECT ul FROM UserLeave ul WHERE ul.deletedAt IS NULL AND ul.user.deletedAt IS NULL "
+			+ "AND ul.leaveType.deletedAt IS NULL ORDER BY ul.validTo DESC")
 	List<UserLeave> findAllActive();
 
-	@Query("SELECT ul FROM UserLeave ul WHERE ul.deletedAt IS NULL "
+	@Query("SELECT ul FROM UserLeave ul WHERE ul.deletedAt IS NULL AND ul.user.deletedAt IS NULL "
+			+ "AND ul.leaveType.deletedAt IS NULL "
 			+ "AND LOWER(ul.user.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " + "ORDER BY ul.validTo DESC")
 	List<UserLeave> findActiveByKeyContaining(@Param("keyword") String keyword);
 

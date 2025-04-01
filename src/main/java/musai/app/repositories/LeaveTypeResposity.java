@@ -1,7 +1,6 @@
 package musai.app.repositories;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,8 +13,6 @@ import musai.app.models.LeaveType;
 public interface LeaveTypeResposity extends JpaRepository<LeaveType, Long> {
 
 	Boolean existsByName(String name);
-
-	Optional<LeaveType> findByIdAndDeletedAtIsNull(Long id);
 	
 	LeaveType findByName(String name);
 
@@ -25,7 +22,7 @@ public interface LeaveTypeResposity extends JpaRepository<LeaveType, Long> {
 	@Query("SELECT lt FROM LeaveType lt WHERE lt.deletedAt IS NULL")
 	List<LeaveType> findAllActive();
 	
-	List<LeaveType> findByParentIdAndDeletedAtIsNull(Long parentId); 
+	List<LeaveType> findByParentId(Long parentId); 
 	
 }
  

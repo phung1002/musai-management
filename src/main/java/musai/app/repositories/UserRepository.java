@@ -18,10 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	Boolean existsByEmail(String email);
 
-	List<User> findAllByDeletedAtIsNull();
-
-	Optional<User> findByIdAndDeletedAtIsNull(Long id);
-
 	@Query("SELECT u FROM User u WHERE u.deletedAt IS NULL "
 			+ "AND LOWER(u.username) LIKE LOWER(CONCAT('%', :keyword, '%'))"
 			+ "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))"

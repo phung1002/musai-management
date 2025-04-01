@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 	public List<UserResponseDTO> getAllUsers(String keyword) {
 		List<User> users = StringUtils.hasText(keyword)
 				? userRepository.findActiveByKeyContaining(keyword)
-				: userRepository.findAllByDeletedAtIsNull();
+				: userRepository.findAll();
 
 		// If the list is empty, return an empty list
 		if (users.isEmpty()) {
@@ -127,7 +127,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO, UserDetailsImpl principal) {
 		// Find User by ID
-		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
+		User existingUser = userRepository.findById(userId)
 				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		// Check user name or email exist (unless belong to current user)
@@ -204,7 +204,7 @@ public class UserServiceImpl implements UserService {
 		if (isUserModifyingSelf(userId, principal)) {
 			throw new ForbiddenException("cannot_delete_your_self");
 		}
-		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
+		User existingUser = userRepository.findById(userId)
 				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		existingUser.setDeletedAt(LocalDateTime.now());
@@ -226,7 +226,7 @@ public class UserServiceImpl implements UserService {
 	// get detail
 	@Override
 	public UserResponseDTO detailUser(Long userId) {
-		User existingUser = userRepository.findByIdAndDeletedAtIsNull(userId)
+		User existingUser = userRepository.findById(userId)
 				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		return new UserResponseDTO(existingUser.getId(), existingUser.getUsername(), existingUser.getEmail(),
@@ -240,7 +240,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public MessageResponse changePassword(ChangePasswordRequestDTO changePasswordRequestDTO,
 			UserDetailsImpl principal) {
-		User user = userRepository.findByIdAndDeletedAtIsNull(principal.getId())
+		User user = userRepository.findById(principal.getId())
 				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		if (!encoder.matches(changePasswordRequestDTO.getPassword(), user.getPassword())) {
