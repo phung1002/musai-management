@@ -167,7 +167,8 @@
     "cannot_remove_own_admin_role": "自身の管理者権限を削除することは許可されていません。",
     "cannot_delete_your_self": "自分を削除することはできません。",
     "user_leave_not_found": "社員の休暇が見つかりません。",
-    "leave_type_not_found": "休暇区分が見つかりません。"
+    "leave_type_not_found": "休暇区分が見つかりません。",
+    "file_not_found_in_directory": "指定されたディレクトリにファイルが見つかりませんでした。"
   },
   "validation": {
     "required_input": "このフィールドは必須です。",

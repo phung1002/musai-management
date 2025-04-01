@@ -44,22 +44,18 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Override
 	public List<DocumentResponseDTO> listAllFiles() {
-		Path uploadPath = Paths.get(uploadDir);
-		return processFilesAndSyncDB(uploadPath, null);
+		
+		return processFilesAndSyncDB(null);
+		
 	}
 
 	@Override
 	public List<DocumentResponseDTO> listFilesForMember(UserDetailsImpl principal) {
-		Path userDir = Paths.get(uploadDir, String.valueOf(principal.getId()));
 
-		if (!Files.exists(userDir) || !Files.isDirectory(userDir)) {
-			return Collections.emptyList();
-		}
-
-		return processFilesAndSyncDB(userDir, principal.getId());
+		return processFilesAndSyncDB(principal.getId());
 	}
 
-	private List<DocumentResponseDTO> processFilesAndSyncDB(Path directoryPath, Long userId) {
+	private List<DocumentResponseDTO> processFilesAndSyncDB(Long userId) {
 		List<DocumentResponseDTO> response = new ArrayList<>();
 
 		List<Document> documents;
@@ -74,8 +70,9 @@ public class DocumentServiceImpl implements DocumentService {
 		}
 
 		for (Document document : documents) {
-			Path filePath = directoryPath.resolve(document.getTitle());
-
+			Path filePath = Paths.get(uploadDir + document.getPath());
+			System.out.println(filePath);
+			System.out.println(document.getTitle());
 			if (Files.exists(filePath)) {
 				// If exist, add to response
 				response.add(mapToDTO(document, filePath.toFile()));
@@ -169,7 +166,7 @@ public class DocumentServiceImpl implements DocumentService {
 	}
 
 	@Override
-	public Resource previewDocument(Long documentId) throws Exception {
+	public Resource previewDocument(Long documentId) throws IOException {
 		Document document = documentRepository.findById(documentId)
 				.orElseThrow(() -> new NotFoundException("file_not_found"));
 

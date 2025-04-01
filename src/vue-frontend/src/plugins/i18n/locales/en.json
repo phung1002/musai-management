@@ -168,7 +168,8 @@
     "username_already_exist":"Username already exists.",
     "cannot_remove_own_admin_role":"You are not allowed to remove your own ADMIN permissions.",
     "cannot_delete_your_self":"Can not delete your self",
-    "user_leave_not_found":"User Leave not found"
+    "user_leave_not_found":"User Leave not found",    
+    "file_not_found_in_directory": "File not found in the specified directory."
   },
   "validation": {
     "required_input": "this field is required",
