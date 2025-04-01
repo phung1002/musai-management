@@ -46,7 +46,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 	public MessageResponse updateLeaveType(Long id, LeaveTypeRequestDTO leaveTypeDTO) {
 
 		LeaveType existingLeaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
+				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
 		if (!leaveTypeDTO.getName().equals(existingLeaveType.getName())) {
 			if (leaveTypeResposity.existsByName(leaveTypeDTO.getName())) {
 				throw new BadRequestException("Error: Name is already taken!");
@@ -67,7 +67,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 	public MessageResponse deleteLeaveType(Long id) throws NoResultException {
 
 		LeaveType existingLeaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
+				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
 
 		List<LeaveType> childrenTypes = leaveTypeResposity.findByParentIdAndDeletedAtIsNull(id);
 
@@ -132,7 +132,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 	@Override
 	public LeaveTypeParentResponseDTO getLeaveTypeDetail(Long id) {
 		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new NotFoundException("Error: LeaveType not found"));
+				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
 
 		Long parentId = null;
 		if (leaveType.getParent() != null) {

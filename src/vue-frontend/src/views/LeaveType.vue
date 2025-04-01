@@ -12,7 +12,7 @@ const keyWord = ref("");
 const addLeaves = ref(false); // 休暇追加・編集フォーム表示
 const isDialogVisible = ref(false); // 削除確認ダイアログ表示
 const errorMessage = ref(""); // エラーメッセージ管理
-const selectedId = ref<ILeaveTypes>({} as ILeaveTypes);
+const selectedLeaveType = ref<ILeaveTypes>({} as ILeaveTypes);
 const selectedLeave = ref<ILeaveTypes | undefined>(undefined); // 編集する休暇情報
 const isEdit = ref(false); // 編集モードかどうか
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
@@ -37,7 +37,6 @@ const fetchLeaveType = async (searchQuery: string = "") => {
   try {
     // 検索キーワードが空でも呼び出せる
     const response = await getLeaves(searchQuery); // API呼び出
-    console.log("response", response);
     loadLeave(response); // リスト更新
   } catch (error) {
     isError.value = true;
@@ -62,35 +61,32 @@ const handleClear = () => {
 // 新規作成
 const handleCreateItem = (leaveType: ILeaveTypes) => {
   selectedLeave.value = leaveType; // 新規作成なのでリセット
-  console.log("新規作成");
-  console.log(isEdit.value);
   addLeaves.value = true;
   isEdit.value = false;
 };
 // 編集
 const handleEditItem = (leave: ILeaveTypes) => {
   selectedLeave.value = { ...leave }; // 選択データをセット
-  console.log("編集対象", selectedLeave.value);
   addLeaves.value = true;
   isEdit.value = true;
 };
 // 削除
 const handleDeleteItem = (leave: ILeaveTypes) => {
-  selectedId.value = leave;
+  selectedLeaveType.value = leave;
   isDialogVisible.value = true;
-  console.log("delete", leave);
 };
 // 削除確認ダイアログのOKボタン押した際イベント
 const onDeleted = async () => {
   // ここに処理を追加
-  if (!selectedId.value.id) return;
+  if (!selectedLeaveType.value.id) return;
   errorMessage.value = "";
   try {
-    await deleteLeave(selectedId.value.id);
-    console.log(`休暇ID ${selectedId.value.id} を削除しました`);
+    await deleteLeave(selectedLeaveType.value.id);
     toast.success(t("message.delete_success"));
     fetchLeaveType(); // リスト更新
   } catch (error: any) {
+    console.log(error.message);
+
     if (error.status == 403) {
       toast.error(t("message.delete_your_self"));
     } else {

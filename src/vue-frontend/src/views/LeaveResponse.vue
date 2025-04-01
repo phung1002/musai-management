@@ -12,7 +12,6 @@ const keyWord = ref("");
 const LeaveRequests = ref<ILeaveResponse[]>([]); // 休暇リスト
 const selectedResponse = ref<ILeaveResponse>({} as ILeaveResponse);
 const detailsCard = ref(false);
-const isDetails = ref(false);
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 // // テーブル　ヘッダー
@@ -49,7 +48,7 @@ const fetchLeaveType = async (searchQuery: string = "") => {
   }
 };
 const handleSearch = () => {
-  if (keyWord.value.trim()) {
+  if (!keyWord.value.trim()) {
     // キーワードがある場合は検索実行
     fetchLeaveType(); // 入力がある場合はAPIでリストを取得
   } else {
@@ -67,7 +66,8 @@ const approve = async (id: number) => {
     await updateLeaveRespond(id, "APPROVED");
     toast.success(t("message.approved_success"));
     await fetchLeaveType(); // 最新データを取得
-  } catch (error) {
+  } catch (error: any) {
+    toast.error(t(error.message));
     console.error("Error approving request:", error);
   }
 };
@@ -77,7 +77,8 @@ const reject = async (id: number) => {
     await updateLeaveRespond(id, "REJECTED");
     toast.success(t("message.rejected_success"));
     await fetchLeaveType(); // 最新データを取得
-  } catch (error) {
+  } catch (error: any) {
+    toast.error(t(error.message));
     console.error("Error rejecting request:", error);
   }
 };
@@ -97,14 +98,11 @@ const getStatusColor = (status: string) => {
 };
 const details = (LeaveResponse: ILeaveResponse) => {
   detailsCard.value = true;
-  isDetails.value = true;
   selectedResponse.value = LeaveResponse;
-  console.log(LeaveResponse);
 };
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
   fetchLeaveType();
-  console.log("ok");
 });
 </script>
 <template>
@@ -206,7 +204,6 @@ onMounted(() => {
     <LeaveResponseDetails
       @form:cancel="detailsCard = false"
       @fetch="fetchLeaveType"
-      :isDetails="isDetails"
       :LeaveResponse="selectedResponse"
     />
   </VDialog>

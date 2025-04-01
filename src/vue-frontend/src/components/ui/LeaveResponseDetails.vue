@@ -18,7 +18,6 @@ const targetId = ref<number | null>(null); // 取り消す ID を保持
 
 // 取り消しボタンを押した時
 const handleRevoked = (id: number) => {
-  console.log(targetId.value);
   targetId.value = id;
   isDialogVisible.value = true;
 };
@@ -26,8 +25,6 @@ const handleRevoked = (id: number) => {
 // API に削除リクエストを送信
 const onRevoked = async () => {
   if (targetId.value === null) return;
-  console.log(targetId.value);
-
   try {
     await updateLeaveRespond(targetId.value, ELeaveStatus.REVOKED);
     toast.success(t("message.cancel_success"));
@@ -35,9 +32,9 @@ const onRevoked = async () => {
     isDialogVisible.value = false; // ダイアログを閉じる
     emit("fetch");
     handleCancel();
-  } catch (error) {
+  } catch (error: any) {
+    toast.error(t(error.message));
     console.error("Error rejecting request:", error);
-    toast.error(t("message.error_occurred"));
   }
 };
 </script>
