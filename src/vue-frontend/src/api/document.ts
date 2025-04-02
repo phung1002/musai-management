@@ -3,8 +3,6 @@ import { IDocument } from "@/types/type";
 
 // ドキュメントアップロードAPI呼び出し
 export async function uploadDocument(file: File): Promise<IDocument> {
-  console.log("アップロード開始 - ファイル情報:", file);
-
   const formData = new FormData();
   formData.append("file", file);
   try {
@@ -13,24 +11,16 @@ export async function uploadDocument(file: File): Promise<IDocument> {
         "Content-Type": "multipart/form-data",
       },
     });
-    console.log("アップロード成功 - レスポンスデータ:", response.data);
-
-    return {
-      id: response.data.id,
-      title: file.name,
-      filePath: response.data.filePath,
-      submitDate: new Date().toISOString().split("T")[0],
-    };
-  } catch (error) {
+    return  response.data;
+  } catch (error : any) {
     console.error("アップロード失敗:", error);
-    throw error;
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 // ドキュメント取得API呼び出し
 export async function getDocuments(): Promise<IDocument[]> {
   try {
     const response = await axiosIns.get<IDocument[]>("/documents/all");
-    console.log("response.data", response.data);
     return response.data;
   } catch (error) {
     console.error("List user failed:", error);
@@ -41,13 +31,7 @@ export async function getDocumentsOfMember(
   userId?: number
 ): Promise<IDocument[]> {
   try {
-    let response;
-
-    // userIdが渡されていれば、そのユーザーの書類を取得
-
-    response = await axiosIns.get<IDocument[]>(`/documents`);
-
-    console.log("response.data", response.data);
+    let response = await axiosIns.get<IDocument[]>(`/documents`);
     return response.data;
   } catch (error) {
     console.error("List documents failed:", error);
@@ -58,10 +42,9 @@ export async function getDocumentsOfMember(
 export async function deleteDocument(id: number): Promise<void> {
   try {
     await axiosIns.delete(`/documents/${id}`);
-    console.log("Delete document successfully");
-  } catch (error) {
+  } catch (error : any) {
     console.error("Delete document failed:", error);
-    throw error;
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 // ドキュメントプレビューAPI
@@ -71,8 +54,6 @@ export async function getDocumentPreview(id: number): Promise<{ file: File }> {
       responseType: "blob",
     });
 
-    console.log(response.data);
-
     // 取得したFileオブジェクトを返す
     const file = new File([response.data], "fileName.pdf", {
       type: "application/pdf",
@@ -81,32 +62,8 @@ export async function getDocumentPreview(id: number): Promise<{ file: File }> {
     return {
       file: file, // Fileオブジェクトを返す
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Document preview failed:", error);
-    throw error;
-  }
-}
-// ドキュメントダウンロードAPI呼び出し
-export async function downloadDocument(
-  id: number,
-  documentName: string
-): Promise<void> {
-  try {
-    const response = await axiosIns.get(`/documents/${id}/download`, {
-      responseType: "blob", // バイナリデータを取得
-    });
-
-    // ダウンロード処理
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", documentName); // ファイル名指定
-    document.body.appendChild(link);
-    link.click();
-    window.URL.revokeObjectURL(url); // メモリ解放
-    console.log("Download document successfully");
-  } catch (error) {
-    console.error("ドキュメントのダウンロードに失敗しました:", error);
-    throw new Error("ドキュメントのダウンロードに失敗しました");
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }

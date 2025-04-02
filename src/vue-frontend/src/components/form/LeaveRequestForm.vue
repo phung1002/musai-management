@@ -151,6 +151,7 @@ const handleSubmit = async () => {
       handleCancel();
     } catch (error: any) {
       toast.error(t(error.message));
+      return;
     }
   } else {
     //update
@@ -164,6 +165,7 @@ const handleSubmit = async () => {
       emit("refetch-userleave");
     } catch (error: any) {
       toast.error(t(error.message));
+      return;
     } finally {
       submiting.value = false;
     }
@@ -213,16 +215,12 @@ const onConfirm = async () => {
   // 確認ダイアログ表示
   if (!props.isEdit) {
     messageConfirm.value = t("message.confirm_leave_application", requestDays);
-    console.log("messageConfirm.value", messageConfirm.value);
-
     isDialogVisible.value = true;
   } else {
     messageConfirm.value = t(
       "message.confirm_leave_application_change",
       requestDays
     );
-    console.log("messageConfirm.value", messageConfirm.value);
-
     isDialogVisible.value = true;
   }
 };
@@ -349,7 +347,7 @@ const handleCancel = () => {
         </VTable>
         <VDivider />
         <VTable>
-          <VCardText>
+          <VCardText class="px-7">
             <VRow>
               <VCol cols="3" class="d-flex align-center">
                 <VLabel class="mr-2">{{ t("leave_duration_from") }}</VLabel>

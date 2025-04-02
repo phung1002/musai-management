@@ -25,12 +25,11 @@ const getProfile = async () => {
   try {
     const response = await profile();
     if (!response) {
-      console.log("No profile data received");
       return;
     }
     infor.value = response;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 // Call API when component is mounted

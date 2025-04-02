@@ -30,6 +30,7 @@ public class UserLeaveController {
 	private UserLeaveService userLeaveService;
 
 	// List All
+	@PreAuthorize("hasRole('MANAGER')")
 	@GetMapping("/all")
 	public ResponseEntity<?> getAllUserLeaves(@RequestParam String keyword) {
 		List<UserLeaveResponseDTO> userLeave = userLeaveService.getAllUserLeaves(keyword);
@@ -45,6 +46,7 @@ public class UserLeaveController {
 	}
 
 	// add
+	@PreAuthorize("hasRole('MANAGER')")
 	@PostMapping
 	public ResponseEntity<?> createLeave(@RequestBody UserLeaveRequestDTO request) {
 		userLeaveService.createUserLeave(request);
@@ -52,6 +54,7 @@ public class UserLeaveController {
 	}
 
 	// update
+	@PreAuthorize("hasRole('MANAGER')")
 	@PutMapping("/{id}")
 	public ResponseEntity<?> editUserLeave(@PathVariable Long id, @RequestBody UserLeaveRequestDTO request) {
 		userLeaveService.editUserLeave(request);

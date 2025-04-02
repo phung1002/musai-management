@@ -8,19 +8,15 @@ import musai.app.DTO.response.LeaveTypeParentResponseDTO;
 import musai.app.DTO.response.MessageResponse;
 
 public interface LeaveTypeService {
-	
+
 	MessageResponse createAddLeaveType(LeaveTypeRequestDTO leaveType);
 
 	MessageResponse updateLeaveType(Long id, LeaveTypeRequestDTO leaveTypeDTO);
 
 	MessageResponse deleteLeaveType(Long id);
 
-	List<LeaveTypeParentResponseDTO> getAllLeaveTypes(String keyword); 
-	
-	List<LeaveTypeChildrenResponseDTO> getAllLeaveTypeTree(); 
-	
-	LeaveTypeParentResponseDTO getLeaveTypeDetail(Long id);
-	
-    List<LeaveTypeChildrenResponseDTO> searchLeaveType(String keyword);
-	
+	List<LeaveTypeParentResponseDTO> getAllLeaveTypes(String keyword);
+
+	List<LeaveTypeChildrenResponseDTO> getAllLeaveTypeTree();
+
 }

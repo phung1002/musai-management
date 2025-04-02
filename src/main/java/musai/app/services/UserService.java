@@ -10,14 +10,12 @@ import musai.app.security.services.UserDetailsImpl;
 
 public interface UserService {
 	List<UserResponseDTO> getAllUsers(String keyword);
-	
+
 	MessageResponse addUser(UserRequestDTO userRequestDTO);
 
 	MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO, UserDetailsImpl principal);
-	
+
 	MessageResponse deleteUser(Long userId, UserDetailsImpl principal);
-	
-	UserResponseDTO detailUser(Long userId);
 
 	MessageResponse changePassword(ChangePasswordRequestDTO changePasswordRequestDTO, UserDetailsImpl principal);
 

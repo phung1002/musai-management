@@ -9,7 +9,6 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -43,46 +42,58 @@ public class DocumentServiceImpl implements DocumentService {
 	}
 
 	@Override
-	public List<DocumentResponseDTO> listAllFiles() throws IOException {
-	    return processFiles(Paths.get(uploadDir));
+	public List<DocumentResponseDTO> listAllFiles() {
+		
+		return processFilesAndSyncDB(null);
+		
 	}
 
 	@Override
-	public List<DocumentResponseDTO> listFilesForMember(UserDetailsImpl principal) throws IOException {
-	    Path userDir = Paths.get(uploadDir, String.valueOf(principal.getId()));
-	    return processFiles(userDir);
+	public List<DocumentResponseDTO> listFilesForMember(UserDetailsImpl principal) {
+
+		return processFilesAndSyncDB(principal.getId());
 	}
 
-	private List<DocumentResponseDTO> processFiles(Path directoryPath) throws IOException {
-	    List<DocumentResponseDTO> response = new ArrayList<>();
-	    
-	    try (Stream<Path> paths = Files.walk(directoryPath)) {
-	        paths.filter(Files::isRegularFile)
-	             .map(Path::toFile)
-	             .forEach(file -> documentRepository.findByTitleAndDeletedAtIsNull(file.getName())
-	                 .ifPresent(document -> response.add(mapToDTO(document, file))));
-	    } catch (IOException e) {
-	        throw new IOException("error_saving_file_to_server", e);
-	    }
-	    
-	    return response;
+	private List<DocumentResponseDTO> processFilesAndSyncDB(Long userId) {
+		List<DocumentResponseDTO> response = new ArrayList<>();
+
+		List<Document> documents;
+
+		// Get list from DB
+		if (userId != null) {
+			// Get document of user, if have user id
+			documents = documentRepository.findByUploadById(userId);
+		} else {
+			// Get all, if don't have user id
+			documents = documentRepository.findAllActive();
+		}
+
+		for (Document document : documents) {
+			Path filePath = Paths.get(uploadDir + document.getPath());
+			if (Files.exists(filePath)) {
+				// If exist, add to response
+				response.add(mapToDTO(document, filePath.toFile()));
+			} else {
+				// If doesn't exist, update deletedAt
+				if (document.getDeletedAt() == null) {
+					document.setDeletedAt(LocalDateTime.now());
+					documentRepository.save(document);
+				}
+			}
+		}
+
+		return response;
 	}
 
 	private DocumentResponseDTO mapToDTO(Document document, File file) {
-	    return new DocumentResponseDTO(
-	        document.getId(),
-	        cleanFileName(file.getName()),
-	        file.getPath(),
-	        document.getUploadBy().getId(),
-	        document.getUploadBy().getFullName(),
-	        document.getUploadAt()
-	    );
+		return new DocumentResponseDTO(document.getId(), cleanFileName(file.getName()), file.getPath(),
+				document.getUploadBy().getId(), document.getUploadBy().getFullName(), document.getUploadAt());
 	}
 
 	private String cleanFileName(String fileName) {
 		// remove timestamp
 		fileName = fileName.replaceFirst("^\\d+_", "");
-		//remove .pdf
+		// remove .pdf
 		if (fileName.endsWith(".pdf")) {
 			fileName = fileName.substring(0, fileName.length() - 4);
 		}
@@ -96,7 +107,7 @@ public class DocumentServiceImpl implements DocumentService {
 		if (contentType == null || !contentType.equals("application/pdf")) {
 			throw new IllegalArgumentException("only_pdf_allowed");
 		}
-		User user = userRepository.findByIdAndDeletedAtIsNull(principal.getId())
+		User user = userRepository.findById(principal.getId())
 				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		// Check if the file size exceeds the maximum limit of 5MB
@@ -123,46 +134,45 @@ public class DocumentServiceImpl implements DocumentService {
 		document.setUploadBy(user);
 		document.setUploadAt(LocalDateTime.now());
 
-		// Save the document metadata to the database
 		return documentRepository.save(document);
 	}
 
 	@Override
-	public void deleteDocument(Long documentId, Long userId) throws IOException {
-	    Document document = documentRepository.findByIdAndDeletedAtIsNull(documentId)
-	            .orElseThrow(() -> new NotFoundException("file_not_found"));
+	public void deleteDocument(Long documentId, Long userId) throws Exception {
+		Document document = documentRepository.findById(documentId)
+				.orElseThrow(() -> new NotFoundException("file_not_found"));
 
-	    if (!document.getUploadBy().getId().equals(userId)) {
-	        throw new AccessDeniedException("not_authorized_to_delete");
-	    }
+		if (!document.getUploadBy().getId().equals(userId)) {
+			throw new AccessDeniedException("not_authorized_to_delete");
+		}
 
-	    Path filePath = Paths.get(uploadDir, document.getPath());
-	    File file = filePath.toFile();
+		Path filePath = Paths.get(uploadDir, document.getPath());
+		File file = filePath.toFile();
 
-	    if (file.exists() && file.isFile()) {
-	        if (!file.delete()) {
-	            throw new IOException("file_delete_failed");
-	        }
-	    } else {
-	        throw new NotFoundException("file_not_found_in_directory");
-	    }
+		if (file.exists() && file.isFile()) {
+			if (!file.delete()) {
+				throw new IOException("file_delete_failed");
+			}
+		} else {
+			throw new NotFoundException("file_not_found_in_directory");
+		}
 
-	    document.setDeletedAt(LocalDateTime.now());
-	    documentRepository.save(document);
+		document.setDeletedAt(LocalDateTime.now());
+		documentRepository.save(document);
 	}
 
 	@Override
 	public Resource previewDocument(Long documentId) throws Exception {
-        Document document = documentRepository.findByIdAndDeletedAtIsNull(documentId)
-                .orElseThrow(() -> new NotFoundException("file_not_found"));
+		Document document = documentRepository.findById(documentId)
+				.orElseThrow(() -> new NotFoundException("file_not_found"));
 
-        String filePath = uploadDir + document.getPath();
+		String filePath = uploadDir + document.getPath();
 
-        File file = new File(filePath);
-        if (!file.exists()) {
-            throw new NotFoundException("file_not_found_in_directory");
-        }
-        Path path = Paths.get(filePath);
-        return new FileSystemResource(path);
-    }
+		File file = new File(filePath);
+		if (!file.exists()) {
+			throw new NotFoundException("file_not_found_in_directory");
+		}
+		Path path = Paths.get(filePath);
+		return new FileSystemResource(path);
+	}
 }

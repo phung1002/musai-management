@@ -55,7 +55,6 @@ const fetchLeaveType = async (searchQuery: string = "") => {
   isError.value = false;
   try {
     const response = await getUserLeaves(searchQuery); // API呼び出
-    console.log("response ss", response);
     loadLeave(response); // リスト更新
   } catch (error) {
     isError.value = true;
@@ -80,23 +79,18 @@ const handleClear = () => {
 // 追加用ダイアログ表示
 const handleCreateItem = (leaveType: IUserLeaves) => {
   selectedLeave.value = leaveType; // 新規作成なのでリセット
-  console.log("新規作成");
-  console.log(isEdit.value);
   addFrom.value = true;
   isEdit.value = false;
 };
 // 編集用ダイアログ表示
 const handleEditItem = (userLeave: IUserLeaves) => {
   selectedLeave.value = { ...userLeave }; // 選択データをセット
-  console.log("編集対象", selectedLeave.value);
-  console.log(isEdit.value);
   addFrom.value = true;
   isEdit.value = true;
 };
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
   fetchLeaveType();
-  console.log("ok");
 });
 </script>
 <template>

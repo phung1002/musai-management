@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ public class LeaveTypeController {
 	private final LeaveTypeService leaveTypeService;
 
 	// add a new paid leave request
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<?> addLeaveType(@RequestBody LeaveTypeRequestDTO request) {
 
@@ -38,6 +40,7 @@ public class LeaveTypeController {
 	}
 
 	// update paid leave request
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateLeaveType(@PathVariable Long id, @RequestBody LeaveTypeRequestDTO request) {
 
@@ -47,6 +50,7 @@ public class LeaveTypeController {
 	}
 
 	// delete paid leave request
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteLeaveType(@PathVariable Long id) {
 
@@ -57,7 +61,7 @@ public class LeaveTypeController {
 
 	// Create API list
 	@GetMapping
-//	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getAllLeaveTypes(@RequestParam String keyword) {
 
 		List<LeaveTypeParentResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypes(keyword);
@@ -72,14 +76,5 @@ public class LeaveTypeController {
 		List<LeaveTypeChildrenResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypeTree();
 
 		return new ResponseEntity<>(leaveTypes, HttpStatus.OK);
-	}
-
-	// Get Detail
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getLeaveTypeDetail(@PathVariable Long id) {
-
-		LeaveTypeParentResponseDTO getLeaveTypeDetail = leaveTypeService.getLeaveTypeDetail(id);
-
-		return new ResponseEntity<>(getLeaveTypeDetail, HttpStatus.OK);
 	}
 }

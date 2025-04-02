@@ -38,9 +38,9 @@ const fetchLeaveType = async (searchQuery: string = "") => {
     // 検索キーワードが空でも呼び出せる
     const response = await getLeaves(searchQuery); // API呼び出
     loadLeave(response); // リスト更新
-  } catch (error) {
+  } catch (error : any) {
     isError.value = true;
-    console.error("Error fetching leaves:", error);
+    toast.error(t(error.message));
   } finally {
     isLoading.value = false;
   }
@@ -85,13 +85,7 @@ const onDeleted = async () => {
     toast.success(t("message.delete_success"));
     fetchLeaveType(); // リスト更新
   } catch (error: any) {
-    console.log(error.message);
-
-    if (error.status == 403) {
-      toast.error(t("message.delete_your_self"));
-    } else {
-      toast.error(t("message.delete_failure"));
-    }
+      toast.error(t(error.message));
   } finally {
     isDialogVisible.value = false;
   }
@@ -155,11 +149,12 @@ onMounted(() => {
               </template>
               <!-- アクション　設定  -->
               <template v-slot:item.action="{ item }">
-                <div class="action-buttons" v-if="item.parentId != null">
+                <div class="action-buttons">
                   <VBtn
                     icon
                     variant="plain"
                     class="action-btn"
+                    :disabled="item.parentId == null"
                     @click="handleEditItem(item)"
                   >
                     <VIcon color="blue">mdi-pencil</VIcon>
@@ -168,6 +163,7 @@ onMounted(() => {
                     icon
                     variant="plain"
                     class="action-btn"
+                    :disabled="item.parentId == null"
                     @click="handleDeleteItem(item)"
                   >
                     <VIcon color="red">mdi-delete</VIcon>

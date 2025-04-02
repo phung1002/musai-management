@@ -8,9 +8,9 @@ export async function getLeaves(key: string): Promise<ILeaveTypes[]> {
       params: { keyword: key },
     });
     return response.data;
-  } catch (error) {
-    console.error("List user failed:", error);
-    throw error;
+  } catch (error : any) {
+    console.error("List leave failed:", error);
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 // 休暇タイプ取得API呼び出し
@@ -18,23 +18,18 @@ export async function getLeavesTree(): Promise<ILeaveTypes[]> {
   try {
     const response = await axiosIns.get<ILeaveTypes[]>("/leave-types/tree");
     return response.data;
-  } catch (error) {
-    console.error("List user failed:", error);
-    throw error;
+  } catch (error : any) {
+    console.error("List leave failed:", error);
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 // 休暇追加API呼び出し
 export async function addLeave(params: ILeaveTypes): Promise<void> {
   try {
     await axiosIns.post("/leave-types", params);
-    console.log("Add leave successfully");
   } catch (error: any) {
-    if (error.response) {
-      console.error("Add leave failed:", error.response.data);
-    } else {
-      console.error("Unexpected error:", error);
-    }
-    throw error;
+    console.error("Add leave failed:", error);
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 // 休暇更新API呼び出し
@@ -44,28 +39,17 @@ export async function updateLeave(
 ): Promise<void> {
   try {
     await axiosIns.put(`/leave-types/${id}`, params);
-    console.log("Update user successfully");
   } catch (error: any) {
-    if (error.response) {
-      console.error("Update user failed:", error.response.data);
-    } else {
-      console.error("Unexpected error:", error);
-    }
-    throw error;
+    console.error("Update leave failed:", error);
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 // 休暇削除API呼び出し
 export async function deleteLeave(id: number): Promise<void> {
   try {
-    console.log("Delete leave id:", id);
     await axiosIns.delete(`/leave-types/${id}`);
-    console.log("Delete leave successfully");
   } catch (error: any) {
-    if (error.response) {
-      console.error("Delete leave failed:", error.response.data);
-    } else {
-      console.error("Unexpected error:", error);
-    }
-    throw error;
+    console.error("Delete leave failed:", error);
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }

@@ -120,6 +120,7 @@ const onConfirmed = async (toLogin: boolean) => {
       handleCancel();
     } catch (error: any) {
       toast.error(t(error.message));
+      return;
     } finally {
       submiting.value = false;
     }

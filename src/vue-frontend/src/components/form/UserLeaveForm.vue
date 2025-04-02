@@ -81,21 +81,15 @@ const publicLeaveChilden: Ref<ILeaveTypes | null> = ref(defaultLeave);
 const summerDayName = ref(""); // "SUMMER_DAY" の名前を格納する
 const summerDayId = ref<number | null>(null); // 初期値はnullが安全
 const onPublicLeaveChange = () => {
-  console.log("publicLeave.value.children?", publicLeave.value.children);
-
   const specialLeave = publicLeave.value.children?.find(
     (child) => child.value === "SPECIAL_LEAVE" && child.children
   );
-  console.log("specialLeave", specialLeave?.id);
   const summerDay = specialLeave?.children?.find(
     (child) => child.value === "SUMMER_DAY"
   );
-  console.log("summerDay", summerDay?.id);
   // 名前とIDの両方を取得
   summerDayName.value = summerDay?.name || "";
   summerDayId.value = summerDay?.id ?? null;
-  console.log("SUMMER_DAY Name:", summerDayName.value);
-
   publicLeaveChilden.value = specialLeave || null;
   childBox.value = null;
   getLeaveTypeId();
@@ -116,29 +110,9 @@ const setleaveTypeId = (selectedTab: string) => {
   if (selectedTab === ELeaveType.PAID_LEAVE) {
     formModel.value.leaveTypeId = paidLeave.value.id ?? 0;
     formModel.value.leaveTypeName = paidLeave.value.name;
-    console.log(
-      "setleaveTypeId",
-      formModel.value.leaveTypeId,
-      paidLeave.value.id
-    );
-    console.log(
-      "leaveTypeName",
-      formModel.value.leaveTypeName,
-      paidLeave.value.name
-    );
   } else {
     formModel.value.leaveTypeId = summerDayId.value ?? 0;
     formModel.value.leaveTypeName = summerDayName.value;
-    console.log(
-      "setleaveTypeId",
-      formModel.value.leaveTypeId,
-      publicLeave.value.id
-    );
-    console.log(
-      "leaveTypeName",
-      formModel.value.leaveTypeName,
-      publicLeave.value.name
-    );
   }
 };
 // フォーカス時にユーザー一覧ポップアップを表示
@@ -161,7 +135,6 @@ const handleResetForm = async () => {
   }
   // 追加際activeTab現在ままにする
   if (!props.isEdit) {
-    console.log("isEdit", props.isEdit, leaves);
     activeTab.value = ELeaveType.PAID_LEAVE;
     formValid.value = false;
   }
@@ -191,12 +164,10 @@ const fetchLeaveType = async () => {
     paidLeave.value =
       leaves.value.find((item) => item.value === ELeaveType.PAID_LEAVE) ||
       defaultLeave;
-    console.log("paidLeave.value", paidLeave.value);
 
     publicLeave.value =
       leaves.value.find((item) => item.value === ELeaveType.PUBLIC_LEAVE) ||
       defaultLeave;
-    console.log("publicLeave.value", publicLeave.value.children);
     if (!paidLeave.value || !publicLeave.value) {
       throw new Error("Missing required leave types");
     }
@@ -213,52 +184,39 @@ const fetchLeaveType = async () => {
 const handleSubmit = async () => {
   // 入力バリデーション
   const isValid = await formRef.value?.validate();
-  console.log("isValid", isValid);
   if (!isValid?.valid) {
     toast.error(t("error.validation_error"));
     return;
   }
-  if (!props.isEdit) {
-    isDialogVisible.value = true;
-    console.log("新しいデータを登録します...");
-    // 登録処理を実行
-  } else {
-    isDialogVisible.value = true;
-    console.log("データを更新しますか？...");
-  }
+  isDialogVisible.value = true;
 };
 // 確認ダイアログで許可されたらイベント発火
 const onConfirmed = async () => {
   if (!props.isEdit) {
     // 新規登録処理を実行
     setleaveTypeId(activeTab.value);
-    console.log("新しいデータを登録します...");
     try {
-      console.log(formModel.value);
       await addUserLeave(formModel.value);
       toast.success(t("message.add_success"));
       handleCancel();
       emit("refetch-data");
+      isDialogVisible.value = false;
     } catch (error: any) {
       toast.error(t(error.message));
-    } finally {
-      isDialogVisible.value = false;
+      return;
     }
   } else {
     // 更新処理を実行
-    console.log("データを更新します...");
     try {
       if (formModel.value.id == null) return;
-      console.log("formModel.value", formModel.value);
-      console.log("formModel.value ID", formModel.value.id);
       await updateUserLeave(formModel.value.id, formModel.value);
       toast.success(t("message.update_success"));
       handleCancel();
       emit("refetch-data");
+      isDialogVisible.value = false;
     } catch (error: any) {
       toast.error(t(error.message));
-    } finally {
-      isDialogVisible.value = false;
+      return;
     }
   }
   handleCancel(); // フォームを閉じる

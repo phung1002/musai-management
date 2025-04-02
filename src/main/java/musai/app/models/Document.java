@@ -3,6 +3,7 @@ package musai.app.models;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.SoftDelete;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -23,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "documents")
 @Data
+@SQLRestriction("deleted_at IS NULL")
 public class Document {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

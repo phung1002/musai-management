@@ -94,10 +94,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	@Override
 	public MessageResponse applyLeave(LeaveApplicationRequestDTO request, UserDetailsImpl principal) {
 
-		System.out.println(principal.getId());
-		User user = userRepository.findByIdAndDeletedAtIsNull(principal.getId())
+		User user = userRepository.findById(principal.getId())
 				.orElseThrow(() -> new NotFoundException("user_not_exist"));
-		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
+		LeaveType leaveType = leaveTypeResposity.findById(request.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("leave_type_not_exist"));
 		if (leaveType.getValue() != null) {
 			// check condition: remainDays > requestDays
@@ -105,6 +104,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 			double remainingDays = calculateRemainingDays(userLeaves);
 			// count request days
 			double requestDays = getRequestDays(leaveType, request.getStartDate(), request.getEndDate());
+			if( requestDays == 0) {
+				throw new BadRequestException("requested_day_unavailble");
+			}
 			if (requestDays > remainingDays) {
 				throw new BadRequestException("requested_days_exceed");
 			}
@@ -146,7 +148,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		}
 		// case REJECTED, REVOKED: update usedDays
 		if (status.equals(ELeaveStatus.REJECTED.name()) || status.equals(ELeaveStatus.REVOKED.name())) {
-			LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(application.getLeaveType().getId())
+			LeaveType leaveType = leaveTypeResposity.findById(application.getLeaveType().getId())
 					.orElseThrow(() -> new NotFoundException("leave_type_not_exist"));
 			List<UserLeaveResponseDTO> userLeaves = getUserLeaveForMember(leaveType, application.getUser().getId());
 			System.out.println(userLeaves);
@@ -167,7 +169,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	public MessageResponse cancelLeave(Long id, UserDetailsImpl principal) {
 		LeaveApplication application = leaveApplicationRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("leave_application_not_exist"));
-		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(application.getLeaveType().getId())
+		LeaveType leaveType = leaveTypeResposity.findById(application.getLeaveType().getId())
 				.orElseThrow(() -> new NotFoundException("leave_tpye_not_exist"));
 		// Can only be cancel if the status is 'pending'.
 		if (!application.getStatus().equals(ELeaveStatus.PENDING)) {
@@ -197,7 +199,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 				|| leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE))) {
 			throw new BadRequestException("can_only_be_update_if_pending_or_request_change");
 		}
-		LeaveType leaveType = leaveTypeResposity.findByIdAndDeletedAtIsNull(request.getLeaveTypeId())
+		LeaveType leaveType = leaveTypeResposity.findById(request.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("leave_type_not_exist"));
 		// case not change leaveType
 		if (leaveType.getValue() != null) {
@@ -206,6 +208,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 			double oldRequestDays = calculateLeaveDays(leaveApplication.getStartDate(), leaveApplication.getEndDate());
 			double remainingDays = calculateRemainingDays(userLeaves);
 			double requestDays = getRequestDays(leaveType, request.getStartDate(), request.getEndDate());
+			if( requestDays == 0) {
+				throw new BadRequestException("requested_day_unavailble");
+			}
 			if (requestDays > remainingDays + oldRequestDays) {
 				throw new BadRequestException("requested_days_exceed");
 			}

@@ -42,8 +42,6 @@ const rnd = (a: number, b: number): number => {
   return Math.floor((b - a + 1) * Math.random()) + a;
 };
 const getDayClass = (date) => {
-  console.log(date);
-
   const day = date.getDay();
   if (day === 0 || day === 6) {
     return "weekend";

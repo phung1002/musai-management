@@ -48,11 +48,9 @@ const fetchDocuments = async () => {
       userRoles.value.includes(ERole.MANAGER) ||
       userRoles.value.includes(ERole.ADMIN)
     ) {
-      console.log("管理者 または 担当者");
       // 管理者 または 担当者の場合は全ての書類を取得
       response = await getDocuments();
     } else {
-      console.log("ユーザー");
       // userの場合は自分の書類のみ取得
       response = await getDocumentsOfMember();
     }
@@ -69,7 +67,6 @@ const fetchDocuments = async () => {
     });
   } catch (error) {
     isError.value = true;
-    console.error("データ取得失敗:", error);
   } finally {
     isLoading.value = false;
   }
@@ -86,19 +83,15 @@ const handleDeleteItem = (id: number) => {
 const handlePreview = async (item: { id: number; title: string }) => {
   try {
     const response = await getDocumentPreview(item.id);
-    console.log("PDFプレビュー表示:", response);
     // 取得したFileオブジェクトを使ってBlob URLを生成
     if (response.file) {
       pdfUrl.value = URL.createObjectURL(response.file); // Blob URLに変換して設定
-      console.log("PDF:", pdfUrl.value);
     }
     // 必要に応じて name を表示や処理で使用する
     pdfTitle.value = item.title; // item.name をタイトルに設定
-    console.log("PDFタイトル:", pdfTitle.value);
     isPreviewDialogVisible.value = true;
-    // console.log("PDFプレビュー表示:", response.filePath);
-  } catch (error) {
-    console.error("PDFのプレビューに失敗しました:", error);
+  } catch (error: any) {
+    toast.error(t(error.message));
   }
 };
 const onCancelHandler = () => {
@@ -112,9 +105,8 @@ const onDeleted = async () => {
     await deleteDocument(selectedDocumentId.value); // API呼び出し
     fetchDocuments(); // データ再取得
     toast.success(t("message.delete_success"));
-  } catch (error) {
-    console.error("ドキュメントの削除に失敗しました:", error);
-    toast.error(t("message.delete_failure"));
+  } catch (error: any) {
+    toast.error(t(error.message));
   } finally {
     isDialogVisible.value = false;
     selectedDocumentId.value = null;
@@ -125,7 +117,6 @@ const onDeleted = async () => {
 onMounted(() => {
   // userStore.setId(); // 仮のIDを設定
   fetchDocuments();
-  console.log("ok");
 });
 </script>
 <template>
