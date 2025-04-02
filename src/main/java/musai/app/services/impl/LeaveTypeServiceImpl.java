@@ -91,7 +91,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 		return new MessageResponse("Paid leave with ID " + id + " was soft deleted");
 	}
 
-	// get List
+	// get all and search
 	@Override
 	public List<LeaveTypeParentResponseDTO> getAllLeaveTypes(String keyword) {
 
@@ -135,32 +135,6 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 				.map(child -> new LeaveTypeChildrenResponseDTO(child.getId(), child.getName(), child.getValue(),
 						filterChildren(child.getChildren(), activeLeaveTypes)))
 				.toList();
-	}
-
-	// get Detail
-	@Override
-	public LeaveTypeParentResponseDTO getLeaveTypeDetail(Long id) {
-		LeaveType leaveType = leaveTypeResposity.findById(id)
-				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
-
-		Long parentId = null;
-		if (leaveType.getParent() != null) {
-			parentId = leaveType.getParent().getId();
-		}
-
-		return new LeaveTypeParentResponseDTO(leaveType.getId(), leaveType.getName(), parentId);
-	}
-
-	// get Search
-	@Override
-	public List<LeaveTypeChildrenResponseDTO> searchLeaveType(String keyword) {
-
-		List<LeaveTypeChildrenResponseDTO> filteredLeaves = leaveTypeResposity.findAll().stream()
-				.filter(leave -> leave.getName().toLowerCase().contains(keyword.toLowerCase()))
-				.map(leave -> new LeaveTypeChildrenResponseDTO(leave.getId(), leave.getName()))
-				.collect(Collectors.toList());
-
-		return filteredLeaves;
 	}
 
 	private LeaveType findParent(Long id) {

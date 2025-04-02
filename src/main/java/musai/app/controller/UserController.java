@@ -3,6 +3,7 @@ package musai.app.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +28,6 @@ import musai.app.validation.ValidationGroups;
 @RestController
 @RequestMapping("/api/users")
 @AllArgsConstructor
-//@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 	private final UserService userService;
 
@@ -36,6 +36,7 @@ public class UserController {
 	 * 
 	 * @return ResponseEntity
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping
 	public ResponseEntity<?> getAllUser(@RequestParam String keyword) {
 		List<UserResponseDTO> response = userService.getAllUsers(keyword);
@@ -48,6 +49,7 @@ public class UserController {
 	 * @paramater UserRequestDTO
 	 * @return ResponseEntity
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public ResponseEntity<?> addUser(
 			@Validated(ValidationGroups.CreateUser.class) @RequestBody UserRequestDTO userRequestDTO) {
@@ -61,6 +63,7 @@ public class UserController {
 	 * @paramater UserRequestDTO
 	 * @return ResponseEntity
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{userId}")
 	public ResponseEntity<?> editUser(@PathVariable Long userId, @Validated @RequestBody UserRequestDTO userRequestDTO,
 			@AuthenticationPrincipal UserDetailsImpl principal) {
@@ -74,19 +77,11 @@ public class UserController {
 	 * parameter UserRequestDTO
 	 * @return ResponseEntity
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteUser(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl principal) {
 		MessageResponse response = userService.deleteUser(id, principal);
 		return ResponseEntity.ok(response);
-	}
-
-	// Create User detail
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getUserDetail(@PathVariable Long id) {
-		UserResponseDTO response = userService.detailUser(id);
-
-		return ResponseEntity.ok(response);
-
 	}
 
 	/**

@@ -13,7 +13,7 @@ import musai.app.models.LeaveType;
 public interface LeaveTypeResposity extends JpaRepository<LeaveType, Long> {
 
 	Boolean existsByName(String name);
-	
+
 	LeaveType findByName(String name);
 
 	@Query("SELECT lt FROM LeaveType lt WHERE lt.name LIKE LOWER(CONCAT('%', :keyword, '%'))")
@@ -21,8 +21,7 @@ public interface LeaveTypeResposity extends JpaRepository<LeaveType, Long> {
 
 	@Query("SELECT lt FROM LeaveType lt WHERE lt.deletedAt IS NULL")
 	List<LeaveType> findAllActive();
-	
-	List<LeaveType> findByParentId(Long parentId); 
-	
+
+	List<LeaveType> findByParentId(Long parentId);
+
 }
- 

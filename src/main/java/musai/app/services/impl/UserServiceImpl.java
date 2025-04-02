@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder encoder;
 
 	/**
-	 * Service get all user
+	 * Service get all user and search
 	 * 
 	 * @return MessageResponse
 	 */
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
 			strRoles.forEach(role -> {
 				ERole enumRole;
 				try {
-					enumRole = ERole.valueOf(role); // String to ERole
+					enumRole = ERole.valueOf(role);
 				} catch (IllegalArgumentException e) {
 					throw new BadRequestException("role_invalid");
 				}
@@ -223,26 +223,12 @@ public class UserServiceImpl implements UserService {
 		return id.equals(Long.valueOf(principal.getId()));
 	}
 
-	/**
-	 * Get infor of role by name
-	 */
+	// Get infor of role by name
 	private Role getRoleByName(ERole roleName) {
 		return roleRepository.findByName(roleName).orElseThrow(() -> new BadRequestException("role_not_found"));
 	}
 
-	// get detail
-	@Override
-	public UserResponseDTO detailUser(Long userId) {
-		User existingUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user_not_exist"));
-
-		return new UserResponseDTO(existingUser.getId(), existingUser.getUsername(), existingUser.getEmail(),
-				existingUser.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),
-				existingUser.getFullName(), existingUser.getFullNameFurigana(), existingUser.getBirthday(),
-				existingUser.getDepartment(), existingUser.getWorkPlace(), existingUser.getJoinDate(),
-				existingUser.getGender());
-
-	}
-
+	// Change password
 	@Override
 	public MessageResponse changePassword(ChangePasswordRequestDTO changePasswordRequestDTO,
 			UserDetailsImpl principal) {
