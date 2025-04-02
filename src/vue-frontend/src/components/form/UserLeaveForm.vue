@@ -218,14 +218,7 @@ const handleSubmit = async () => {
     toast.error(t("error.validation_error"));
     return;
   }
-  if (!props.isEdit) {
-    isDialogVisible.value = true;
-    console.log("新しいデータを登録します...");
-    // 登録処理を実行
-  } else {
-    isDialogVisible.value = true;
-    console.log("データを更新しますか？...");
-  }
+  isDialogVisible.value = true;
 };
 // 確認ダイアログで許可されたらイベント発火
 const onConfirmed = async () => {
@@ -239,10 +232,10 @@ const onConfirmed = async () => {
       toast.success(t("message.add_success"));
       handleCancel();
       emit("refetch-data");
+      isDialogVisible.value = false;
     } catch (error: any) {
       toast.error(t(error.message));
-    } finally {
-      isDialogVisible.value = false;
+      return;
     }
   } else {
     // 更新処理を実行
@@ -255,10 +248,10 @@ const onConfirmed = async () => {
       toast.success(t("message.update_success"));
       handleCancel();
       emit("refetch-data");
+      isDialogVisible.value = false;
     } catch (error: any) {
       toast.error(t(error.message));
-    } finally {
-      isDialogVisible.value = false;
+      return;
     }
   }
   handleCancel(); // フォームを閉じる

@@ -169,7 +169,8 @@
     "cannot_remove_own_admin_role":"You are not allowed to remove your own ADMIN permissions.",
     "cannot_delete_your_self":"Can not delete your self",
     "user_leave_not_found":"User Leave not found",    
-    "file_not_found_in_directory": "File not found in the specified directory."
+    "file_not_found_in_directory": "File not found in the specified directory.",
+    "requested_day_unavailble": "selected date does not match."
   },
   "validation": {
     "required_input": "this field is required",

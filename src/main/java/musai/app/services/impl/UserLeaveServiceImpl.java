@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import lombok.AllArgsConstructor;
 import musai.app.DTO.request.UserLeaveRequestDTO;
 import musai.app.DTO.response.UserLeaveResponseDTO;
+import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.LeaveType;
 import musai.app.models.User;
@@ -97,7 +98,9 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		// leaveTypeId
 		LeaveType leaveType = leaveTypeResposity.findById(userLeaveRequestDTO.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
-
+		if( userLeaveRequestDTO.getValidTo().isBefore(userLeaveRequestDTO.getValidFrom())) {
+			throw new BadRequestException("requested_day_unavailble");
+		}
 		UserLeave userLeave = new UserLeave();
 
 		userLeave.setUser(existingUser);
@@ -125,6 +128,10 @@ public class UserLeaveServiceImpl implements UserLeaveService {
 		// leaveTypeId
 		LeaveType leaveType = leaveTypeResposity.findById(userLeaveRequestDTO.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
+		
+		if( userLeaveRequestDTO.getValidTo().isBefore(userLeaveRequestDTO.getValidFrom())) {
+			throw new BadRequestException("requested_day_unavailble");
+		}
 		// update information of user
 		existingUserLeave.setUser(existingUser);
 		existingUserLeave.setLeaveType(leaveType);

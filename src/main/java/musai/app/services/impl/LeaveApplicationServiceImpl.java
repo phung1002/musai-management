@@ -94,7 +94,6 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	@Override
 	public MessageResponse applyLeave(LeaveApplicationRequestDTO request, UserDetailsImpl principal) {
 
-		System.out.println(principal.getId());
 		User user = userRepository.findById(principal.getId())
 				.orElseThrow(() -> new NotFoundException("user_not_exist"));
 		LeaveType leaveType = leaveTypeResposity.findById(request.getLeaveTypeId())
@@ -105,6 +104,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 			double remainingDays = calculateRemainingDays(userLeaves);
 			// count request days
 			double requestDays = getRequestDays(leaveType, request.getStartDate(), request.getEndDate());
+			if( requestDays == 0) {
+				throw new BadRequestException("requested_day_unavailble");
+			}
 			if (requestDays > remainingDays) {
 				throw new BadRequestException("requested_days_exceed");
 			}
@@ -206,6 +208,9 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 			double oldRequestDays = calculateLeaveDays(leaveApplication.getStartDate(), leaveApplication.getEndDate());
 			double remainingDays = calculateRemainingDays(userLeaves);
 			double requestDays = getRequestDays(leaveType, request.getStartDate(), request.getEndDate());
+			if( requestDays == 0) {
+				throw new BadRequestException("requested_day_unavailble");
+			}
 			if (requestDays > remainingDays + oldRequestDays) {
 				throw new BadRequestException("requested_days_exceed");
 			}

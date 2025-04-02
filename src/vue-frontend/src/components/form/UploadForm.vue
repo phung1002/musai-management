@@ -53,6 +53,7 @@ const onConfirmed = async () => {
   } catch (error) {
     console.error("PDF アップロードに失敗しました:", error);
     toast.error(t("error.upload_error"));
+    return;
   }
   handleCancel(); // フォーム閉じる
 };

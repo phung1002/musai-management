@@ -151,6 +151,7 @@ const handleSubmit = async () => {
       handleCancel();
     } catch (error: any) {
       toast.error(t(error.message));
+      return;
     }
   } else {
     //update
@@ -164,6 +165,7 @@ const handleSubmit = async () => {
       emit("refetch-userleave");
     } catch (error: any) {
       toast.error(t(error.message));
+      return;
     } finally {
       submiting.value = false;
     }

@@ -168,7 +168,8 @@
     "cannot_delete_your_self": "自分を削除することはできません。",
     "user_leave_not_found": "社員の休暇が見つかりません。",
     "leave_type_not_found": "休暇区分が見つかりません。",
-    "file_not_found_in_directory": "指定されたディレクトリにファイルが見つかりませんでした。"
+    "file_not_found_in_directory": "指定されたディレクトリにファイルが見つかりませんでした。",
+    "requested_day_unavailble": "選択された日付が一致しません。"
   },
   "validation": {
     "required_input": "このフィールドは必須です。",
