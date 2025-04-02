@@ -27,7 +27,6 @@ export async function createUser(params: IUser): Promise<void> {
 export async function updateUser(id: number, params: IUser): Promise<void> {
   try {
     await axiosIns.put(`/users/${id}`, params);
-    console.log("Update user successfully");
   } catch (error: any) {
     console.error("Update user failed:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
@@ -52,7 +51,6 @@ export interface ChangePasswordPayload {
 export const changePassword = async (
   payload: ChangePasswordPayload
 ): Promise<void> => {
-  console.log("OK", payload);
   try {
     await axiosIns.put(`/users/change-password`, payload);
   } catch (error: any) {

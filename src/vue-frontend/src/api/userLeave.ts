@@ -7,8 +7,6 @@ export async function getUserLeaves(key: string): Promise<IUserLeaves[]> {
     const response = await axiosIns.get<IUserLeaves[]>("/user-leaves/all", {
       params: { keyword: key },
     });
-    console.log("response.data", response.data);
-
     return response.data;
   } catch (error) {
     console.error("List user failed:", error);
@@ -31,7 +29,6 @@ export async function updateUserLeave(
 ): Promise<void> {
   try {
     await axiosIns.put(`/user-leaves/${id}`, params);
-    console.log("Update user successfully");
   } catch (error: any) {
     console.error("Update user failed:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
@@ -41,7 +38,6 @@ export async function updateUserLeave(
 export async function addUserLeave(params: IUserLeaves): Promise<void> {
   try {
     await axiosIns.post("/user-leaves", params);
-    console.log("Add leave successfully");
   } catch (error: any) {
     console.error("Add leave failed:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));

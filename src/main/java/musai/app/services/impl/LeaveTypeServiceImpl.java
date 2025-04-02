@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import jakarta.persistence.NoResultException;
+import lombok.RequiredArgsConstructor;
 import musai.app.DTO.request.LeaveTypeRequestDTO;
 import musai.app.DTO.response.LeaveTypeChildrenResponseDTO;
 import musai.app.DTO.response.LeaveTypeParentResponseDTO;
@@ -17,23 +18,25 @@ import musai.app.DTO.response.MessageResponse;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.LeaveType;
+import musai.app.repositories.LeaveApplicationRepository;
 import musai.app.repositories.LeaveTypeResposity;
+import musai.app.repositories.UserLeaveRepository;
 import musai.app.services.LeaveTypeService;
 
 @Service
+@RequiredArgsConstructor
 public class LeaveTypeServiceImpl implements LeaveTypeService {
-	private final LeaveTypeResposity leaveTypeResposity;
 
-	public LeaveTypeServiceImpl(LeaveTypeResposity leaveTypeRepository) {
-		this.leaveTypeResposity = leaveTypeRepository;
-	}
+	private final LeaveTypeResposity leaveTypeResposity;
+	private final UserLeaveRepository userLeaveRepository;
+	private final LeaveApplicationRepository leaveApplicationRepository;
 
 	// add
 	@Override
 	public MessageResponse createAddLeaveType(LeaveTypeRequestDTO leaveTypeDTO) {
 
 		if (leaveTypeResposity.existsByName(leaveTypeDTO.getName())) {
-			throw new BadRequestException("Error: Name is already taken!");
+			throw new BadRequestException("name_already_taken");
 		}
 		LeaveType parent = findParent(leaveTypeDTO.getParentId());
 		LeaveType leaveType = new LeaveType(leaveTypeDTO.getName(), parent, null);
@@ -49,12 +52,12 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
 		if (!leaveTypeDTO.getName().equals(existingLeaveType.getName())) {
 			if (leaveTypeResposity.existsByName(leaveTypeDTO.getName())) {
-				throw new BadRequestException("Error: Name is already taken!");
+				throw new BadRequestException("name_already_taken");
 			}
 			existingLeaveType.setName(leaveTypeDTO.getName());
 		}
 		if (leaveTypeDTO.getParentId() == id) {
-			throw new BadRequestException("Error: Itself can not be parent");
+			throw new BadRequestException("itself_can_not_be_parent");
 		}
 		LeaveType parent = findParent(leaveTypeDTO.getParentId());
 		existingLeaveType.setParent(parent);
@@ -71,8 +74,16 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 
 		List<LeaveType> childrenTypes = leaveTypeResposity.findByParentId(id);
 
+		// Check relationship
+		if (userLeaveRepository.existsByLeaveTypeId(id)) {
+			throw new BadRequestException("cannot_delete_leave_type_have_relation_with_user");
+		}
+		if (leaveApplicationRepository.existsByLeaveTypeId(id)) {
+			throw new BadRequestException("cannot_delete_leave_type_have_relation_with_leave_request");
+		}
+
 		if (!childrenTypes.isEmpty()) {
-			throw new BadRequestException("Error: LeaveType had children can't be delete");
+			throw new BadRequestException("cannot_delete_leave_type_have_children");
 		}
 
 		existingLeaveType.setDeletedAt(LocalDateTime.now());
@@ -84,24 +95,22 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 	@Override
 	public List<LeaveTypeParentResponseDTO> getAllLeaveTypes(String keyword) {
 
-	    // Fetch all LeaveType entities from the repository based on keyword or fetch all if no keyword
-	    List<LeaveType> leaveTypes = StringUtils.hasText(keyword)
-	            ? leaveTypeResposity.findActiveByKeywordContaining(keyword)
-	            : leaveTypeResposity.findAllActive();
+		// Fetch all LeaveType entities from the repository based on keyword or fetch
+		// all if no keyword
+		List<LeaveType> leaveTypes = StringUtils.hasText(keyword)
+				? leaveTypeResposity.findActiveByKeywordContaining(keyword)
+				: leaveTypeResposity.findAllActive();
 
-	    // If the list is empty, return an empty list or handle it in another way if needed
-	    if (leaveTypes.isEmpty()) {
-	        return Collections.emptyList();
-	    }
+		// If the list is empty, return an empty list or handle it in another way if
+		// needed
+		if (leaveTypes.isEmpty()) {
+			return Collections.emptyList();
+		}
 
-	    // Map each LeaveType entity to LeaveTypeParentResponseDTO
-	    return leaveTypes.stream()
-	            .map(leave -> new LeaveTypeParentResponseDTO(
-	                    leave.getId(),
-	                    leave.getName(),
-	                    leave.getParent() != null ? leave.getParent().getId() : null // Safe check for parent
-	            ))
-	            .collect(Collectors.toList());
+		// Map each LeaveType entity to LeaveTypeParentResponseDTO
+		return leaveTypes.stream().map(leave -> new LeaveTypeParentResponseDTO(leave.getId(), leave.getName(),
+				leave.getParent() != null ? leave.getParent().getId() : null // Safe check for parent
+		)).collect(Collectors.toList());
 	}
 
 	// Create API list tree
@@ -157,8 +166,7 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 	private LeaveType findParent(Long id) {
 		if (id == null)
 			return null;
-		return leaveTypeResposity.findById(id)
-				.orElseThrow(() -> new NotFoundException("Parent not found!"));
+		return leaveTypeResposity.findById(id).orElseThrow(() -> new NotFoundException("leave_type_not_found"));
 	}
 
 }

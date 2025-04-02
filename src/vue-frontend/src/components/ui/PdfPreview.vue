@@ -23,7 +23,6 @@ const props = defineProps<{
 
 // ファイルダウンロード
 const handleDownload = async () => {
-  console.log(props.pdfUrl);
   if (!props.pdfUrl) {
     toast.error("PDFファイルのURLが無効です。");
     return;

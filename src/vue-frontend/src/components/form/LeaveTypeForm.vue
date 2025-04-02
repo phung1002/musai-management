@@ -70,7 +70,6 @@ const initializeFormForEdit = () => {
     activeTab.value = "paid";
   } else {
     activeTab.value = "public";
-    console.log("1", formModel.value.parentId, props.leave?.parentId);
     // 編集中の公休を親IDに基づいて設定
     if (props.leave?.parentId) {
       if (props.leave.parentId == public_leave.value.id) {
@@ -152,18 +151,16 @@ const handleSubmit = async () => {
   if (!props.isEdit) {
     setParentId(activeTab.value);
     isDialogVisible.value = true;
-    console.log("新しいデータを登録します...");
+
     // 登録処理を実行
   } else {
     isDialogVisible.value = true;
-    console.log("データを更新しますか？...");
   }
 };
 // 確認ダイアログで許可されたらイベント発火
 const onConfirmed = async () => {
   if (!props.isEdit) {
     // 新規登録処理を実行
-    console.log("新しいデータを登録します...");
     try {
       await addLeave(formModel.value);
       toast.success(t("message.add_success"));
@@ -176,7 +173,6 @@ const onConfirmed = async () => {
     }
   } else {
     // 更新処理を実行
-    console.log("データを更新しますか？...");
     try {
       if (formModel.value.id == null) return;
       await updateLeave(formModel.value.id, formModel.value);

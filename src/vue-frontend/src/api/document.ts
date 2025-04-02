@@ -3,8 +3,6 @@ import { IDocument } from "@/types/type";
 
 // ドキュメントアップロードAPI呼び出し
 export async function uploadDocument(file: File): Promise<IDocument> {
-  console.log("アップロード開始 - ファイル情報:", file);
-
   const formData = new FormData();
   formData.append("file", file);
   try {
@@ -13,8 +11,6 @@ export async function uploadDocument(file: File): Promise<IDocument> {
         "Content-Type": "multipart/form-data",
       },
     });
-    console.log("アップロード成功 - レスポンスデータ:", response.data);
-
     return  response.data;
   } catch (error : any) {
     console.error("アップロード失敗:", error);
@@ -35,13 +31,7 @@ export async function getDocumentsOfMember(
   userId?: number
 ): Promise<IDocument[]> {
   try {
-    let response;
-
-    // userIdが渡されていれば、そのユーザーの書類を取得
-
-    response = await axiosIns.get<IDocument[]>(`/documents`);
-
-    console.log("response.data", response.data);
+    let response = await axiosIns.get<IDocument[]>(`/documents`);
     return response.data;
   } catch (error) {
     console.error("List documents failed:", error);
@@ -52,7 +42,6 @@ export async function getDocumentsOfMember(
 export async function deleteDocument(id: number): Promise<void> {
   try {
     await axiosIns.delete(`/documents/${id}`);
-    console.log("Delete document successfully");
   } catch (error : any) {
     console.error("Delete document failed:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));

@@ -16,6 +16,10 @@ public interface UserLeaveRepository extends JpaRepository<UserLeave, Long> {
 
 	List<UserLeave> findByUserId(Long id);
 
+	boolean existsByLeaveTypeId(Long leaveTypeId);
+
+	boolean existsByUserId(Long userId);
+
 	@Query("SELECT ul FROM UserLeave ul WHERE ul.deletedAt IS NULL AND ul.user.deletedAt IS NULL "
 			+ "AND ul.leaveType.deletedAt IS NULL ORDER BY ul.validTo DESC")
 	List<UserLeave> findAllActive();

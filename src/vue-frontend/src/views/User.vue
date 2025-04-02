@@ -54,7 +54,6 @@ const fetchUsers = async (searchQuery: string = "") => {
     // 検索キーワードが空でも呼び出せる
     const response = await getAllUsers(searchQuery);
     loadUser(response);
-    console.log("response", response);
   } catch (error) {
     isError.value = true;
   } finally {

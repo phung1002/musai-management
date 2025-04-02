@@ -22,7 +22,9 @@ import musai.app.exception.NotFoundException;
 import musai.app.models.ERole;
 import musai.app.models.Role;
 import musai.app.models.User;
+import musai.app.repositories.LeaveApplicationRepository;
 import musai.app.repositories.RoleRepository;
+import musai.app.repositories.UserLeaveRepository;
 import musai.app.repositories.UserRepository;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.UserService;
@@ -31,9 +33,11 @@ import musai.app.services.UserService;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
+	private final UserLeaveRepository userLeaveRepository;
+	private final LeaveApplicationRepository leaveApplicationRepository;
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder encoder;
-	
+
 	/**
 	 * Service get all user
 	 * 
@@ -41,8 +45,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public List<UserResponseDTO> getAllUsers(String keyword) {
-		List<User> users = StringUtils.hasText(keyword)
-				? userRepository.findActiveByKeyContaining(keyword)
+		List<User> users = StringUtils.hasText(keyword) ? userRepository.findActiveByKeyContaining(keyword)
 				: userRepository.findAll();
 
 		// If the list is empty, return an empty list
@@ -127,8 +130,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public MessageResponse editUser(Long userId, UserRequestDTO userRequestDTO, UserDetailsImpl principal) {
 		// Find User by ID
-		User existingUser = userRepository.findById(userId)
-				.orElseThrow(() -> new NotFoundException("user_not_exist"));
+		User existingUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		// Check user name or email exist (unless belong to current user)
 		if (!existingUser.getUsername().equals(userRequestDTO.getUsername())
@@ -204,9 +206,14 @@ public class UserServiceImpl implements UserService {
 		if (isUserModifyingSelf(userId, principal)) {
 			throw new ForbiddenException("cannot_delete_your_self");
 		}
-		User existingUser = userRepository.findById(userId)
-				.orElseThrow(() -> new NotFoundException("user_not_exist"));
-
+		User existingUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user_not_exist"));
+		// Check relationship
+		if (userLeaveRepository.existsByUserId(userId)) {
+			throw new BadRequestException("cannot_delete_user_have_leave");
+		}
+		if (leaveApplicationRepository.existsByUserId(userId)) {
+			throw new BadRequestException("cannot_delete_user_have_request");
+		}
 		existingUser.setDeletedAt(LocalDateTime.now());
 		userRepository.save(existingUser); // Update deleted_at
 		return new MessageResponse("delete_success");
@@ -226,8 +233,7 @@ public class UserServiceImpl implements UserService {
 	// get detail
 	@Override
 	public UserResponseDTO detailUser(Long userId) {
-		User existingUser = userRepository.findById(userId)
-				.orElseThrow(() -> new NotFoundException("user_not_exist"));
+		User existingUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user_not_exist"));
 
 		return new UserResponseDTO(existingUser.getId(), existingUser.getUsername(), existingUser.getEmail(),
 				existingUser.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),

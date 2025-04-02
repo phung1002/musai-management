@@ -37,8 +37,6 @@ export const useValidator = (t: Function) => ({
   },
 
   checkEqual: (password: string) => (value: string) => {
-    console.log(password, value);
-
     if (password != value) {
       return t("validation.password_confirm");
     }
