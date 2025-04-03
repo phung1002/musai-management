@@ -61,7 +61,7 @@ public class LeaveTypeController {
 
 	// Create API list
 	@GetMapping
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getAllLeaveTypes(@RequestParam String keyword) {
 
 		List<LeaveTypeParentResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypes(keyword);
