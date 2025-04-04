@@ -84,7 +84,7 @@ const handleSubmit = async () => {
     return;
   }
   if (!props.isEdit) {
-    messageConfirm.value = t("apply_confirm_message");
+    messageConfirm.value = t("register_confirm_message");
     isDialogVisible.value = true;
     // 登録処理を実行
   } else {

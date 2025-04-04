@@ -60,7 +60,7 @@ const paidBox = ref(null);
 const publicBox = ref(null);
 const childBox = ref(null);
 // 10～30の配列を生成
-const numberOptions = Array.from({ length: 21 }, (_, i) => i + 5);
+const numberOptions = Array.from({ length: 26 }, (_, i) => i + 0);
 
 // フォームデータの初期化
 const formModel = ref<IUserLeaves>(
