@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import ProfileDropdown from '@/components/ui/ProfileDropdown.vue';
 import { useUserStore } from '@/store/userStore';
+import { computed } from 'vue';
 
 const userStore = useUserStore();
-const fullName = userStore.fullName;
+const fullName = computed(() => userStore.fullName);
 </script>
 
 <template>

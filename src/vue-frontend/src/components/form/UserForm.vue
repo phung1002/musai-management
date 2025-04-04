@@ -15,6 +15,7 @@ import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { useUserStore } from "@/store/userStore";
 import { handleLogout } from "@/api/auth";
 import type { VForm } from "vuetify/lib/components/index.mjs";
+import { fetchUserProfile } from "@/api/auth";
 
 const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const userStore = useUserStore();
@@ -75,6 +76,7 @@ const formattedJoinDate = computed({
 });
 
 const toLogin = ref(false);
+const fetchProfile = ref(false);
 const messageConfirm = ref("");
 const handleSubmit = async () => {
   // 入力バリデーション
@@ -89,20 +91,18 @@ const handleSubmit = async () => {
     // 登録処理を実行
   } else {
     if (formModel.value.id == userStore.id) {
-      if (
-        formModel.value.password.length > 0 ||
-        JSON.stringify(formModel.value.roles) !==
-          JSON.stringify(userStore.roles)
-      ) {
+      if (formModel.value.password.length > 0 || formModel.value.username != userStore.username) {
         toLogin.value = true;
-      }
+      } else fetchProfile.value = true;
     }
+
     messageConfirm.value = toLogin.value
-      ? t("message.admin_change_their_password_or_role")
+      ? t("message.admin_change_their_password_or_login_id")
       : t("update_confirm_message");
     isDialogVisible.value = true;
   }
 };
+
 // 確認ダイアログで許可されたらイベント発火
 const onConfirmed = async (toLogin: boolean) => {
   const payload: IUser = {
@@ -133,6 +133,9 @@ const onConfirmed = async (toLogin: boolean) => {
       handleCancel();
       if (toLogin) {
         handleLogout();
+      } else if (fetchProfile.value) {
+        emit("refetch-data");
+        await fetchUserProfile();
       } else {
         emit("refetch-data");
       }
@@ -152,6 +155,7 @@ const resetForm = async () => {
     formRef.value.resetValidation();
   }
   toLogin.value = false;
+  fetchProfile.value = false;
   confirmPassword.value = "";
   formValid.value = false;
   activeTab.value = "detail_information";
@@ -342,7 +346,7 @@ const handleCancel = () => {
       :message="messageConfirm"
       :isVisible="isDialogVisible"
       @update:isVisible="isDialogVisible = $event"
-      @confirmed="onConfirmed(true)"
+      @confirmed="onConfirmed(toLogin)"
     />
   </VDialog>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import ProfileDropdown from "@/components/auth/ProfileCard.vue";
 import { handleLogout } from "@/api/auth";
@@ -16,8 +16,7 @@ const handleSubmit = () => {
 const showProfile = () => {
   showProfileView.value = true;
 };
-const gender = userStore.gender;
-
+const gender = computed(() => userStore.gender);
 const onConfirmed = () => {
   handleLogout();
   sessionStorage.clear();
