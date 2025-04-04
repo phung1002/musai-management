@@ -274,7 +274,7 @@ const onConfirmed = async () => {
       <ConfimDialogView
         :title="t('confirm')"
         :message="
-          isEdit ? t('update_confirm_message') : t('register_confirm_message')
+          isEdit ? t('update_confirm_message') : t('addition_confirm_message')
         "
         :isVisible="isDialogVisible"
         @update:isVisible="isDialogVisible = $event"

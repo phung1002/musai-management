@@ -82,20 +82,24 @@ const reject = async (id: number) => {
     console.error("Error rejecting request:", error);
   }
 };
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: string, type?: "approve" | "reject") => {
+  if (status === "PENDING") {
+    if (type === "approve") return "green"; // 承認ボタンはAPPROVEDの色
+    if (type === "reject") return "orange"; // 拒否ボタンはREJECTEDの色
+    return "blue"; // ステータスの表示は青色
+  }
   switch (status) {
     case "APPROVED":
       return "green";
     case "REJECTED":
       return "orange";
-    case "PENDING":
-      return "blue";
     case "REVOKED":
       return "red";
     default:
       return "grey";
   }
 };
+
 const details = (LeaveResponse: ILeaveResponse) => {
   detailsCard.value = true;
   selectedResponse.value = LeaveResponse;
@@ -177,9 +181,9 @@ onMounted(() => {
                     :disabled="item.status != 'PENDING'"
                     @click="approve(item.id)"
                   >
-                    <VIcon :color="getStatusColor(item.status)"
-                      >mdi-check-bold</VIcon
-                    >
+                    <VIcon :color="getStatusColor(item.status, 'approve')">
+                      mdi-check-bold
+                    </VIcon>
                   </VBtn>
                   <VBtn
                     icon
@@ -188,9 +192,9 @@ onMounted(() => {
                     :disabled="item.status != 'PENDING'"
                     @click="reject(item.id)"
                   >
-                    <VIcon :color="getStatusColor(item.status)"
-                      >mdi-close-thick</VIcon
-                    >
+                    <VIcon :color="getStatusColor(item.status, 'reject')">
+                      mdi-close-thick
+                    </VIcon>
                   </VBtn>
                 </div>
               </template>

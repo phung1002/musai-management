@@ -111,7 +111,26 @@ onMounted(() => {
               </VBtn>
             </VCardActions>
           </VToolbar>
-
+          <VDivider />
+          <!-- 検索バー -->
+          <VCardItem class="py-0">
+            <VToolbar tag="div" color="transparent" flat>
+              <VTextField
+                v-model="keyWord"
+                :prepend-icon="'mdi-filter-variant'"
+                :placeholder="t('type_something')"
+                hide-details
+                clearable
+                variant="plain"
+                class="search"
+                @click:clear="handleClear"
+                @keyup.enter="handleSearch"
+              />
+              <VBtn icon density="comfortable" @click="handleSearch">
+                <VIcon>mdi-magnify</VIcon>
+              </VBtn>
+            </VToolbar>
+          </VCardItem>
           <VDivider />
           <!-- 休暇タイプタブ設定 -->
           <VTable>
@@ -123,26 +142,6 @@ onMounted(() => {
               </VTab>
             </VTabs>
             <VCardItem>
-              <VDivider />
-              <!-- 検索バー -->
-              <VCardItem class="py-0">
-                <VToolbar tag="div" color="transparent" flat>
-                  <VTextField
-                    v-model="keyWord"
-                    :prepend-icon="'mdi-filter-variant'"
-                    :placeholder="t('type_something')"
-                    hide-details
-                    clearable
-                    variant="plain"
-                    class="search"
-                    @click:clear="handleClear"
-                    @keyup.enter="handleSearch"
-                  />
-                  <VBtn icon density="comfortable" @click="handleSearch">
-                    <VIcon>mdi-magnify</VIcon>
-                  </VBtn>
-                </VToolbar>
-              </VCardItem>
               <VDivider />
               <VWindow v-model="activeTab">
                 <VWindowItem value="paid"></VWindowItem>
