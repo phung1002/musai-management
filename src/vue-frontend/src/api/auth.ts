@@ -10,7 +10,6 @@ interface LoginParams {
 export async function login(params: LoginParams): Promise<void> {
   try {
     await axiosIns.post("/auth/login", params);
-    const userStore = useUserStore();
 
     // Fetch user profile after successful login
     await fetchUserProfile();

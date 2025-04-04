@@ -129,7 +129,7 @@
     "validation_error": "送信前にエラーを修正してください。",
     "user_exists": "ユーザー名はすでにシステムに存在します。",
     "user_not_found": "ユーザー名はシステムに存在しません。",
-    "admin_change_their_password_or_role": "自分のパスワード及び権限を変更する場合は、再ログインが必要です。",
+    "admin_change_their_password_or_login_id": "自分のパスワード及びログインIDを変更する場合は、再ログインが必要です。",
     "cannot_remove_own_admin_role": "自身の管理者権限を削除することは許可されていません。",
     "cancel_only_pending": " ステータスが「承認待ち」の休暇申請のみキャンセルできます。",
     "confirm_leave_application": "{n}日間の休暇を申請しますか？",

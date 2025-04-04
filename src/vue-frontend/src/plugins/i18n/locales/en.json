@@ -129,7 +129,7 @@
     "validation_error": "please correct the highlighted errors before submitting.",
     "user_exists": "The username already exists in the system.",
     "user_not_found": "The user does not exist in the system.",
-    "admin_change_their_password_or_role": "If an admin changes their password or role, they will need to log in again.",
+    "admin_change_their_password_or_login_id": "If an admin changes their password or login id, they will need to log in again.",
     "cannot_remove_own_admin_role": "You are not allowed to remove your own ADMIN permissions.",
     "cancel_only_pending": "You can only cancel a leave application with the status 'Pending.'",
     "confirm_leave_application": "Do you want to apply for leave for {n} days?",
