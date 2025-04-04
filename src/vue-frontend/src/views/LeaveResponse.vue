@@ -6,6 +6,7 @@ import { ILeaveResponse } from "@/types/type";
 import { toast } from "vue3-toastify";
 import { allLeaveRequests, updateLeaveRespond } from "@/api/response";
 import { format } from "date-fns"; // 日付フォーマットライブラリ
+import { ELeaveStatus } from "@/constants/leaveStatus";
 import LeaveResponseDetails from "@/components/ui/LeaveResponseDetails.vue";
 const { t } = useI18n();
 const keyWord = ref("");
@@ -82,18 +83,15 @@ const reject = async (id: number) => {
     console.error("Error rejecting request:", error);
   }
 };
-const getStatusColor = (status: string, type?: "approve" | "reject") => {
-  if (status === "PENDING") {
-    if (type === "approve") return "green"; // 承認ボタンはAPPROVEDの色
-    if (type === "reject") return "orange"; // 拒否ボタンはREJECTEDの色
-    return "blue"; // ステータスの表示は青色
-  }
+const getStatusColor = (status: string) => {
   switch (status) {
-    case "APPROVED":
+    case ELeaveStatus.APPROVED:
       return "green";
-    case "REJECTED":
+    case ELeaveStatus.REJECTED:
       return "orange";
-    case "REVOKED":
+    case ELeaveStatus.PENDING:
+      return "blue";
+    case ELeaveStatus.REVOKED:
       return "red";
     default:
       return "grey";
@@ -181,9 +179,7 @@ onMounted(() => {
                     :disabled="item.status != 'PENDING'"
                     @click="approve(item.id)"
                   >
-                    <VIcon :color="getStatusColor(item.status, 'approve')">
-                      mdi-check-bold
-                    </VIcon>
+                    <VIcon color="blue"> mdi-check-bold </VIcon>
                   </VBtn>
                   <VBtn
                     icon
@@ -192,9 +188,7 @@ onMounted(() => {
                     :disabled="item.status != 'PENDING'"
                     @click="reject(item.id)"
                   >
-                    <VIcon :color="getStatusColor(item.status, 'reject')">
-                      mdi-close-thick
-                    </VIcon>
+                    <VIcon color="red"> mdi-close-thick </VIcon>
                   </VBtn>
                 </div>
               </template>

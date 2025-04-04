@@ -6,6 +6,7 @@ export interface ILeaveRequest {
   endDate: Date | null;
   reason: string;
   status: string;
+  leaveTypeValue: string;
 }
 
 export interface IUser {

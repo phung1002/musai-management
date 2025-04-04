@@ -19,16 +19,20 @@ const resetFile = () => {
 };
 // ファイルアップロード
 const handleFileUpload = (event: Event) => {
+  resetFile();
   const input = event.target as HTMLInputElement;
   if (input.files && input.files[0]) {
     const file = input.files[0];
 
     if (file.type !== "application/pdf") {
       alert("PDF ファイルを選択してください");
+      resetFile(); // PDF以外のファイルが選ばれたらリセット
       return;
     }
     selectedFile.value = file;
     pdfPreviewUrl.value = URL.createObjectURL(file);
+  } else {
+    resetFile(); // ファイルが選択されていない場合リセット
   }
 };
 // アップロード確認

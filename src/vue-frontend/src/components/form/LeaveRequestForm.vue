@@ -35,6 +35,7 @@ const defaultRequest: ILeaveRequest = {
   endDate: null,
   reason: "",
   status: "",
+  leaveTypeValue: "",
 };
 const formModel = ref<ILeaveRequest>(
   props.isEdit
@@ -217,6 +218,13 @@ const onConfirm = async () => {
     messageConfirm.value = t("message.confirm_leave_application", requestDays);
     isDialogVisible.value = true;
   } else {
+    if (formModel.value.leaveTypeValue == "HALF_DAY") {
+      requestDays = 0.5;
+      messageConfirm.value = t(
+        "message.confirm_leave_application_half",
+        requestDays
+      );
+    }
     messageConfirm.value = t(
       "message.confirm_leave_application_change",
       requestDays
