@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n";
 import { profile } from "@/api/auth";
 import { IUser } from "@/types/type";
 const { t } = useI18n();
-
+import { ERole } from "@/constants/role";
 const emit = defineEmits(["form:cancel"]);
 const handleCancel = () => {
   emit("form:cancel");
@@ -30,6 +30,16 @@ const getProfile = async () => {
     infor.value = response;
   } catch (error) {
     console.error(error);
+  }
+};
+const getRoleColor = (roles: string) => {
+  switch (roles) {
+    case ERole.ADMIN:
+      return "red";
+    case ERole.MANAGER:
+      return "orange";
+    default:
+      return "green";
   }
 };
 // Call API when component is mounted
@@ -65,36 +75,67 @@ onMounted(() => {
     </VCardText>
     <VCardItem>
       <VList>
+        <!-- ユーザーID -->
         <VListItem>
           <template v-slot:prepend>
             <v-icon icon="mdi-card-account-details-outline"></v-icon>
           </template>
           <VListItemTitle>{{ infor.username }}</VListItemTitle>
         </VListItem>
+        <!-- 権限 -->
+        <VListItem>
+          <template v-slot:prepend>
+            <v-icon icon="mdi-account-key"></v-icon>
+          </template>
+          <VListItemTitle>
+            <VChipGroup column active-class="bg-primary text-white">
+              <VChip
+                v-for="(role, index) in infor.roles"
+                :style="{ color: getRoleColor(role) }"
+                :key="index"
+                text-color="white"
+              >
+                {{ t(`roles.${role}`) }}
+              </VChip>
+            </VChipGroup>
+          </VListItemTitle>
+        </VListItem>
+        <!-- メールアドレス -->
         <VListItem>
           <template v-slot:prepend>
             <v-icon icon="mdi-email"></v-icon>
           </template>
           <VListItemTitle>{{ infor.email }}</VListItemTitle>
         </VListItem>
-        <VListItem>
-          <template v-slot:prepend>
-            <v-icon icon="mdi-account-credit-card-outline"></v-icon>
-          </template>
-          <VListItemTitle>{{ infor.department }}</VListItemTitle>
-        </VListItem>
+        <!-- 性別 -->
         <VListItem>
           <template v-slot:prepend>
             <v-icon icon="mdi-human-male-female"></v-icon>
           </template>
           <VListItemTitle>{{ t(`${infor.gender}`) }}</VListItemTitle>
         </VListItem>
+        <!-- 部署 -->
+        <VListItem>
+          <template v-slot:prepend>
+            <v-icon icon="mdi-account-credit-card-outline"></v-icon>
+          </template>
+          <VListItemTitle>{{ infor.department }}</VListItemTitle>
+        </VListItem>
+        <!-- 勤務先 -->
+        <VListItem>
+          <template v-slot:prepend>
+            <v-icon icon="mdi-briefcase"></v-icon>
+          </template>
+          <VListItemTitle>{{ infor.workPlace }}</VListItemTitle>
+        </VListItem>
+        <!-- 入社日 -->
         <VListItem>
           <template v-slot:prepend>
             <v-icon icon="mdi-bank-transfer-in"></v-icon>
           </template>
           <VListItemTitle>{{ convertDate(infor.joinDate) }}</VListItemTitle>
         </VListItem>
+        <!-- 生年月日 -->
         <VListItem>
           <template v-slot:prepend>
             <v-icon icon="mdi-cake-variant-outline"></v-icon>

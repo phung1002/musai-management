@@ -181,8 +181,8 @@ const handleCancel = () => {
         </VTabs>
       </VCardText>
       <VCardText>
-        <VWindow v-model="activeTab" eager>
-          <VWindowItem value="account">
+        <VWindow v-model="activeTab">
+          <VWindowItem value="account" eager>
             <VRow>
               <VCol cols="6">
                 <VLabel>{{ t("login_id") }}</VLabel>
