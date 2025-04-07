@@ -6,41 +6,49 @@ import java.util.Set;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import musai.app.validation.ValidationGroups;
 
 @Data
-public class UserRequestDTO {
+public class EmployeeRequestDTO {
 
-	@NotBlank(message = "Username cannot be blank")
-	@Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
-	private String username;
+	@NotBlank(message = "Employee ID cannot be blank")
+	@Pattern(regexp = "^\\d{4}$", message = "Employee ID must be 4 digits (e.g., 0001)")
+	private String employeeId;
 
 	@NotBlank(message = "Email cannot be blank")
-	@Size(max = 50, message = "Email must be less than 50 characters")
+	@Size(min = 5, max = 30, message = "Email must be beetwen 5 and 50 characters")
 	@Email(message = "Invalid email format")
 	private String email;
 
-	@NotBlank(groups = ValidationGroups.CreateUser.class, message = "Password cannot be blank")
+	@NotBlank(groups = ValidationGroups.CreateEmployee.class, message = "Password cannot be blank")
 //	@Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{6,40}$", message = "Password must be between 6 and 40 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character")
 	private String password;
 
 	@NotEmpty(message = "Roles cannot be empty")
 	private Set<String> roles;
 
+	@NotBlank(message = "Full Name cannot be blank")
 	private String fullName;
 
+	@NotBlank(message = "Full Name Furigana cannot be blank")
 	private String fullNameFurigana;
 
+	@NotBlank(message = "Birthday cannot be blank")
 	private LocalDate birthday;
 
+	@NotBlank(message = "Department cannot be blank")
 	private String department;
 
+	@NotBlank(message = "Work Place cannot be blank")
 	private String workPlace;
 
+	@NotBlank(message = "Join Date cannot be blank")
 	private LocalDate joinDate;
 
+	@NotBlank(message = "Gender cannot be blank")
 	private String gender;
 
 }

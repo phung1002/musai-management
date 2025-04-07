@@ -39,6 +39,7 @@ const items = [
     value: "/admin/leave-management",
     roles: [ERole.ADMIN],
   },
+  { type: "divider", roles: [ERole.MANAGER] },
   { type: "subheader", title: t("roles.MANAGER"), roles: [ERole.MANAGER] },
   {
     title: t("employee_leave_management"),

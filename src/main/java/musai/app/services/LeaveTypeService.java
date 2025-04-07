@@ -9,7 +9,7 @@ import musai.app.DTO.response.MessageResponse;
 
 public interface LeaveTypeService {
 
-	MessageResponse createAddLeaveType(LeaveTypeRequestDTO leaveType);
+	MessageResponse createLeaveType(LeaveTypeRequestDTO leaveType);
 
 	MessageResponse updateLeaveType(Long id, LeaveTypeRequestDTO leaveTypeDTO);
 

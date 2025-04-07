@@ -28,7 +28,7 @@ export const defaultUser: IUser = {
 
 export const formRules = (validator: any, isEdit: boolean) => ({
   username: [validator.required, validator.halfSize, validator.checkLength(5, 20)],
-  email: [validator.required, validator.halfSize, validator.checkLength(5, 30), validator.emailFormat],
+  email: [validator.required, validator.checkLength(5, 30), validator.emailFormat],
   password: isEdit
   ? [(value: string) => (!value || validator.halfSize(value)) ,
      (value: string) => (!value || validator.checkLength(6, 20)(value))]

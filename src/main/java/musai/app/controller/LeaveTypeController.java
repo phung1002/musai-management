@@ -29,49 +29,49 @@ public class LeaveTypeController {
 
 	private final LeaveTypeService leaveTypeService;
 
-	// add a new paid leave request
+	// API create
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
-	public ResponseEntity<?> addLeaveType(@RequestBody LeaveTypeRequestDTO request) {
+	public ResponseEntity<?> create(@RequestBody LeaveTypeRequestDTO request) {
 
-		MessageResponse addResponse = leaveTypeService.createAddLeaveType(request);
+		MessageResponse addResponse = leaveTypeService.createLeaveType(request);
 
 		return new ResponseEntity<>(addResponse, HttpStatus.CREATED);
 	}
 
-	// update paid leave request
+	// API update 
 	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
-	public ResponseEntity<?> updateLeaveType(@PathVariable Long id, @RequestBody LeaveTypeRequestDTO request) {
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody LeaveTypeRequestDTO request) {
 
 		MessageResponse updateResponse = leaveTypeService.updateLeaveType(id, request);
 
 		return new ResponseEntity<>(updateResponse, HttpStatus.OK);
 	}
 
-	// delete paid leave request
+	// API delete 
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteLeaveType(@PathVariable Long id) {
+	public ResponseEntity<?> delete(@PathVariable Long id) {
 
 		MessageResponse deleteResponse = leaveTypeService.deleteLeaveType(id);
 
 		return new ResponseEntity<>(deleteResponse, HttpStatus.OK);
 	}
 
-	// Create API list
+	// API list
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> getAllLeaveTypes(@RequestParam String keyword) {
+	public ResponseEntity<?> list(@RequestParam String keyword) {
 
 		List<LeaveTypeParentResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypes(keyword);
 
 		return new ResponseEntity<>(leaveTypes, HttpStatus.OK);
 	}
 
-	// Create API list tree
+	// API list tree
 	@GetMapping("/tree")
-	public ResponseEntity<?> getAllLeaveTypeTree() {
+	public ResponseEntity<?> tr() {
 
 		List<LeaveTypeChildrenResponseDTO> leaveTypes = leaveTypeService.getAllLeaveTypeTree();
 
