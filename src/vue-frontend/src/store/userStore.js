@@ -5,6 +5,7 @@ export const useUserStore = defineStore("user", {
   state: () => ({
     id: "",
     username: "",
+    employeeId: "",
     fullName: "",
     roles: [],
     gender: "",
@@ -30,6 +31,9 @@ export const useUserStore = defineStore("user", {
     },
     setUsername(username) {
       this.username = username;
+    },
+    setEmployeeId(employeeId) {
+      this.employeeId = employeeId;
     },
     setRoles(roles) {
       this.roles = roles;

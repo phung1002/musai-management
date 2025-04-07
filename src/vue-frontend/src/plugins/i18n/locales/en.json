@@ -188,7 +188,8 @@
     "furigana_format": "please enter the furigana in the correct format.",
     "half_size": "please enter half-size characters only.",
     "invalid_date_range": "selected date does not match.",
-    "invalid_date": "invalid date"
+    "invalid_date": "invalid date",
+    "employeeId_4digits": "employee id must be 4 digits."
   },
   "application_status": {
     "PENDING": "PENDING",

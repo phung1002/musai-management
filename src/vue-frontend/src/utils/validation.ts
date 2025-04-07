@@ -27,7 +27,14 @@ export const useValidator = (t: Function) => ({
     }
     return true;
   },
-
+  checkNumber: (value: string) => {
+    // 数字が4桁かどうかをチェック
+    const numberRegex = /^[0-9]{4}$/;
+    if (!numberRegex.test(value)) {
+      return t("validation.employeeId_4digits");
+    }
+    return true;
+  },
   checkFurigana: (value: string) => {
     const furiganaRegex = /^[ぁ-ゖァ-ヴーｧ-ﾝﾞﾟ]+$/u;
     if (!furiganaRegex.test(value)) {

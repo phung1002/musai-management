@@ -187,7 +187,8 @@
     "furigana_format": "正しいふりがなの形式で入力してください。",
     "half_size": "半角文字のみを入力してください。",
     "invalid_date_range":"選択された日付が一致しません。",
-    "invalid_date":"正しい日付を入力してください。"
+    "invalid_date":"正しい日付を入力してください。",
+    "employeeId_4digits": "社員番号は4桁の数字で入力してください。"
   },
   "application_status": {
     "PENDING": "承認待ち",

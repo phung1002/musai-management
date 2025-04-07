@@ -185,13 +185,13 @@ const handleCancel = () => {
           <VWindowItem value="account" eager>
             <VRow>
               <VCol cols="6">
-                <VLabel>{{ t("login_id") }}</VLabel>
+                <VLabel>{{ t("employee_id") }}</VLabel>
                 <VTextField
-                  v-model="formModel.username"
-                  :rules="formRulesConfig.username"
+                  v-model="formModel.employeeId"
+                  :rules="formRulesConfig.employeeId"
                   variant="outlined"
                   color="primary"
-                  name="username"
+                  name="employee_id"
                 />
               </VCol>
               <VCol cols="6">

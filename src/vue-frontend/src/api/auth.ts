@@ -2,7 +2,7 @@ import axiosIns from "@/plugins/axios";
 import { useUserStore } from "@/store/userStore";
 
 interface LoginParams {
-  username: string;
+  employeeId: string;
   password: string;
 }
 
@@ -29,10 +29,10 @@ export async function fetchUserProfile(): Promise<void> {
     userStore.setAuthenticated(true);
     userStore.setId(data.id);
     userStore.setRoles(data.roles);
-    userStore.setUsername(data.username);
+    userStore.setEmployeeId(data.employeeId);
     userStore.setFullName(data.fullName);
     userStore.setGender(data.gender);
-  } catch (error:any) {
+  } catch (error: any) {
     console.error("Failed to fetch user profile:", error);
 
     // If the error is 401, the session might have expired, trigger logout
@@ -52,7 +52,7 @@ export async function logout(): Promise<void> {
     userStore.setId("");
     userStore.setAuthenticated(false);
     userStore.setRoles([]);
-    userStore.setUsername("");
+    userStore.setEmployeeId("");
     userStore.setFullName("");
     userStore.setGender("");
   } catch (error) {

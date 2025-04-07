@@ -80,7 +80,7 @@ onMounted(() => {
           <template v-slot:prepend>
             <v-icon icon="mdi-card-account-details-outline"></v-icon>
           </template>
-          <VListItemTitle>{{ infor.username }}</VListItemTitle>
+          <VListItemTitle>{{ infor.employeeId }}</VListItemTitle>
         </VListItem>
         <!-- 権限 -->
         <VListItem>

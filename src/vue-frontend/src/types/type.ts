@@ -12,6 +12,7 @@ export interface ILeaveRequest {
 export interface IUser {
   id: number | null;
   username: string;
+  employeeId: string;
   email: string;
   password: string;
   fullName: string;

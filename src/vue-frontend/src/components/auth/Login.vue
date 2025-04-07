@@ -18,11 +18,10 @@ export default {
     const formValid = ref(false);
     const errorMessage = ref("");
     const formModel = reactive({
-      username: "",
+      employeeId: "",
       password: "",
     });
     const handleSubmit = async () => {
-      // if (formValid.value === true) {
       submiting.value = true;
       try {
         await login(formModel);
@@ -41,7 +40,6 @@ export default {
       } finally {
         submiting.value = false;
       }
-      // }
     };
     return {
       t,
@@ -76,12 +74,12 @@ export default {
           <VForm v-model="formValid" @submit.prevent>
             <VRow class="d-flex mb-3">
               <VCol cols="12">
-                <VLabel class="mb-1">{{ $t("login_id") }}</VLabel>
+                <VLabel class="mb-1">{{ $t("employee_id") }}</VLabel>
                 <VTextField
                   variant="outlined"
                   color="primary"
-                  name="username"
-                  v-model="formModel.username"
+                  name="employee_id"
+                  v-model="formModel.employeeId"
                 />
               </VCol>
               <VCol cols="12">
