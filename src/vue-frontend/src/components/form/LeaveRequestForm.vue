@@ -412,7 +412,13 @@ const handleCancel = () => {
       </VBtn>
     </VCardActions>
     <!-- 確認ダイアログ表示 -->
-    <VDialog v-model="isDialogVisible" width="auto" eager persistent>
+    <VDialog
+      v-model="isDialogVisible"
+      width="auto"
+      max-width="90%"
+      eager
+      persistent
+    >
       <ConfimDialogView
         :title="t('confirm')"
         :message="messageConfirm"
