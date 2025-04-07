@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n";
 import LeaveRequestForm from "@/components/form/LeaveRequestForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { listLeaveRequestForMember, cancelRequest } from "@/api/request";
-import { getUserLeavesForMember } from "@/api/userLeave";
+import { getEmployeeLeavesForMember } from "@/api/employeeLeave";
 import { ILeaveRequest } from "@/types/type";
 import { toast } from "vue3-toastify";
 import { ELeaveStatus } from "@/constants/leaveStatus";
@@ -56,9 +56,9 @@ const headers = reactive([
   { title: t("status"), key: "status" },
   { title: t("action"), key: "action" },
 ]);
-const loadUserLeave = async () => {
+const loadEmployeeLeave = async () => {
   try {
-    let response = await getUserLeavesForMember();
+    let response = await getEmployeeLeavesForMember();
     userLeaves.value = response.map(
       ({ leaveTypeName, remainedDays, validTo }) => ({
         leaveTypeName,
@@ -100,7 +100,7 @@ const handleClear = () => {
 // Call API when component is mounted
 onMounted(() => {
   fetchLeaveRequests();
-  loadUserLeave();
+  loadEmployeeLeave();
 });
 
 const openConfirmCancelDialog = (leaveRequest: ILeaveRequest) => {
@@ -113,7 +113,7 @@ const handleCancel = async () => {
     await cancelRequest(selectedRequest.value.id);
     toast.success(t("message.delete_success"));
     fetchLeaveRequests();
-    loadUserLeave();
+    loadEmployeeLeave();
   } catch (error: any) {
     toast.error(t("message.cancel_only_pending"));
   } finally {
@@ -258,7 +258,7 @@ const getStatusColor = (status: string) => {
       :application="selectedRequest"
       @form:cancel="isDialogVisible = false"
       @refetch-data="fetchLeaveRequests"
-      @refetch-userleave="loadUserLeave"
+      @refetch-userleave="loadEmployeeLeave"
     />
   </VDialog>
   <VDialog v-model="isConfirmDialogVisible" width="auto" persistent>

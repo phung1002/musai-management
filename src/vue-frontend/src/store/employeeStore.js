@@ -1,7 +1,7 @@
 import { ERole } from "@/constants/role";
 import { defineStore } from "pinia";
 
-export const useUserStore = defineStore("user", {
+export const useEmployeeStore = defineStore("user", {
   state: () => ({
     id: "",
     username: "",

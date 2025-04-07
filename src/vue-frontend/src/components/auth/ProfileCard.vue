@@ -3,7 +3,7 @@
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { profile } from "@/api/auth";
-import { IUser } from "@/types/type";
+import { IEmployee } from "@/types/type";
 const { t } = useI18n();
 import { ERole } from "@/constants/role";
 const emit = defineEmits(["form:cancel"]);
@@ -20,7 +20,7 @@ const convertDate = (date: string | null): string | null => {
   return `${year}-${month}-${day}`;
 };
 
-const infor = ref<IUser>({} as IUser);
+const infor = ref<IEmployee>({} as IEmployee);
 const getProfile = async () => {
   try {
     const response = await profile();

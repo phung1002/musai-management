@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useUserStore } from "@/store/userStore";
+import { useEmployeeStore } from "@/store/employeeStore";
 import LoginVue from "@/components/auth/Login.vue";
 import DefaultLayoutVue from "@/components/layout/DefaultLayout.vue";
 import NotFoundVue from "@/components/auth/NotFound.vue";
 import UnauthorizedVue from "@/components/auth/Unauthorized.vue";
-import UserVue from "@/views/User.vue";
+import EmployeeVue from "@/views/Employee.vue";
 import { ERole } from "@/constants/role";
 
-import UserLeaveManagementViewVue from "@/views/UserLeave.vue";
+import EmployeeManagementVue from "@/views/EmployeeLeave.vue";
 import RequestConfirmViewVue from "@/views/LeaveResponse.vue";
 import PasswordChangeVue from "@/views/PasswordChange.vue";
 import CalendarVue from "@/views/Calendar.vue";
@@ -40,9 +40,9 @@ const routes = {
   children: [
     // Admin routes
     {
-      path: "/admin/users",
-      name: "admin-user-list",
-      component: UserVue,
+      path: "/admin/employees",
+      name: "admin-employee-list",
+      component: EmployeeVue,
       meta: {
         requiresAuth: true,
         requiredRoles: [ERole.ADMIN],
@@ -58,9 +58,9 @@ const routes = {
       },
     },
     {
-      path: "/manager/user-leave-management",
-      name: "manager-user-leave-management",
-      component: UserLeaveManagementViewVue,
+      path: "/manager/employee-leave-management",
+      name: "manager-employee-leave-management",
+      component: EmployeeManagementVue,
       meta: {
         requiresAuth: true,
         requiredRoles: [ERole.MANAGER],
@@ -137,8 +137,8 @@ const hasRequiredRoles = (userRoles, requiredRoles) => {
 
 // Navigation guard
 router.beforeEach(async (to, from, next) => {
-  const userStore = useUserStore();
-  const isAuthenticated = userStore.authenticated;
+  const employeeStore = useEmployeeStore();
+  const isAuthenticated = employeeStore.authenticated;
 
   // Check if authentication is required or if the user is authenticated
   if (!to.meta.requiresAuth || isAuthenticated) {
@@ -150,7 +150,7 @@ router.beforeEach(async (to, from, next) => {
       // Check if user has required roles
       if (
         isAuthenticated &&
-        !hasRequiredRoles(userStore.roles, to.meta.requiredRoles)
+        !hasRequiredRoles(employeeStore.roles, to.meta.requiredRoles)
       ) {
         return next({ name: "unauthorized" });
       }

@@ -1,10 +1,10 @@
 <!-- ユーザー管理画面 -->
 <script setup lang="ts">
-import { reactive, ref, onMounted, watch } from "vue";
+import { reactive, ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { deleteUser, getAllUsers } from "@/api/user";
-import { IUser } from "@/types/type";
-import UserForm from "@/components/form/UserForm.vue";
+import { deleteEmployee, getAllEmployees } from "@/api/employee";
+import { IEmployee } from "@/types/type";
+import EmployeeForm from "@/components/form/EmployeeForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { toast } from "vue3-toastify";
 import { ERole } from "@/constants/role";
@@ -26,7 +26,7 @@ const headers = reactive([
 ]);
 
 const keyWord = ref("");
-const users = ref<IUser[]>([]);
+const employees = ref<IEmployee[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
 
@@ -36,24 +36,24 @@ const openCreateDialog = () => {
   isEdit.value = false;
   showDialog.value = true;
 };
-const openUpdateDialog = (user: IUser) => {
+const openUpdateDialog = (employee: IEmployee) => {
   isEdit.value = true;
   showDialog.value = true;
-  selectedUser.value = user;
+  selectedEmployee.value = employee;
 };
-const selectedUser = ref<IUser>({} as IUser);
-const openConfirmDialog = (user: IUser) => {
-  selectedUser.value = user;
+const selectedEmployee = ref<IEmployee>({} as IEmployee);
+const openConfirmDialog = (employee: IEmployee) => {
+  selectedEmployee.value = employee;
   isConfirmDialogVisible.value = true;
 };
-// Get list user from api API
-const fetchUsers = async (searchQuery: string = "") => {
+// Get list employee from api API
+const fetchEmployees = async (searchQuery: string = "") => {
   isLoading.value = true;
   isError.value = false;
   try {
     // 検索キーワードが空でも呼び出せる
-    const response = await getAllUsers(searchQuery);
-    loadUser(response);
+    const response = await getAllEmployees(searchQuery);
+    loadEmployee(response);
   } catch (error) {
     isError.value = true;
   } finally {
@@ -63,30 +63,30 @@ const fetchUsers = async (searchQuery: string = "") => {
 const handleSearch = () => {
   if (!keyWord.value.trim()) {
     // 入力が空の場合、リストを再表示（全データを取得）
-    fetchUsers();
+    fetchEmployees();
   } else {
     // 入力がある場合は検索を実行
-    fetchUsers(keyWord.value);
+    fetchEmployees(keyWord.value);
   }
 };
 const handleClear = () => {
   keyWord.value = ""; // 検索ボックスをクリア
-  fetchUsers(); // 全ユーザーを再表示
+  fetchEmployees(); // 全ユーザーを再表示
 };
-const loadUser = (lst: any) => {
-  users.value = lst.map((user: IUser) => ({
-    ...user,
-    roles: user.roles.map(formatRole),
+const loadEmployee = (lst: any) => {
+  employees.value = lst.map((employee: IEmployee) => ({
+    ...employee,
+    roles: employee.roles.map(formatRole),
   }));
 };
 
-const handleDeleteUser = async () => {
-  if (!selectedUser.value.id) return;
+const handledeleteEmployee = async () => {
+  if (!selectedEmployee.value.id) return;
 
   try {
-    await deleteUser(selectedUser.value.id);
+    await deleteEmployee(selectedEmployee.value.id);
     toast.success(t("message.delete_success"));
-    fetchUsers();
+    fetchEmployees();
   } catch (error: any) {
     toast.error(t(error.message));
   } finally {
@@ -105,7 +105,7 @@ const getRoleColor = (roles: string) => {
 };
 // Call API when component is mounted
 onMounted(() => {
-  fetchUsers();
+  fetchEmployees();
 });
 </script>
 
@@ -113,7 +113,7 @@ onMounted(() => {
   <VRow>
     <VCol cols="12">
       <VContainer class="app-container">
-        <!-- Add user button -->
+        <!-- Add employee button -->
         <VCard flat elevation="0">
           <VToolbar tag="div">
             <VToolbarTitle>
@@ -157,11 +157,11 @@ onMounted(() => {
             </VToolbar>
           </VCardItem>
           <VDivider />
-          <!--Table list user -->
+          <!--Table list employee -->
           <VCardItem>
             <VDataTable
               :headers="headers"
-              :items="users"
+              :items="employees"
               :items-per-page-text="t('items_per_page')"
               :no-data-text="t('no_records_found')"
               v-if="!isLoading && !isError"
@@ -212,13 +212,13 @@ onMounted(() => {
       </VContainer>
     </VCol>
   </VRow>
-  <!-- Dialog Create/Update user -->
+  <!-- Dialog Create/Update employee -->
   <VDialog v-model="showDialog" width="auto" persistent>
-    <UserForm
+    <EmployeeForm
       :isEdit="isEdit"
-      :user="selectedUser"
+      :employee="selectedEmployee"
       @form-cancel="showDialog = false"
-      @refetch-data="fetchUsers"
+      @refetch-data="fetchEmployees"
     />
   </VDialog>
   <VDialog v-model="isConfirmDialogVisible" width="auto" persistent>
@@ -227,7 +227,7 @@ onMounted(() => {
       :message="t('delete_confirm_message')"
       :isVisible="isConfirmDialogVisible"
       @update:isVisible="isConfirmDialogVisible = $event"
-      @confirmed="handleDeleteUser"
+      @confirmed="handledeleteEmployee"
     />
   </VDialog>
 </template>

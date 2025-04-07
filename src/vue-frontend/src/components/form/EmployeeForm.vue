@@ -1,24 +1,24 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from "vue";
-import { IUser } from "@/types/type";
+import { IEmployee } from "@/types/type";
 import { useI18n } from "vue-i18n";
 import { useValidator } from "@/utils/validation";
 import {
   roles,
-  defaultUser,
+  defaultEmployee,
   formRules,
   genders,
-} from "../../configs/userFormConfig";
-import { createUser, updateUser } from "@/api/user";
+} from "@/configs/EmployeeFormConfig";
+import { createEmployee, updateEmployee } from "@/api/employee";
 import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import { useUserStore } from "@/store/userStore";
+import { useEmployeeStore } from "@/store/employeeStore";
 import { handleLogout } from "@/api/auth";
 import type { VForm } from "vuetify/lib/components/index.mjs";
-import { fetchUserProfile } from "@/api/auth";
+import { fetchEmployeeProfile } from "@/api/auth";
 
 const formRef = ref<InstanceType<typeof VForm> | null>(null);
-const userStore = useUserStore();
+const employeeStore = useEmployeeStore();
 const formatDate = (date: string | null) =>
   date ? new Date(date).toISOString() : null;
 
@@ -28,10 +28,12 @@ const validator = useValidator(t);
 const isDialogVisible = ref(false);
 const activeTab = ref("detail_information");
 const emit = defineEmits(["form-cancel", "refetch-data"]);
-const props = defineProps<{ user?: IUser; isEdit: boolean }>();
+const props = defineProps<{ employee?: IEmployee; isEdit: boolean }>();
 
-const formModel = ref<IUser>(
-  props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser }
+const formModel = ref<IEmployee>(
+  props.isEdit
+    ? { ...defaultEmployee, ...props.employee }
+    : { ...defaultEmployee }
 );
 
 // Form validation rules
@@ -90,8 +92,11 @@ const handleSubmit = async () => {
     isDialogVisible.value = true;
     // 登録処理を実行
   } else {
-    if (formModel.value.id == userStore.id) {
-      if (formModel.value.password.length > 0 || formModel.value.username != userStore.username) {
+    if (formModel.value.id == employeeStore.id) {
+      if (
+        formModel.value.password.length > 0 ||
+        formModel.value.username != employeeStore.username
+      ) {
         toLogin.value = true;
       } else fetchProfile.value = true;
     }
@@ -105,16 +110,16 @@ const handleSubmit = async () => {
 
 // 確認ダイアログで許可されたらイベント発火
 const onConfirmed = async (toLogin: boolean) => {
-  const payload: IUser = {
-    ...(formModel.value as IUser),
+  const payload: IEmployee = {
+    ...(formModel.value as IEmployee),
     birthday: formatDate(formModel.value.birthday),
     joinDate: formatDate(formModel.value.joinDate),
   };
   submiting.value = true;
   if (!props.isEdit) {
     try {
-      // if create user
-      await createUser(payload);
+      // if create employee
+      await createEmployee(payload);
       toast.success(t("message.add_success"));
       emit("refetch-data");
       handleCancel();
@@ -126,16 +131,16 @@ const onConfirmed = async (toLogin: boolean) => {
     }
   } else {
     try {
-      // if update user
+      // if update employee
       if (formModel.value.id == null) return;
-      await updateUser(formModel.value.id, payload);
+      await updateEmployee(formModel.value.id, payload);
       toast.success(t("message.update_success"));
       handleCancel();
       if (toLogin) {
         handleLogout();
       } else if (fetchProfile.value) {
         emit("refetch-data");
-        await fetchUserProfile();
+        await fetchEmployeeProfile();
       } else {
         emit("refetch-data");
       }
@@ -148,8 +153,8 @@ const onConfirmed = async (toLogin: boolean) => {
 };
 const resetForm = async () => {
   formModel.value = props.isEdit
-    ? { ...defaultUser, ...props.user }
-    : { ...defaultUser };
+    ? { ...defaultEmployee, ...props.employee }
+    : { ...defaultEmployee };
   await nextTick();
   if (formRef.value?.resetValidation) {
     formRef.value.resetValidation();

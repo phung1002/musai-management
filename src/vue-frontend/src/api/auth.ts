@@ -1,5 +1,5 @@
 import axiosIns from "@/plugins/axios";
-import { useUserStore } from "@/store/userStore";
+import { useEmployeeStore } from "@/store/employeeStore";
 
 interface LoginParams {
   employeeId: string;
@@ -12,7 +12,7 @@ export async function login(params: LoginParams): Promise<void> {
     await axiosIns.post("/auth/login", params);
 
     // Fetch user profile after successful login
-    await fetchUserProfile();
+    await fetchEmployeeProfile();
   } catch (error: any) {
     console.error("Login failed:", error.response?.data || error);
     throw error;
@@ -20,18 +20,18 @@ export async function login(params: LoginParams): Promise<void> {
 }
 
 // Fetch the current user's profile after login or page reload
-export async function fetchUserProfile(): Promise<void> {
-  const userStore = useUserStore();
+export async function fetchEmployeeProfile(): Promise<void> {
+  const employeeStore = useEmployeeStore();
   try {
     const response = await axiosIns.get("/auth/profile");
     const data = response.data;
 
-    userStore.setAuthenticated(true);
-    userStore.setId(data.id);
-    userStore.setRoles(data.roles);
-    userStore.setEmployeeId(data.employeeId);
-    userStore.setFullName(data.fullName);
-    userStore.setGender(data.gender);
+    employeeStore.setAuthenticated(true);
+    employeeStore.setId(data.id);
+    employeeStore.setRoles(data.roles);
+    employeeStore.setEmployeeId(data.employeeId);
+    employeeStore.setFullName(data.fullName);
+    employeeStore.setGender(data.gender);
   } catch (error: any) {
     console.error("Failed to fetch user profile:", error);
 
@@ -44,17 +44,17 @@ export async function fetchUserProfile(): Promise<void> {
 
 // Function to call the logout API
 export async function logout(): Promise<void> {
-  const userStore = useUserStore();
+  const employeeStore = useEmployeeStore();
   try {
     await axiosIns.post("/auth/logout");
 
     // Reset user state after logout
-    userStore.setId("");
-    userStore.setAuthenticated(false);
-    userStore.setRoles([]);
-    userStore.setEmployeeId("");
-    userStore.setFullName("");
-    userStore.setGender("");
+    employeeStore.setId("");
+    employeeStore.setAuthenticated(false);
+    employeeStore.setRoles([]);
+    employeeStore.setEmployeeId("");
+    employeeStore.setFullName("");
+    employeeStore.setGender("");
   } catch (error) {
     console.error("Logout failed:", error);
   }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { getAllUsers } from "@/api/user";
-import { IUser } from "@/types/type";
+import { getAllEmployees } from "@/api/employee";
+import { IEmployee } from "@/types/type";
 const { t } = useI18n();
 
 const props = defineProps({
@@ -27,7 +27,7 @@ const headers = reactive([
 
 // 検索
 const keyWord = ref("");
-const users = ref<IUser[]>([]);
+const users = ref<IEmployee[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
 
@@ -37,7 +37,7 @@ const fetchUsers = async (searchQuery: string = "") => {
   isError.value = false;
   try {
     // 検索キーワードが空でも呼び出せる
-    const response = await getAllUsers(searchQuery);
+    const response = await getAllEmployees(searchQuery);
     loadUser(response);
   } catch (error) {
     isError.value = true;
@@ -59,13 +59,13 @@ const handleClear = () => {
   fetchUsers(); // 空の検索でリストを再表示
 };
 const loadUser = (lst: any) => {
-  users.value = lst.map((user: IUser) => ({
+  users.value = lst.map((user: IEmployee) => ({
     ...user,
   }));
 };
 
 // 行がクリックされたときの処理
-const onRowClick = (item: IUser) => {
+const onRowClick = (item: IEmployee) => {
   emit("selectUser", { id: item.id, name: item.fullName });
   emit("update:isVisible", false);
 };

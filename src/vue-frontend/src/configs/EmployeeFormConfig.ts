@@ -1,4 +1,4 @@
-import { IUser } from "@/types/type";
+import { IEmployee } from "@/types/type";
 import { ERole } from "@/constants/role";
 
 export const roles = Object.keys(ERole).map((key) => ({
@@ -11,7 +11,7 @@ export const genders = [
   { value: "female", title: "female" },
 ];
 
-export const defaultUser: IUser = {
+export const defaultEmployee: IEmployee = {
   id: null,
   username: "",
   employeeId: "",

@@ -2,10 +2,10 @@
 import logoImg from "@/assets/images/logo.png";
 import { reactive, computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { useUserStore } from "@/store/userStore";
+import { useEmployeeStore } from "@/store/employeeStore";
 import { ERole } from "@/constants/role";
 
-const userStore = useUserStore();
+const userStore = useEmployeeStore();
 const filteredItems = computed(() => {
   return items.filter((item) => {
     if (!item.roles) return true;
@@ -22,10 +22,10 @@ const items = [
     props: {
       prependIcon: "mdi-account-box-multiple-outline",
       link: true,
-      to: "/admin/users",
+      to: "/admin/employees",
       exact: false,
     },
-    value: "/admin/users",
+    value: "/admin/employees",
     roles: [ERole.ADMIN],
   },
   {
@@ -46,10 +46,10 @@ const items = [
     props: {
       prependIcon: "mdi-badge-account-horizontal-outline",
       link: true,
-      to: "/manager/user-leave-management",
+      to: "/manager/employee-leave-management",
       exact: true,
     },
-    value: "/manager/user-leave-management",
+    value: "/manager/employee-leave-management",
     roles: [ERole.MANAGER],
   },
   {

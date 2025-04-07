@@ -9,7 +9,7 @@ export interface ILeaveRequest {
   leaveTypeValue: string;
 }
 
-export interface IUser {
+export interface IEmployee {
   id: number | null;
   username: string;
   employeeId: string;
@@ -36,7 +36,7 @@ export interface ILeaveTypes {
   parentId: number | null; // 親カテゴリのID（ルートカテゴリなら省略）
   children?: ILeaveTypes[]; // 子カテゴリ（サブカテゴリー）
 }
-export interface IUserLeaves {
+export interface IEmployeeLeaves {
   id: number | null; // ����ID
   leaveTypeId: number; // 休暇のタイプ
   leaveTypeName: string; //

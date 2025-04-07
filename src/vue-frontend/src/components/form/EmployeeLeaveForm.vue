@@ -4,20 +4,23 @@ import { ref, Ref, onMounted, watch, nextTick, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { VSelect, VTab } from "vuetify/lib/components/index.mjs";
 import { useValidator } from "@/utils/validation";
-import { IUserLeaves, ILeaveTypes } from "@/types/type";
-import { addUserLeave, updateUserLeave } from "@/api/userLeave";
+import { IEmployeeLeaves, ILeaveTypes } from "@/types/type";
+import { addEmployeeLeave, updateEmployeeLeave } from "@/api/employeeLeave";
 import { getLeavesTree } from "@/api/leave";
 import { toast } from "vue3-toastify";
 import { ELeaveType } from "@/constants/leaveType";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import UserList from "@/components/ui/UserSearchBox.vue";
+import EmployeeList from "@/components/ui/EmployeeSearchBox.vue";
 import type { VForm } from "vuetify/lib/components/index.mjs";
 
 const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const { t } = useI18n(); //日本語にローカル変更用
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const errors = ref<{ leave_type?: string; leave_name?: string }>({});
-const props = defineProps<{ userLeave?: IUserLeaves; isEdit: boolean }>(); // 編集対象情報
+const props = defineProps<{
+  employeeLeave?: IEmployeeLeaves;
+  isEdit: boolean;
+}>(); // 編集対象情報
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
 const validator = useValidator(t); // バリデーション
 const isDialogVisible = ref(false); // 確認ダイアログ表示
@@ -32,7 +35,7 @@ const tabs = ref([
   { title: "", icon: "mdi-pine-tree-box", tab: ELeaveType.PUBLIC_LEAVE },
 ]);
 // デフォルト値
-const defaultUserLeave = {
+const defaultEmployeeLeave = {
   id: null,
   leaveTypeId: 0,
   leaveTypeName: "",
@@ -63,10 +66,10 @@ const childBox = ref(null);
 const numberOptions = Array.from({ length: 26 }, (_, i) => i + 0);
 
 // フォームデータの初期化
-const formModel = ref<IUserLeaves>(
+const formModel = ref<IEmployeeLeaves>(
   props.isEdit
-    ? { ...defaultUserLeave, ...props.userLeave }
-    : { ...defaultUserLeave }
+    ? { ...defaultEmployeeLeave, ...props.employeeLeave }
+    : { ...defaultEmployeeLeave }
 );
 // `validFrom` を動的に取得して `validTo` のバリデーションを実行
 const checkDateRange = computed(
@@ -120,15 +123,15 @@ const showUserList = () => {
   userListVisible.value = true;
 };
 // 子コンポーネントから受け取る処理
-const handleUserSelect = (user: { id: number; name: string }) => {
-  formModel.value.userId = user.id;
-  formModel.value.userFullName = user.name;
+const handleUserSelect = (employee: { id: number; name: string }) => {
+  formModel.value.userId = employee.id;
+  formModel.value.userFullName = employee.name;
 };
 // 入力初期化
 const handleResetForm = async () => {
   formModel.value = props.isEdit
-    ? { ...defaultUserLeave, ...props.userLeave }
-    : { ...defaultUserLeave };
+    ? { ...defaultEmployeeLeave, ...props.employeeLeave }
+    : { ...defaultEmployeeLeave };
   await nextTick();
   if (formRef.value?.resetValidation) {
     formRef.value.resetValidation();
@@ -196,7 +199,7 @@ const onConfirmed = async () => {
     // 新規登録処理を実行
     setleaveTypeId(activeTab.value);
     try {
-      await addUserLeave(formModel.value);
+      await addEmployeeLeave(formModel.value);
       toast.success(t("message.add_success"));
       handleCancel();
       emit("refetch-data");
@@ -209,7 +212,7 @@ const onConfirmed = async () => {
     // 更新処理を実行
     try {
       if (formModel.value.id == null) return;
-      await updateUserLeave(formModel.value.id, formModel.value);
+      await updateEmployeeLeave(formModel.value.id, formModel.value);
       toast.success(t("message.update_success"));
       handleCancel();
       emit("refetch-data");
@@ -374,7 +377,7 @@ const onConfirmed = async () => {
     </VDialog>
     <!-- ユーザー一覧ポップアップ -->
     <VDialog v-model="userListVisible" width="auto" eager persistent>
-      <UserList
+      <EmployeeList
         v-if="userListVisible"
         :title="t('user_lists')"
         @selectUser="handleUserSelect"

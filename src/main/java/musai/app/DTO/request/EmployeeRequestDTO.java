@@ -36,7 +36,6 @@ public class EmployeeRequestDTO {
 	@NotBlank(message = "Full Name Furigana cannot be blank")
 	private String fullNameFurigana;
 
-	@NotBlank(message = "Birthday cannot be blank")
 	private LocalDate birthday;
 
 	@NotBlank(message = "Department cannot be blank")
@@ -45,7 +44,6 @@ public class EmployeeRequestDTO {
 	@NotBlank(message = "Work Place cannot be blank")
 	private String workPlace;
 
-	@NotBlank(message = "Join Date cannot be blank")
 	private LocalDate joinDate;
 
 	@NotBlank(message = "Gender cannot be blank")
