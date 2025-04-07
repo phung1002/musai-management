@@ -9,7 +9,7 @@ export const useValidator = (t: Function) => ({
       : t("validation.required_input"),
 
   emailFormat: (value: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || !value
+    (/^[\x00-\x7F]+$/.test(value) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) || !value
       ? true
       : t("validation.email_format"),
 
@@ -21,9 +21,9 @@ export const useValidator = (t: Function) => ({
   },
 
   halfSize: (value: string) => {
-    const halfSizeRegex = /^[\x20-\x7E]+$/;
+    const halfSizeRegex = /^[a-zA-Z0-9]+$/;
     if (!halfSizeRegex.test(value)) {
-      return t("validation.half_size");
+      return t("validation.half_width_alphanumeric");
     }
     return true;
   },

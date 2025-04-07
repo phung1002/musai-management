@@ -36,7 +36,6 @@ export const formRules = (validator: any, isEdit: boolean) => ({
   employeeId: [validator.required, validator.checkNumber, validator.halfSize],
   email: [
     validator.required,
-    validator.halfSize,
     validator.checkLength(5, 30),
     validator.emailFormat,
   ],

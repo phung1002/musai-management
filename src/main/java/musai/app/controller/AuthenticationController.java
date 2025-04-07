@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import musai.app.DTO.request.LoginRequest;
 import musai.app.DTO.response.MessageResponse;
-import musai.app.DTO.response.UserResponseDTO;
+import musai.app.DTO.response.EmployeeResponseDTO;
 import musai.app.security.jwt.JwtUtils;
 import musai.app.services.AuthenticationService;
 
@@ -38,7 +38,7 @@ public class AuthenticationController {
             return ResponseEntity.ok("login_success");
 		} catch (BadCredentialsException ex) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(new MessageResponse("invalid_username_or_password."));
+					.body(new MessageResponse("invalid_employee_id_or_password."));
 		}
 	}
 	
@@ -49,14 +49,14 @@ public class AuthenticationController {
 	}
 
 	@GetMapping("/validate")
-    public ResponseEntity<?> validateUser(HttpServletRequest request) {
-		authenticationService.validateUser(request);
+    public ResponseEntity<?> validate(HttpServletRequest request) {
+		authenticationService.validateEmployee(request);
         return ResponseEntity.ok("validate_success");
     }
 
 	@GetMapping("/profile")
     public ResponseEntity<?> profile(HttpServletRequest request) {
-		UserResponseDTO response = authenticationService.getProfile(request);
+		EmployeeResponseDTO response = authenticationService.getProfile(request);
         return ResponseEntity.ok(response);
     }
 }

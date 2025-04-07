@@ -11,7 +11,7 @@ public class DocumentResponseDTO {
 	private Long id;
 	private String title;
 	private String path;
-	private Long userId;
+	private Long employeeId;
 	private String uploadBy;
 	private LocalDateTime uploadAt;
 }

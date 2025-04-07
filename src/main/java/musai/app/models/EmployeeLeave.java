@@ -25,16 +25,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "user_leaves")
-public class UserLeave {
+@Table(name = "employee_leaves")
+public class EmployeeLeave {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "employe_id")
+    private Employee employee;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "leave_type_id")
@@ -76,8 +76,8 @@ public class UserLeave {
     private LocalDateTime deletedAt;
     
     // Constructor
-    public UserLeave(User userId, LeaveType leaveType, Double totalDays, Double usedDays ) {
-        this.user = userId;
+    public EmployeeLeave(Employee employeeId, LeaveType leaveType, Double totalDays, Double usedDays ) {
+        this.employee = employeeId;
         this.leaveType = leaveType;
         this.totalDays = totalDays;
         this.usedDays = usedDays; 

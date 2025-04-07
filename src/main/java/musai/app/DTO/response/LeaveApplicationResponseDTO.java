@@ -11,7 +11,7 @@ import musai.app.models.ELeaveStatus;
 @AllArgsConstructor
 public class LeaveApplicationResponseDTO {
     private Long id;
-    private String userFullName;
+    private String employeeFullName;
     private Long leaveTypeId;
     private String leaveTypeName;
     private String leaveTypeValue;

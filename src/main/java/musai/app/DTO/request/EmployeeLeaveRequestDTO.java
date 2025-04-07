@@ -5,9 +5,8 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class UserLeaveRequestDTO {
-	private Long Id;
-    private Long userId;
+public class EmployeeLeaveRequestDTO {
+    private Long employeeId;
     private Long leaveTypeId;
     private Double totalDays;
     private Double usedDays;

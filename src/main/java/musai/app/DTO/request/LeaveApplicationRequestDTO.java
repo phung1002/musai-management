@@ -9,8 +9,8 @@ import lombok.Data;
 @Data
 public class LeaveApplicationRequestDTO {
 	
-//	@NotNull(message = "User ID is required")
-    private Long userId; 
+	@NotNull(message = "Employee ID is required")
+    private Long employeeId; 
 	
 	@NotNull(message = "Leave type ID is required")
     private Long leaveTypeId; 

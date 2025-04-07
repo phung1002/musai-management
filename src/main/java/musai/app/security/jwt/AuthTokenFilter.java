@@ -52,13 +52,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
 			// Validate the token and process it if valid
 			if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-				// Extract username from the token
-				String username = jwtUtils.getUserNameFromJwtToken(jwt);
+				// Extract employee id from the token
+				String employeeId = jwtUtils.getUserNameFromJwtToken(jwt);
 
-				// Load user details using the username
-				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+				// Load employee details using the employee id
+				UserDetails userDetails = userDetailsService.loadUserByUsername(employeeId);
 
-				// Create an authentication object using user details and authorities
+				// Create an authentication object using employee details and authorities
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 						userDetails, null, // No credentials required
 						userDetails.getAuthorities());
@@ -76,7 +76,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             }
 		} catch (Exception e) {
 			// Log any exceptions during the authentication process
-			logger.error("Cannot set user authentication: {}", e);
+			logger.error("Cannot set employee authentication: {}", e);
 		}
 
 		// Continue processing the request

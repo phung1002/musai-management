@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponseDTO {
+public class EmployeeResponseDTO {
 
 	private Long id;
 
-	private String username;
+	private String employeeId;
 
 	private String email;
 

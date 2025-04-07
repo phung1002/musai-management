@@ -38,7 +38,7 @@ public class Document {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "upload_by")
-	private User uploadBy;
+	private Employee uploadBy;
 
 	@CreationTimestamp
 	@JsonBackReference
