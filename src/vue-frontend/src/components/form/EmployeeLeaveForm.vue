@@ -24,7 +24,7 @@ const props = defineProps<{
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
 const validator = useValidator(t); // バリデーション
 const isDialogVisible = ref(false); // 確認ダイアログ表示
-const userListVisible = ref(false); // ユーザー一覧ポップアップの表示状態
+const employeeListVisible = ref(false); // ユーザー一覧ポップアップの表示状態
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 const formValid = ref(false);
@@ -119,8 +119,8 @@ const setleaveTypeId = (selectedTab: string) => {
   }
 };
 // フォーカス時にユーザー一覧ポップアップを表示
-const showUserList = () => {
-  userListVisible.value = true;
+const showemployeeList = () => {
+  employeeListVisible.value = true;
 };
 // 子コンポーネントから受け取る処理
 const handleUserSelect = (employee: { id: number; name: string }) => {
@@ -301,7 +301,7 @@ const onConfirmed = async () => {
                       <VBtn
                         icon="mdi-magnify"
                         variant="text"
-                        @click="showUserList"
+                        @click="showemployeeList"
                         :disabled="isEdit"
                         density="comfortable"
                       />
@@ -376,12 +376,12 @@ const onConfirmed = async () => {
       />
     </VDialog>
     <!-- ユーザー一覧ポップアップ -->
-    <VDialog v-model="userListVisible" width="auto" eager persistent>
+    <VDialog v-model="employeeListVisible" width="auto" eager persistent>
       <EmployeeList
-        v-if="userListVisible"
+        v-if="employeeListVisible"
         :title="t('user_lists')"
         @selectUser="handleUserSelect"
-        @update:isVisible="userListVisible = $event"
+        @update:isVisible="employeeListVisible = $event"
     /></VDialog>
   </VCard>
 </template>

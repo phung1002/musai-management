@@ -5,14 +5,14 @@ import { useI18n } from "vue-i18n";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { ERole } from "@/constants/role";
 
-const userStore = useEmployeeStore();
+const employeeStore = useEmployeeStore();
 const filteredItems = computed(() => {
   return items.filter((item) => {
     if (!item.roles) return true;
-    return item.roles.some((role) => userRoles.value.includes(role));
+    return item.roles.some((role) => employeeRoles.value.includes(role));
   });
 });
-const userRoles = computed(() => userStore.roles || []);
+const employeeRoles = computed(() => employeeStore.roles || []);
 const { t } = useI18n();
 const items = [
   { type: "divider", roles: [ERole.ADMIN] },

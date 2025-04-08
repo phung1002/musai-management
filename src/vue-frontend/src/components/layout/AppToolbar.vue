@@ -3,8 +3,8 @@ import ProfileDropdown from "@/components/ui/ProfileDropdown.vue";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { computed } from "vue";
 
-const userStore = useEmployeeStore();
-const fullName = computed(() => userStore.fullName);
+const employeeStore = useEmployeeStore();
+const fullName = computed(() => employeeStore.fullName);
 </script>
 
 <template>
