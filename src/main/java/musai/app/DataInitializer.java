@@ -50,7 +50,7 @@ public class DataInitializer implements CommandLineRunner {
 			String encodedPassword = encoder.encode("admin");
 
 			Employee admin = new Employee("0000", "admin@gmail.com", encodedPassword, "Admin", "アドミン",
-					LocalDate.of(1990, 1, 1), "管理", "本社", LocalDate.of(2023, 1, 1), "male");
+					LocalDate.of(1990, 1, 1), "管理", "本社", "080000000", LocalDate.of(2023, 1, 1), "male");
 
 			Role roleAdmin = roleRepository.findByName(ERole.ADMIN)
 					.orElseThrow(() -> new RuntimeException("Error: Role ADMIN is not found."));
@@ -68,19 +68,18 @@ public class DataInitializer implements CommandLineRunner {
 
 			// management
 			Employee user1 = new Employee("0002", "nguyen@gmail.com", encoder.encode("nguyen"), "Nguyen Khanh Phung",
-					"グエンカンプン", LocalDate.of(1997, 2, 10), "IT", "本社", LocalDate.of(2024, 5, 1), "female");
-			Employee user2 = new Employee("0003", "chamith@gmail.com", encoder.encode("chamith"), "Chamith",
-					"チャミット", LocalDate.of(1994, 1, 1), "IT", "本社", LocalDate.of(2024, 12, 1), "male");
-			Employee user3 = new Employee("0004", "hoang@gmail.com", encoder.encode("hoang"), "Tran Kim Hoang",
-					"チャミット", LocalDate.of(1991, 1, 1), "IT", "本社", LocalDate.of(2024, 12, 1), "female");
+					"グエンカンプン", LocalDate.of(1997, 2, 10), "IT", "本社","080000222", LocalDate.of(2024, 5, 1), "female");
+			Employee user2 = new Employee("0003", "chamith@gmail.com", encoder.encode("chamith"), "Chamith", "チャミット",
+					LocalDate.of(1994, 1, 1), "IT", "本社","080000333", LocalDate.of(2024, 12, 1), "male");
+			Employee user3 = new Employee("0004", "hoang@gmail.com", encoder.encode("hoang"), "Tran Kim Hoang", "チャミット",
+					LocalDate.of(1991, 1, 1), "IT", "本社", "080000444", LocalDate.of(2024, 12, 1), "female");
 			roles.remove(roleAdmin);
-			user1.getRoles().add(roleManagement);	
+			user1.getRoles().add(roleManagement);
 			user2.getRoles().add(roleManagement);
 			user3.getRoles().add(roleManagement);
 			employeeRepository.save(user1);
 			employeeRepository.save(user2);
 			employeeRepository.save(user3);
-
 
 			// member
 			for (int i = 1; i <= 9; i++) {
@@ -125,7 +124,7 @@ public class DataInitializer implements CommandLineRunner {
 		String password = encoder.encode("user" + i);
 
 		return new Employee(employeeId, email, password, "User " + i, generateRandomHiragana(5),
-				LocalDate.of(1994, 1, 1), "役職 " + i, "支店 " + i,
+				LocalDate.of(1994, 1, 1), "役職 " + i, "支店 " + i, "070" + String.valueOf(i).repeat(6),
 				LocalDate.of(2025, 1, 1), "male");
 	}
 

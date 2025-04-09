@@ -43,6 +43,9 @@ public class EmployeeRequestDTO {
 
 	@NotBlank(message = "Work Place cannot be blank")
 	private String workPlace;
+	
+	@NotBlank(message = "Mobile cannot be blank")
+	private String mobile;
 
 	private LocalDate joinDate;
 

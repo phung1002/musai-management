@@ -52,6 +52,9 @@ public class Employee {
 
 	@Column(name = "work_place")
 	private String workPlace;
+	
+	@Column(name = "mobile")
+	private String mobile;
 
 	@Column(name = "join_date")
 	private LocalDate joinDate;
@@ -76,7 +79,7 @@ public class Employee {
 	private Set<Role> roles = new HashSet<>();
 
 	public Employee(String employeeId, String email, String encode, String fullName, String fullNameFurigana,
-			LocalDate birthday, String department, String workPlace, LocalDate joinDate, String gender) {
+			LocalDate birthday, String department, String workPlace, String mobile, LocalDate joinDate, String gender) {
 		this.employeeId = employeeId;
 		this.email = email;
 		this.password = encode;
@@ -85,6 +88,7 @@ public class Employee {
 		this.birthday = birthday;
 		this.department = department;
 		this.workPlace = workPlace;
+		this.mobile = mobile;
 		this.joinDate = joinDate;
 		this.gender = gender;
 	}
