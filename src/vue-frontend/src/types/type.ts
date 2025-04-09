@@ -11,7 +11,6 @@ export interface ILeaveRequest {
 
 export interface IEmployee {
   id: number | null;
-  username: string;
   employeeId: string;
   email: string;
   password: string;
@@ -41,8 +40,8 @@ export interface IEmployeeLeaves {
   leaveTypeId: number; // 休暇のタイプ
   leaveTypeName: string; //
   leaveTypeValue: string;
-  userId: number; // 一意のID
-  userFullName: string; // 休暇の名前
+  employeeId: number; // 一意のID
+  employeeFullName: string; // 休暇の名前
   totalDays: number;
   usedDays: number;
   remainedDays: number;
@@ -52,7 +51,7 @@ export interface IEmployeeLeaves {
 }
 export interface ILeaveResponse {
   id: number;
-  userFullName: string;
+  employeeFullName: string;
   leaveTypeName: string;
   leaveTypeValue: string;
   createdAt: string;
@@ -69,7 +68,7 @@ export interface IDocument {
   title: string;
   filePath: string;
   submitDate: string;
-  userId: string;
+  employeeId: string;
 }
 
 export interface IEvent {

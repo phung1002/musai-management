@@ -66,7 +66,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <VCard width="940px">
+  <VCard class="v-card-form">
     <VToolbar tag="div">
       <VToolbarTitle>
         <VIcon icon="mdi-file-upload-outline" /> {{ t("pdf_view") }}

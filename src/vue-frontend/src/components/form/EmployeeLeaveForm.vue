@@ -24,7 +24,7 @@ const props = defineProps<{
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
 const validator = useValidator(t); // バリデーション
 const isDialogVisible = ref(false); // 確認ダイアログ表示
-const userListVisible = ref(false); // ユーザー一覧ポップアップの表示状態
+const employeeListVisible = ref(false); // ユーザー一覧ポップアップの表示状態
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 const formValid = ref(false);
@@ -40,8 +40,8 @@ const defaultEmployeeLeave = {
   leaveTypeId: 0,
   leaveTypeName: "",
   leaveTypeValue: "",
-  userFullName: "",
-  userId: 0,
+  employeeFullName: "",
+  employeeId: 0,
   remainedDays: 0,
   totalDays: 0,
   usedDays: 0,
@@ -120,12 +120,12 @@ const setleaveTypeId = (selectedTab: string) => {
 };
 // フォーカス時にユーザー一覧ポップアップを表示
 const showUserList = () => {
-  userListVisible.value = true;
+  employeeListVisible.value = true;
 };
 // 子コンポーネントから受け取る処理
 const handleUserSelect = (employee: { id: number; name: string }) => {
-  formModel.value.userId = employee.id;
-  formModel.value.userFullName = employee.name;
+  formModel.value.employeeId = employee.id;
+  formModel.value.employeeFullName = employee.name;
 };
 // 入力初期化
 const handleResetForm = async () => {
@@ -227,7 +227,7 @@ const onConfirmed = async () => {
 </script>
 
 <template>
-  <VCard class="leave_form">
+  <VCard class="v-card-form">
     <VToolbar tag="div">
       <!-- 新規登録際タイトルの表示 -->
       <VToolbarTitle v-if="!isEdit">
@@ -287,13 +287,13 @@ const onConfirmed = async () => {
               <VCol>
                 <VToolbar tag="div" color="transparent" flat>
                   <VTextField
-                    v-model="formModel.userFullName"
+                    v-model="formModel.employeeFullName"
                     :rules="[validator.required]"
                     variant="outlined"
                     color="primary"
                     clearable
                     class="search"
-                    name="userFullName"
+                    name="employeeFullName"
                     :disabled="isEdit"
                     readonly
                   >
@@ -376,12 +376,12 @@ const onConfirmed = async () => {
       />
     </VDialog>
     <!-- ユーザー一覧ポップアップ -->
-    <VDialog v-model="userListVisible" width="auto" eager persistent>
+    <VDialog v-model="employeeListVisible" width="auto" eager persistent>
       <EmployeeList
-        v-if="userListVisible"
-        :title="t('user_lists')"
+        v-if="employeeListVisible"
+        :title="t('employee_lists')"
         @selectUser="handleUserSelect"
-        @update:isVisible="userListVisible = $event"
+        @update:isVisible="employeeListVisible = $event"
     /></VDialog>
   </VCard>
 </template>

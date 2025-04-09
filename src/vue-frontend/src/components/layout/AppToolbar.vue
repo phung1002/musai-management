@@ -2,6 +2,7 @@
 import ProfileDropdown from "@/components/ui/ProfileDropdown.vue";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { computed } from "vue";
+import { shortenFileName } from '@/utils/stringUtils';
 
 const userStore = useEmployeeStore();
 const fullName = computed(() => userStore.fullName);
@@ -11,7 +12,7 @@ const fullName = computed(() => userStore.fullName);
   <!------Header-------->
   <VAppBar :elevation="10">
     <VSpacer />
-    <VCardTitle>{{ fullName }}</VCardTitle>
+    <VCardTitle>{{ shortenFileName(fullName) }}</VCardTitle>
     <ProfileDropdown />
   </VAppBar>
 </template>

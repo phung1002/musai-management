@@ -4,7 +4,6 @@ import { defineStore } from "pinia";
 export const useEmployeeStore = defineStore("user", {
   state: () => ({
     id: "",
-    username: "",
     employeeId: "",
     fullName: "",
     roles: [],

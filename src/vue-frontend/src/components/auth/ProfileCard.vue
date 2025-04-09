@@ -49,7 +49,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VCard class="profile-card" min-width="600">
+  <VCard class="profile-card v-card-form">
     <VToolbar tag="div" color="transparent">
       <VSpacer />
       <VCardActions>

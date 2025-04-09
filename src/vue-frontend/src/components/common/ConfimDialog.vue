@@ -35,7 +35,7 @@ const onCancel = () => {
 </script>
 
 <template>
-  <VCard width="640px">
+  <VCard  class="v-card-form">
     <VToolbar tag="div">
       <VToolbarTitle style="color: red">
         <VIcon icon="mdi-alert" />{{ title }}

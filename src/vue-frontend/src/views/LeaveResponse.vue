@@ -18,7 +18,7 @@ const isError = ref(false); // エラーフラグ
 // // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  { title: t("employee_name"), key: "userFullName" },
+  { title: t("employee_name"), key: "employeeFullName" },
   { title: t("leave_type"), key: "leaveTypeName" },
   { title: t("submit_date"), key: "createdAt" },
   { title: t("status"), key: "status" },

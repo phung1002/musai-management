@@ -95,7 +95,7 @@ const handleSubmit = async () => {
     if (formModel.value.id == employeeStore.id) {
       if (
         formModel.value.password.length > 0 ||
-        formModel.value.username != employeeStore.username
+        formModel.value.employeeId != employeeStore.employeeId
       ) {
         toLogin.value = true;
       } else fetchProfile.value = true;
@@ -172,7 +172,7 @@ const handleCancel = () => {
 </script>
 
 <template>
-  <VCard width="940px">
+  <VCard class="v-card-form">
     <VToolbar tag="div">
       <VToolbarTitle v-if="!isEdit">{{ t("employee_register") }}</VToolbarTitle>
       <VToolbarTitle v-else>{{ t("employee_update") }}</VToolbarTitle>
