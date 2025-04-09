@@ -4,8 +4,8 @@ import { useEmployeeStore } from "@/store/employeeStore";
 import { computed } from "vue";
 import { shortenFileName } from "@/utils/stringUtils";
 
-const userStore = useEmployeeStore();
-const fullName = computed(() => userStore.fullName);
+const employeeStore = useEmployeeStore();
+const fullName = computed(() => employeeStore.fullName);
 </script>
 
 <template>

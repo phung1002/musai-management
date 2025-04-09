@@ -21,7 +21,9 @@ const leaveRequests = ref<ILeaveRequest[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
 const isConfirmDialogVisible = ref(false);
-const userLeaves = ref([{ leaveTypeName: "", remainedDays: 0, validTo: "" }]);
+const employeeLeaves = ref([
+  { leaveTypeName: "", remainedDays: 0, validTo: "" },
+]);
 const keyWord = ref("");
 
 const convertDate = (date: Date | null): string | null => {
@@ -60,7 +62,7 @@ const headers = reactive([
 const loadEmployeeLeave = async () => {
   try {
     let response = await getEmployeeLeavesForMember();
-    userLeaves.value = response.map(
+    employeeLeaves.value = response.map(
       ({ leaveTypeName, remainedDays, validTo }) => ({
         leaveTypeName,
         remainedDays,
@@ -144,7 +146,7 @@ const getStatusColor = (status: string) => {
         <VCardText class="d-flex justify-end">
           <VDataTable
             :headers="headersUserLeave"
-            :items="userLeaves"
+            :items="employeeLeaves"
             item-value="id"
             density="compact"
             class="small-text table-leave-of-employee"

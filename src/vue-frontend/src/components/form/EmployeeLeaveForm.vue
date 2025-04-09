@@ -119,13 +119,17 @@ const setleaveTypeId = (selectedTab: string) => {
   }
 };
 // フォーカス時にユーザー一覧ポップアップを表示
-const showUserList = () => {
+const showEmployeeList = () => {
   employeeListVisible.value = true;
 };
 // 子コンポーネントから受け取る処理
-const handleUserSelect = (employee: { id: number; name: string }) => {
-  formModel.value.employeeId = employee.id;
-  formModel.value.employeeFullName = employee.name;
+const handleUserSelect = (employee: {
+  id: number;
+  employeeId: number;
+  fullName: string;
+}) => {
+  formModel.value.employeeId = employee.employeeId;
+  formModel.value.employeeFullName = employee.fullName;
 };
 // 入力初期化
 const handleResetForm = async () => {
@@ -301,7 +305,7 @@ const onConfirmed = async () => {
                       <VBtn
                         icon="mdi-magnify"
                         variant="text"
-                        @click="showUserList"
+                        @click="showEmployeeList"
                         :disabled="isEdit"
                         density="comfortable"
                       />

@@ -11,8 +11,8 @@ export async function uploadDocument(file: File): Promise<IDocument> {
         "Content-Type": "multipart/form-data",
       },
     });
-    return  response.data;
-  } catch (error : any) {
+    return response.data;
+  } catch (error: any) {
     console.error("アップロード失敗:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
@@ -40,7 +40,7 @@ export async function getDocumentsOfMember(): Promise<IDocument[]> {
 export async function deleteDocument(id: number): Promise<void> {
   try {
     await axiosIns.delete(`/documents/${id}`);
-  } catch (error : any) {
+  } catch (error: any) {
     console.error("Delete document failed:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
