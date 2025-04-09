@@ -9,7 +9,9 @@ export const useValidator = (t: Function) => ({
       : t("validation.required_input"),
 
   emailFormat: (value: string) =>
-    (/^[\x00-\x7F]+$/.test(value) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) || !value
+    (/^[\x00-\x7F]+$/.test(value) &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) ||
+    !value
       ? true
       : t("validation.email_format"),
 
@@ -32,6 +34,13 @@ export const useValidator = (t: Function) => ({
     const numberRegex = /^[0-9]{4}$/;
     if (!numberRegex.test(value)) {
       return t("validation.employeeId_4digits");
+    }
+    return true;
+  },
+  checkMobileNumber: (value: string) => {
+    const mobileRegex = /^0[5789]0\d{4}\d{4}$/;
+    if (!mobileRegex.test(value)) {
+      return t("validation.mobile_format");
     }
     return true;
   },
