@@ -1,17 +1,6 @@
 package musai.app;
 
-import musai.app.models.ELeaveValue;
-import musai.app.models.ERole;
-import musai.app.models.LeaveType;
-import musai.app.models.Role;
-import musai.app.models.Employee;
-import musai.app.repositories.LeaveTypeResposity;
-import musai.app.repositories.RoleRepository;
-import musai.app.repositories.EmployeeRepository;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -19,6 +8,15 @@ import java.util.Set;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import musai.app.models.ELeaveValue;
+import musai.app.models.ERole;
+import musai.app.models.Employee;
+import musai.app.models.LeaveType;
+import musai.app.models.Role;
+import musai.app.repositories.EmployeeRepository;
+import musai.app.repositories.LeaveTypeResposity;
+import musai.app.repositories.RoleRepository;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -68,9 +66,9 @@ public class DataInitializer implements CommandLineRunner {
 
 			// management
 			Employee user1 = new Employee("0002", "nguyen@gmail.com", encoder.encode("nguyen"), "Nguyen Khanh Phung",
-					"グエンカンプン", LocalDate.of(1997, 2, 10), "IT", "本社","080000222", LocalDate.of(2024, 5, 1), "female");
+					"グエンカンプン", LocalDate.of(1997, 2, 10), "IT", "本社", "080000222", LocalDate.of(2024, 5, 1), "female");
 			Employee user2 = new Employee("0003", "chamith@gmail.com", encoder.encode("chamith"), "Chamith", "チャミット",
-					LocalDate.of(1994, 1, 1), "IT", "本社","080000333", LocalDate.of(2024, 12, 1), "male");
+					LocalDate.of(1994, 1, 1), "IT", "本社", "080000333", LocalDate.of(2024, 12, 1), "male");
 			Employee user3 = new Employee("0004", "hoang@gmail.com", encoder.encode("hoang"), "Tran Kim Hoang", "チャミット",
 					LocalDate.of(1991, 1, 1), "IT", "本社", "080000444", LocalDate.of(2024, 12, 1), "female");
 			roles.remove(roleAdmin);
