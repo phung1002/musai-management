@@ -11,8 +11,8 @@ export async function uploadDocument(file: File): Promise<IDocument> {
         "Content-Type": "multipart/form-data",
       },
     });
-    return  response.data;
-  } catch (error : any) {
+    return response.data;
+  } catch (error: any) {
     console.error("アップロード失敗:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
@@ -23,7 +23,7 @@ export async function getDocuments(): Promise<IDocument[]> {
     const response = await axiosIns.get<IDocument[]>("/documents/all");
     return response.data;
   } catch (error) {
-    console.error("List user failed:", error);
+    console.error("List failed:", error);
     throw error;
   }
 }
@@ -42,7 +42,7 @@ export async function getDocumentsOfMember(
 export async function deleteDocument(id: number): Promise<void> {
   try {
     await axiosIns.delete(`/documents/${id}`);
-  } catch (error : any) {
+  } catch (error: any) {
     console.error("Delete document failed:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }

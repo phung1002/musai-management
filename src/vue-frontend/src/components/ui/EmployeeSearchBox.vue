@@ -15,30 +15,30 @@ const props = defineProps({
     default: false,
   },
 });
-const emit = defineEmits(["update:isVisible", "selectUser"]);
+const emit = defineEmits(["update:isVisible", "selectEmployee"]);
 const visible = ref(props.isVisible);
 
 // テーブルのヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  // { title: t("employee_id"), key: "id" },
+  { title: t("employee_id"), key: "employeeId" },
   { title: t("full_name"), key: "fullName" },
 ]);
 
 // 検索
 const keyWord = ref("");
-const users = ref<IEmployee[]>([]);
+const employees = ref<IEmployee[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
 
 // ユーザーリスト取得API呼び出
-const fetchUsers = async (searchQuery: string = "") => {
+const fetchEmployees = async (searchQuery: string = "") => {
   isLoading.value = true;
   isError.value = false;
   try {
     // 検索キーワードが空でも呼び出せる
     const response = await getAllEmployees(searchQuery);
-    loadUser(response);
+    loadEmployee(response);
   } catch (error) {
     isError.value = true;
   } finally {
@@ -48,25 +48,29 @@ const fetchUsers = async (searchQuery: string = "") => {
 const handleSearch = () => {
   if (!keyWord.value.trim()) {
     // 入力が空の場合、リストを再表示（全データを取得）
-    fetchUsers();
+    fetchEmployees();
   } else {
     // 入力がある場合は検索を実行
-    fetchUsers(keyWord.value);
+    fetchEmployees(keyWord.value);
   }
 };
 const handleClear = () => {
   keyWord.value = ""; // キーワードを空に設定
-  fetchUsers(); // 空の検索でリストを再表示
+  fetchEmployees(); // 空の検索でリストを再表示
 };
-const loadUser = (lst: any) => {
-  users.value = lst.map((user: IEmployee) => ({
-    ...user,
+const loadEmployee = (lst: any) => {
+  employees.value = lst.map((employee: IEmployee) => ({
+    ...employee,
   }));
 };
 
 // 行がクリックされたときの処理
 const onRowClick = (item: IEmployee) => {
-  emit("selectUser", { id: item.id, name: item.fullName });
+  emit("selectEmployee", {
+    id: item.id,
+    employeeId: item.employeeId,
+    name: item.fullName,
+  });
   emit("update:isVisible", false);
 };
 
@@ -75,10 +79,9 @@ const onCancel = () => {
   visible.value = false;
   emit("update:isVisible", false);
 };
-
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
-  fetchUsers();
+  fetchEmployees();
 });
 </script>
 <template>
@@ -112,7 +115,7 @@ onMounted(() => {
     <VCardItem>
       <VDataTable
         :headers="headers"
-        :items="users"
+        :items="employees"
         :items-per-page-text="t('items_per_page')"
         :no-data-text="t('no_records_found')"
         v-if="!isLoading && !isError"
@@ -121,7 +124,7 @@ onMounted(() => {
         <template v-slot:item="{ item, index }">
           <tr @click="onRowClick(item)" class="selectrow-btn">
             <td>{{ index + 1 }}</td>
-            <!-- <td>{{ item.id }}</td> -->
+            <td>{{ item.employeeId }}</td>
             <td>{{ item.fullName }}</td>
           </tr>
         </template>
