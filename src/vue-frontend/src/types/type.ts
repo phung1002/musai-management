@@ -13,6 +13,7 @@ export interface IEmployee {
   id: number | null;
   employeeId: string;
   email: string;
+  mobile: string;
   password: string;
   fullName: string;
   fullNameFurigana: string;

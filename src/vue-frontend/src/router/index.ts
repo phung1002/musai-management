@@ -129,9 +129,9 @@ const router = createRouter({
 });
 
 // Helper function: Check user roles
-const hasRequiredRoles = (userRoles, requiredRoles) => {
+const hasRequiredRoles = (employeeRoles, requiredRoles) => {
   return requiredRoles
-    ? userRoles.some((role) => requiredRoles.includes(role))
+    ? employeeRoles.some((role) => requiredRoles.includes(role))
     : true;
 };
 

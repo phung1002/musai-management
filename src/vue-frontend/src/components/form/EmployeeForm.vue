@@ -200,6 +200,21 @@ const handleCancel = () => {
                 />
               </VCol>
               <VCol cols="6">
+                <VLabel>{{ t("role") }}</VLabel>
+                <VAutocomplete
+                  v-model="formModel.roles"
+                  :rules="[validator.required]"
+                  :items="translatedRoles"
+                  variant="outlined"
+                  color="primary"
+                  name="roles"
+                  multiple
+                  chips
+                  clearable
+                >
+                </VAutocomplete>
+              </VCol>
+              <VCol cols="6">
                 <VLabel>{{ t("email") }}</VLabel>
                 <VTextField
                   v-model="formModel.email"
@@ -207,6 +222,16 @@ const handleCancel = () => {
                   variant="outlined"
                   color="primary"
                   name="email"
+                />
+              </VCol>
+              <VCol cols="6">
+                <VLabel>{{ t("mobile_number") }}</VLabel>
+                <VTextField
+                  v-model="formModel.mobile"
+                  :rules="formRulesConfig.mobile"
+                  variant="outlined"
+                  color="primary"
+                  name="mobile_number"
                 />
               </VCol>
               <VCol cols="6">
@@ -230,21 +255,6 @@ const handleCancel = () => {
                   name="confirmPassword"
                   type="password"
                 />
-              </VCol>
-              <VCol cols="6">
-                <VLabel>{{ t("role") }}</VLabel>
-                <VAutocomplete
-                  v-model="formModel.roles"
-                  :rules="[validator.required]"
-                  :items="translatedRoles"
-                  variant="outlined"
-                  color="primary"
-                  name="roles"
-                  multiple
-                  chips
-                  clearable
-                >
-                </VAutocomplete>
               </VCol>
             </VRow>
           </VWindowItem>

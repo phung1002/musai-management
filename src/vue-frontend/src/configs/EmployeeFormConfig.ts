@@ -13,9 +13,9 @@ export const genders = [
 
 export const defaultEmployee: IEmployee = {
   id: null,
-  username: "",
   employeeId: "",
   email: "",
+  mobile: "",
   password: "",
   fullName: "",
   fullNameFurigana: "",
@@ -39,6 +39,7 @@ export const formRules = (validator: any, isEdit: boolean) => ({
     validator.checkLength(5, 30),
     validator.emailFormat,
   ],
+  mobile: [validator.required, validator.checkMobileNumber],
   password: isEdit
     ? [
         (value: string) => !value || validator.halfSize(value),
