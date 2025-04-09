@@ -21,7 +21,7 @@ const visible = ref(props.isVisible);
 // テーブルのヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  // { title: t("employee_id"), key: "id" },
+  { title: t("employee_id"), key: "employeeId" },
   { title: t("full_name"), key: "fullName" },
 ]);
 
@@ -66,7 +66,11 @@ const loadEmployee = (lst: any) => {
 
 // 行がクリックされたときの処理
 const onRowClick = (item: IEmployee) => {
-  emit("selectEmployee", { id: item.id, name: item.fullName });
+  emit("selectEmployee", {
+    id: item.id,
+    employeeId: item.employeeId,
+    name: item.fullName,
+  });
   emit("update:isVisible", false);
 };
 
@@ -75,7 +79,6 @@ const onCancel = () => {
   visible.value = false;
   emit("update:isVisible", false);
 };
-
 // コンポーネントがマウントされたときAPI呼び出し修理実行
 onMounted(() => {
   fetchEmployees();
@@ -121,7 +124,7 @@ onMounted(() => {
         <template v-slot:item="{ item, index }">
           <tr @click="onRowClick(item)" class="selectrow-btn">
             <td>{{ index + 1 }}</td>
-            <!-- <td>{{ item.id }}</td> -->
+            <td>{{ item.employeeId }}</td>
             <td>{{ item.fullName }}</td>
           </tr>
         </template>

@@ -41,6 +41,7 @@ const defaultEmployeeLeave = {
   leaveTypeName: "",
   leaveTypeValue: "",
   userFullName: "",
+  employeeId: 0,
   userId: 0,
   remainedDays: 0,
   totalDays: 0,
@@ -123,9 +124,14 @@ const showemployeeList = () => {
   employeeListVisible.value = true;
 };
 // 子コンポーネントから受け取る処理
-const handleUserSelect = (employee: { id: number; name: string }) => {
+const handleUserSelect = (employee: {
+  id: number;
+  employeeId: number;
+  fullName: string;
+}) => {
   formModel.value.userId = employee.id;
-  formModel.value.userFullName = employee.name;
+  formModel.value.employeeId = employee.employeeId;
+  formModel.value.userFullName = employee.fullName;
 };
 // 入力初期化
 const handleResetForm = async () => {

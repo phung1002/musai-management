@@ -42,6 +42,7 @@ export interface IEmployeeLeaves {
   leaveTypeName: string; //
   leaveTypeValue: string;
   userId: number; // 一意のID
+  employeeId: number; // 社員ID
   userFullName: string; // 休暇の名前
   totalDays: number;
   usedDays: number;
