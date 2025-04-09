@@ -11,7 +11,7 @@ export async function login(params: LoginParams): Promise<void> {
   try {
     await axiosIns.post("/auth/login", params);
 
-    // Fetch user profile after successful login
+    // Fetch profile after successful login
     await fetchEmployeeProfile();
   } catch (error: any) {
     console.error("Login failed:", error.response?.data || error);
@@ -19,7 +19,7 @@ export async function login(params: LoginParams): Promise<void> {
   }
 }
 
-// Fetch the current user's profile after login or page reload
+// Fetch the current login's profile after login or page reload
 export async function fetchEmployeeProfile(): Promise<void> {
   const employeeStore = useEmployeeStore();
   try {
@@ -33,7 +33,7 @@ export async function fetchEmployeeProfile(): Promise<void> {
     employeeStore.setFullName(data.fullName);
     employeeStore.setGender(data.gender);
   } catch (error: any) {
-    console.error("Failed to fetch user profile:", error);
+    console.error("Failed to fetch profile:", error);
 
     // If the error is 401, the session might have expired, trigger logout
     if (error.response?.status === 401) {
@@ -48,7 +48,7 @@ export async function logout(): Promise<void> {
   try {
     await axiosIns.post("/auth/logout");
 
-    // Reset user state after logout
+    // Reset state after logout
     employeeStore.setId("");
     employeeStore.setAuthenticated(false);
     employeeStore.setRoles([]);
@@ -87,7 +87,7 @@ export async function handleLogout() {
   window.location.href = "/login";
 }
 
-// Get user profile data (returns the data instead of the full response)
+// Get profile data (returns the data instead of the full response)
 export async function profile() {
   try {
     const response = await axiosIns.get("/auth/profile");

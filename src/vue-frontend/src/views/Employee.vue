@@ -8,7 +8,7 @@ import EmployeeForm from "@/components/form/EmployeeForm.vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { toast } from "vue3-toastify";
 import { ERole } from "@/constants/role";
-import { shortenFileName } from '@/utils/stringUtils';
+import { shortenFileName } from "@/utils/stringUtils";
 
 const isConfirmDialogVisible = ref(false);
 const formatRole = (role: string) => role;
@@ -173,9 +173,6 @@ onMounted(() => {
               </template>
               <template v-slot:item.fullName="{ item }">
                 <td>{{ shortenFileName(item.fullName) }}</td>
-              </template>
-              <template v-slot:item.email="{ item }">
-                <td>{{ shortenFileName(item.email) }}</td>
               </template>
               <template v-slot:item.department="{ item }">
                 <td>{{ shortenFileName(item.department) }}</td>

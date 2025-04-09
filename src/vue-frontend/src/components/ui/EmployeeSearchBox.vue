@@ -27,7 +27,7 @@ const headers = reactive([
 
 // 検索
 const keyWord = ref("");
-const users = ref<IEmployee[]>([]);
+const employees = ref<IEmployee[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
 
@@ -59,8 +59,8 @@ const handleClear = () => {
   fetchUsers(); // 空の検索でリストを再表示
 };
 const loadUser = (lst: any) => {
-  users.value = lst.map((user: IEmployee) => ({
-    ...user,
+  employees.value = lst.map((employee: IEmployee) => ({
+    ...employee,
   }));
 };
 
@@ -112,7 +112,7 @@ onMounted(() => {
     <VCardItem>
       <VDataTable
         :headers="headers"
-        :items="users"
+        :items="employees"
         :items-per-page-text="t('items_per_page')"
         :no-data-text="t('no_records_found')"
         v-if="!isLoading && !isError"

@@ -23,13 +23,11 @@ export async function getDocuments(): Promise<IDocument[]> {
     const response = await axiosIns.get<IDocument[]>("/documents/all");
     return response.data;
   } catch (error) {
-    console.error("List user failed:", error);
+    console.error("List documents failed:", error);
     throw error;
   }
 }
-export async function getDocumentsOfMember(
-  userId?: number
-): Promise<IDocument[]> {
+export async function getDocumentsOfMember(): Promise<IDocument[]> {
   try {
     let response = await axiosIns.get<IDocument[]>(`/documents`);
     return response.data;

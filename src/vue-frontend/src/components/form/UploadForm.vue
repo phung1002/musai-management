@@ -6,7 +6,7 @@ import ConfimDialogView from "@/components/common/ConfimDialog.vue"; // 確認�
 import { useValidator } from "@/utils/validation"; // バリデーション
 import { uploadDocument } from "@/api/document"; // API関数
 import { toast } from "vue3-toastify"; // トースト通知
-import { shortenFileName } from '@/utils/stringUtils';
+import { shortenFileName } from "@/utils/stringUtils";
 
 const { t } = useI18n();
 const isDialogVisible = ref(false); // 確認ダイアログ表示

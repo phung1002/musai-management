@@ -128,10 +128,10 @@ const router = createRouter({
   ],
 });
 
-// Helper function: Check user roles
-const hasRequiredRoles = (userRoles, requiredRoles) => {
+// Helper function: Check employee roles
+const hasRequiredRoles = (employeeRoles, requiredRoles) => {
   return requiredRoles
-    ? userRoles.some((role) => requiredRoles.includes(role))
+    ? employeeRoles.some((role) => requiredRoles.includes(role))
     : true;
 };
 
@@ -140,14 +140,14 @@ router.beforeEach(async (to, from, next) => {
   const employeeStore = useEmployeeStore();
   const isAuthenticated = employeeStore.authenticated;
 
-  // Check if authentication is required or if the user is authenticated
+  // Check if authentication is required or if authenticated
   if (!to.meta.requiresAuth || isAuthenticated) {
     try {
       // Validate token if authenticated
       if (isAuthenticated && !(await validateToken())) {
         await logout();
       }
-      // Check if user has required roles
+      // Check if required roles
       if (
         isAuthenticated &&
         !hasRequiredRoles(employeeStore.roles, to.meta.requiredRoles)

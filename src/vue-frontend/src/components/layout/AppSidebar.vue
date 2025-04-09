@@ -137,9 +137,11 @@ const handleDrawerWidth = () => {
     :border="true"
     :elevation="1"
   >
+  <div>
     <VToolbar color="transparent" class="mr-2">
       <VImg class="logo-img" :src="logoImg" alt="logo" contain></VImg>
     </VToolbar>
+  </div>
     <div class="app-drawer__inner">
       <VList
         :items="filteredItems"
@@ -162,25 +164,9 @@ const handleDrawerWidth = () => {
 </template>
 
 <style lang="scss" scoped>
-// @media (min-width: 1024px) {
-//   .logo-img {
-//     width: 256px !important;
-//   }
-// }
-// @media (min-width: 640px) {
-//   .logo-img {
-//     width: 256px !important;
-//   }
-// }
-// @media (min-width: 350px) {
-// }
-
 .logo-img {
-  margin: 0px 2px !important;
-  width: 60px !important;
-  .v-img{
-    padding-bottom: 4px !important;
-  }
+  margin: 4px 2px !important;
+  // width: 60px !important;
 }
 .btn-collapse {
   position: absolute;

@@ -189,7 +189,7 @@ const handleCancel = () => {
         <VWindow v-model="activeTab">
           <VWindowItem value="account" eager>
             <VRow>
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("employee_id") }}</VLabel>
                 <VTextField
                   v-model="formModel.employeeId"
@@ -199,7 +199,7 @@ const handleCancel = () => {
                   name="employee_id"
                 />
               </VCol>
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("email") }}</VLabel>
                 <VTextField
                   v-model="formModel.email"
@@ -209,7 +209,7 @@ const handleCancel = () => {
                   name="email"
                 />
               </VCol>
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("password") }}</VLabel>
                 <VTextField
                   v-model="formModel.password"
@@ -220,7 +220,7 @@ const handleCancel = () => {
                   type="password"
                 />
               </VCol>
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("password_confirm") }}</VLabel>
                 <VTextField
                   v-model="confirmPassword"
@@ -231,7 +231,7 @@ const handleCancel = () => {
                   type="password"
                 />
               </VCol>
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("role") }}</VLabel>
                 <VAutocomplete
                   v-model="formModel.roles"
@@ -250,7 +250,7 @@ const handleCancel = () => {
           </VWindowItem>
           <VWindowItem value="detail_information" eager>
             <VRow class="d-flex mb-3">
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("full_name") }}</VLabel>
                 <VTextField
                   v-model="formModel.fullName"
@@ -260,7 +260,7 @@ const handleCancel = () => {
                   name="fullName"
                 />
               </VCol>
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("full_name_furigana") }}</VLabel>
                 <VTextField
                   v-model="formModel.fullNameFurigana"
@@ -270,7 +270,7 @@ const handleCancel = () => {
                   name="fullNameFurigana"
                 />
               </VCol>
-              <VCol cols="3">
+              <VCol cols="6" md="3">
                 <VLabel>{{ t("birthday") }}</VLabel>
                 <VTextField
                   v-model="formattedBirthday"
@@ -282,7 +282,7 @@ const handleCancel = () => {
                   type="date"
                 />
               </VCol>
-              <VCol cols="3">
+              <VCol cols="6" md="3">
                 <VLabel>{{ t("gender") }}</VLabel>
                 <VAutocomplete
                   v-model="formModel.gender"
@@ -294,7 +294,7 @@ const handleCancel = () => {
                 >
                 </VAutocomplete>
               </VCol>
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("department") }}</VLabel>
                 <VTextField
                   v-model="formModel.department"
@@ -304,7 +304,7 @@ const handleCancel = () => {
                   name="department"
                 />
               </VCol>
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("work_place") }}</VLabel>
                 <VTextField
                   v-model="formModel.workPlace"
@@ -314,7 +314,7 @@ const handleCancel = () => {
                   name="workPlace"
                 />
               </VCol>
-              <VCol cols="3">
+              <VCol cols="6" md="3">
                 <VLabel>{{ t("join_date") }}</VLabel>
                 <VTextField
                   v-model="formattedJoinDate"

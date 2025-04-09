@@ -25,7 +25,7 @@ const fetchEvents = async () => {
 
       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
         tempEvents.push({
-          title: item.userFullName,
+          title: item.employeeFullName,
           start: new Date(currentDate),
           end: new Date(currentDate),
           color: eventColor,
