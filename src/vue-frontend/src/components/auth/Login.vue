@@ -57,10 +57,8 @@ export default {
 
 <template>
   <div class="auth">
-    <div
-      class="auth-wrapper d-flex flex-column align-center justify-center pt-10"
-    >
-      <VCard rounded="md" elevation="10" class="login-card" width="500">
+    <div class="auth-wrapper d-flex flex-column align-center justify-center pt-10">
+      <VCard rounded="md" elevation="10" class="v-card-form login-card">
         <VCardItem class="pa-sm-8">
           <div class="d-flex flex-column align-center justify-center py-6">
             <v-img

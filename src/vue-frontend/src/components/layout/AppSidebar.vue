@@ -137,20 +137,14 @@ const handleDrawerWidth = () => {
     :border="true"
     :elevation="1"
   >
-    <VToolbar color="transparent">
-      <v-img
-        :src="logoImg"
-        alt="logo"
-        contain
-        class="logo py-2"
-        :height="200"
-      ></v-img>
+    <VToolbar color="transparent" class="mr-2">
+      <VImg class="logo-img" :src="logoImg" alt="logo" contain></VImg>
     </VToolbar>
     <div class="app-drawer__inner">
       <VList
         :items="filteredItems"
         color="primary"
-        class="menu-list"
+        class="menu-list pt-0"
         nav
         :slim="true"
       />
@@ -167,7 +161,27 @@ const handleDrawerWidth = () => {
   </VNavigationDrawer>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
+// @media (min-width: 1024px) {
+//   .logo-img {
+//     width: 256px !important;
+//   }
+// }
+// @media (min-width: 640px) {
+//   .logo-img {
+//     width: 256px !important;
+//   }
+// }
+// @media (min-width: 350px) {
+// }
+
+.logo-img {
+  margin: 0px 2px !important;
+  width: 60px !important;
+  .v-img{
+    padding-bottom: 4px !important;
+  }
+}
 .btn-collapse {
   position: absolute;
   inset-block-start: 50%;

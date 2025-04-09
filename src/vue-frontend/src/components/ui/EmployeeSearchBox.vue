@@ -85,7 +85,7 @@ onMounted(() => {
 });
 </script>
 <template>
-  <VCard flat width="640px">
+  <VCard flat class="v-card-form">
     <VToolbar tag="div">
       <VToolbarTitle>
         <VIcon icon="mdi-account-search" />{{ title }}

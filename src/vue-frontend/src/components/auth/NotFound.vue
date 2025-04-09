@@ -18,17 +18,16 @@ const backLogin = () => {
 
 <template>
   <div class="page-notfound">
-    <div class="notfound">
+    <div class="notfound pr-4">
       <div class="notfound-emoji"></div>
       <h2>{{ t("message.page_not_found") }}</h2>
-      <!-- <h2>Oops! Page Not Be Found</h2> -->
       <p>{{ t("message.page_not_found_description") }}</p>
-      <VBtn @click="backHome()" class="mr-4">{{ t("back_home") }}</VBtn>
-      <VBtn @click="backLogin()">{{ t("back_login") }}</VBtn>
+      <VBtn @click="backHome()" class="mr-4 mb-2">{{ t("back_home") }}</VBtn>
+      <VBtn @click="backLogin()" class="mb-2">{{ t("back_login") }}</VBtn>
     </div>
   </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .page-notfound {
   position: relative;
   height: 100vh;

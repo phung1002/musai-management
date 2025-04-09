@@ -188,7 +188,7 @@ onMounted(() => {
   <VDialog v-model="addFrom" width="auto" persistent>
     <EmployeeLeaveForm
       :isEdit="isEdit"
-      :EmployeeLeave="selectedLeave"
+      :employeeLeave="selectedLeave"
       @form-cancel="addFrom = false"
       @refetch-data="fetchLeaveType"
     />

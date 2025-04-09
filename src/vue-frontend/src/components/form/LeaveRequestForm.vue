@@ -260,7 +260,7 @@ const handleCancel = () => {
 </script>
 
 <template>
-  <VCard class="leave_form">
+  <VCard class="v-card-form">
     <VToolbar tag="div">
       <VToolbarTitle>
         <VIcon icon="mdi-lead-pencil" />{{ t("leave_request") }}

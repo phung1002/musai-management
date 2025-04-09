@@ -190,7 +190,7 @@ const onConfirmed = async () => {
 </script>
 
 <template>
-  <VCard class="leave_form">
+  <VCard class="v-card-form">
     <VToolbar tag="div">
       <!-- 新規登録際タイトルの表示 -->
       <VToolbarTitle v-if="!isEdit">

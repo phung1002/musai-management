@@ -40,9 +40,8 @@ const defaultEmployeeLeave = {
   leaveTypeId: 0,
   leaveTypeName: "",
   leaveTypeValue: "",
-  userFullName: "",
+  employeeFullName: "",
   employeeId: 0,
-  userId: 0,
   remainedDays: 0,
   totalDays: 0,
   usedDays: 0,
@@ -120,7 +119,7 @@ const setleaveTypeId = (selectedTab: string) => {
   }
 };
 // フォーカス時にユーザー一覧ポップアップを表示
-const showemployeeList = () => {
+const showEmployeeList = () => {
   employeeListVisible.value = true;
 };
 // 子コンポーネントから受け取る処理
@@ -129,9 +128,8 @@ const handleUserSelect = (employee: {
   employeeId: number;
   fullName: string;
 }) => {
-  formModel.value.userId = employee.id;
   formModel.value.employeeId = employee.employeeId;
-  formModel.value.userFullName = employee.fullName;
+  formModel.value.employeeFullName = employee.fullName;
 };
 // 入力初期化
 const handleResetForm = async () => {
@@ -233,7 +231,7 @@ const onConfirmed = async () => {
 </script>
 
 <template>
-  <VCard class="leave_form">
+  <VCard class="v-card-form">
     <VToolbar tag="div">
       <!-- 新規登録際タイトルの表示 -->
       <VToolbarTitle v-if="!isEdit">
@@ -293,13 +291,13 @@ const onConfirmed = async () => {
               <VCol>
                 <VToolbar tag="div" color="transparent" flat>
                   <VTextField
-                    v-model="formModel.userFullName"
+                    v-model="formModel.employeeFullName"
                     :rules="[validator.required]"
                     variant="outlined"
                     color="primary"
                     clearable
                     class="search"
-                    name="userFullName"
+                    name="employeeFullName"
                     :disabled="isEdit"
                     readonly
                   >
@@ -307,7 +305,7 @@ const onConfirmed = async () => {
                       <VBtn
                         icon="mdi-magnify"
                         variant="text"
-                        @click="showemployeeList"
+                        @click="showEmployeeList"
                         :disabled="isEdit"
                         density="comfortable"
                       />
@@ -385,7 +383,7 @@ const onConfirmed = async () => {
     <VDialog v-model="employeeListVisible" width="auto" eager persistent>
       <EmployeeList
         v-if="employeeListVisible"
-        :title="t('user_lists')"
+        :title="t('employee_lists')"
         @selectUser="handleUserSelect"
         @update:isVisible="employeeListVisible = $event"
     /></VDialog>

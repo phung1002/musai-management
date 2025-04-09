@@ -15,6 +15,7 @@ import {
 import { IDocument } from "@/types/type"; // 型定義
 import { useI18n } from "vue-i18n";
 import { toast } from "vue3-toastify"; // トースト通知
+import { shortenFileName } from '@/utils/stringUtils';
 const { t } = useI18n();
 const employeeStore = useEmployeeStore(); // ユーザーストア
 const applyFrom = ref(false); // フォーム表示
@@ -137,7 +138,7 @@ onMounted(() => {
                 @click="handleCreateItem"
                 variant="elevated"
                 ><v-icon icon="mdi-plus" start></v-icon>{{ t("upload") }}
-                <VDialog v-model="applyFrom" width="auto" eager persistent>
+                <VDialog v-model="applyFrom" width="auto" persistent>
                   <UploadForm
                     @form:cancel="applyFrom = false"
                     @fetch="fetchDocuments"
@@ -160,6 +161,9 @@ onMounted(() => {
               <template v-slot:item.number="{ index }">
                 {{ index + 1 }}
               </template>
+              <template v-slot:item.title="{ item }">
+                <span>{{ shortenFileName(item.title) }}</span>
+              </template>
               <!-- アクション　設定  -->
               <template v-slot:item.action="{ item }">
                 <div class="action-buttons">
@@ -168,7 +172,7 @@ onMounted(() => {
                     v-if="employeeRoles.includes(ERole.MEMBER)"
                     variant="plain"
                     class="action-btn"
-                    :disabled="item.userId !== isEmployee"
+                    :disabled="item.employeeId !== isEmployee"
                     @click="handleDeleteItem(item.id)"
                   >
                     <VIcon color="red">mdi-delete</VIcon>
