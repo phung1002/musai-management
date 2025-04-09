@@ -6,6 +6,7 @@ import { useI18n } from "vue-i18n";
 import { VTab } from "vuetify/lib/components/index.mjs";
 import { IEmployeeLeaves } from "@/types/type";
 import { getEmployeeLeaves } from "@/api/employeeLeave";
+import { shortenFileName } from "@/utils/stringUtils";
 const { t } = useI18n();
 const keyWord = ref("");
 const addFrom = ref(false); // 追加プラグ
@@ -25,7 +26,7 @@ const tabs = ref([
 // // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  { title: t("employee_name"), key: "userFullName" },
+  { title: t("employee_name"), key: "employeeFullName" },
   { title: t("valid_leaves"), key: "totalDays" },
   { title: t("used_leaves"), key: "usedDays" },
   { title: t("available_leaves"), key: "remainedDays" },
@@ -155,6 +156,9 @@ onMounted(() => {
                   <!-- 表示　番号設定  -->
                   <template v-slot:item.number="{ index }">
                     {{ index + 1 }}
+                  </template>
+                  <template v-slot:item.employeeFullName="{ item }">
+                    <td>{{ shortenFileName(item.employeeFullName) }}</td>
                   </template>
                   <!-- アクション　設定  -->
                   <template v-slot:item.action="{ item }">

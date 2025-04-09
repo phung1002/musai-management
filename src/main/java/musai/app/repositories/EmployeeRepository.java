@@ -24,7 +24,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 			+ "OR LOWER(e.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))"
 			+ "OR LOWER(e.fullNameFurigana) LIKE LOWER(CONCAT('%', :keyword, '%'))"
 			+ "OR LOWER(e.department) LIKE LOWER(CONCAT('%', :keyword, '%'))"
-			+ "OR LOWER(e.workPlace) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+			+ "OR LOWER(e.workPlace) LIKE LOWER(CONCAT('%', :keyword, '%'))"
+			+ "OR LOWER(e.mobile) LIKE CONCAT('%', :keyword, '%')")
 	List<Employee> findActiveByKeyContaining(@Param("keyword") String keyword);
 
 }

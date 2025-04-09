@@ -161,7 +161,6 @@ const handleSubmit = async () => {
   } else {
     //update
     try {
-      // if update
       if (formModel.value.id == null) return;
       await updateLeaveRequest(formModel.value.id, formModel.value);
       toast.success(t("message.update_success"));

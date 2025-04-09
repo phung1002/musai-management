@@ -14,7 +14,7 @@ export async function getEmployeeLeaves(
     );
     return response.data;
   } catch (error) {
-    console.error("List user failed:", error);
+    console.error("List leave of employee failed:", error);
     throw error;
   }
 }
@@ -23,7 +23,7 @@ export async function getEmployeeLeavesForMember(): Promise<IEmployeeLeaves[]> {
     const response = await axiosIns.get<IEmployeeLeaves[]>("/employee-leaves");
     return response.data;
   } catch (error) {
-    console.error("List user failed:", error);
+    console.error("List leave of employee failed:", error);
     throw error;
   }
 }

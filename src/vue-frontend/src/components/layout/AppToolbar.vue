@@ -2,7 +2,7 @@
 import ProfileDropdown from "@/components/ui/ProfileDropdown.vue";
 import { useEmployeeStore } from "@/store/employeeStore";
 import { computed } from "vue";
-import { shortenFileName } from '@/utils/stringUtils';
+import { shortenFileName } from "@/utils/stringUtils";
 
 const employeeStore = useEmployeeStore();
 const fullName = computed(() => employeeStore.fullName);

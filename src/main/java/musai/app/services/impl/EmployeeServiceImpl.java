@@ -62,7 +62,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return new EmployeeResponseDTO(employee.getId(), employee.getEmployeeId(), employee.getEmail(),
 				employee.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()),
 				employee.getFullName(), employee.getFullNameFurigana(), employee.getBirthday(),
-				employee.getDepartment(), employee.getWorkPlace(), employee.getJoinDate(), employee.getGender());
+				employee.getDepartment(), employee.getWorkPlace(), employee.getMobile(), employee.getJoinDate(),
+				employee.getGender());
 	}
 
 	/**
@@ -84,8 +85,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Employee employee = new Employee(employeeRequestDTO.getEmployeeId(), employeeRequestDTO.getEmail(),
 				encoder.encode(employeeRequestDTO.getPassword()), employeeRequestDTO.getFullName(),
 				employeeRequestDTO.getFullNameFurigana(), employeeRequestDTO.getBirthday(),
-				employeeRequestDTO.getDepartment(), employeeRequestDTO.getWorkPlace(), employeeRequestDTO.getJoinDate(),
-				employeeRequestDTO.getGender());
+				employeeRequestDTO.getDepartment(), employeeRequestDTO.getWorkPlace(), employeeRequestDTO.getMobile(),
+				employeeRequestDTO.getJoinDate(), employeeRequestDTO.getGender());
 
 		Set<String> strRoles = employeeRequestDTO.getRoles();
 		Set<Role> roles = new HashSet<>();

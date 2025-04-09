@@ -7,6 +7,7 @@ import { useI18n } from "vue-i18n";
 import { ILeaveTypes } from "@/types/type";
 import { deleteLeave, getLeaves } from "@/api/leave";
 import { toast } from "vue3-toastify";
+import { shortenFileName } from "@/utils/stringUtils";
 const { t } = useI18n(); // 日本語にローカル変更用
 const keyWord = ref("");
 const addLeaves = ref(false); // 休暇追加・編集フォーム表示
@@ -146,6 +147,9 @@ onMounted(() => {
               <!-- 表示　番号設定  -->
               <template v-slot:item.number="{ index }">
                 {{ index + 1 }}
+              </template>
+              <template v-slot:item.name="{ item }">
+                <td>{{ shortenFileName(item.name) }}</td>
               </template>
               <!-- アクション　設定  -->
               <template v-slot:item.action="{ item }">

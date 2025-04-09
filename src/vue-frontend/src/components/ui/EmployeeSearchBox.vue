@@ -58,6 +58,7 @@ const handleClear = () => {
   keyWord.value = ""; // キーワードを空に設定
   fetchEmployees(); // 空の検索でリストを再表示
 };
+
 const loadEmployee = (lst: any) => {
   employees.value = lst.map((employee: IEmployee) => ({
     ...employee,

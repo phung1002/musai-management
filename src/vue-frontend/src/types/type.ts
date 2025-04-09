@@ -67,6 +67,7 @@ export interface ILeaveResponse {
 export interface IDocument {
   id: number;
   title: string;
+  uploadBy: string;
   filePath: string;
   submitDate: string;
   employeeId: string;

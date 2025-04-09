@@ -180,12 +180,6 @@ onMounted(() => {
               <template v-slot:item.fullName="{ item }">
                 <td>{{ shortenFileName(item.fullName) }}</td>
               </template>
-              <template v-slot:item.email="{ item }">
-                <td>{{ shortenFileName(item.email) }}</td>
-              </template>
-              <template v-slot:item.mobile="{ item }">
-                <td>{{ shortenFileName(item.mobile) }}</td>
-              </template>
               <template v-slot:item.department="{ item }">
                 <td>{{ shortenFileName(item.department) }}</td>
               </template>

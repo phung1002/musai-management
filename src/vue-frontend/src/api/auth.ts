@@ -12,7 +12,6 @@ export async function login(params: LoginParams): Promise<void> {
   try {
     // ログインAPIを呼び出し、成功した場合はユーザープロフィールを取得
     await axiosIns.post("/auth/login", params);
-
     // ログイン成功後、ユーザープロフィールを取得
     await fetchEmployeeProfile();
   } catch (error: any) {
@@ -40,7 +39,6 @@ export async function fetchEmployeeProfile(): Promise<void> {
   } catch (error: any) {
     // エラーが発生した場合、エラーメッセージを表示
     console.error("Failed to fetch employee profile:", error);
-
     // もしエラーが401なら、セッションが切れている可能性があるので、ログアウト処理を実行
     if (error.response?.status === 401) {
       await logout();
@@ -54,7 +52,6 @@ export async function logout(): Promise<void> {
   try {
     // ログアウトAPIを呼び出し
     await axiosIns.post("/auth/logout");
-
     // ログアウト後、ユーザー情報をリセット
     employeeStore.setId("");
     employeeStore.setAuthenticated(false);

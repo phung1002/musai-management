@@ -314,7 +314,7 @@ const onConfirmed = async () => {
               </VCol>
             </VRow>
             <VRow>
-              <VCol cols="4">
+              <VCol cols="12" md="4">
                 <VLabel>{{ t("valid_leaves") }}</VLabel>
                 <VSelect
                   v-model="formModel.totalDays"
@@ -324,7 +324,7 @@ const onConfirmed = async () => {
                   name="totalDays"
                 />
               </VCol>
-              <VCol cols="4">
+              <VCol cols="12" md="4">
                 <VLabel>{{ t("leave_start") }}</VLabel>
                 <VTextField
                   v-model="formModel.validFrom"
@@ -336,7 +336,7 @@ const onConfirmed = async () => {
                   type="date"
                 />
               </VCol>
-              <VCol cols="4">
+              <VCol cols="12" md="4">
                 <VLabel>{{ t("leave_expired") }}</VLabel>
                 <VTextField
                   v-model="formModel.validTo"

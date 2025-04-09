@@ -9,6 +9,7 @@ import { getEmployeeLeavesForMember } from "@/api/employeeLeave";
 import { ILeaveRequest } from "@/types/type";
 import { toast } from "vue3-toastify";
 import { ELeaveStatus } from "@/constants/leaveStatus";
+import { shortenFileName } from "@/utils/stringUtils";
 
 // 日本語にローカル変更用
 const { t } = useI18n();
@@ -148,7 +149,7 @@ const getStatusColor = (status: string) => {
             :items="employeeLeaves"
             item-value="id"
             density="compact"
-            class="small-text table-user-leave"
+            class="small-text table-leave-of-employee"
             hide-default-footer
             :no-data-text="t('no_leave_day')"
           />
@@ -216,13 +217,8 @@ const getStatusColor = (status: string) => {
                   </VChip>
                 </VChipGroup>
               </template>
-              <template v-slot:item.startDate="{ item }">
-                {{ convertDate(item.startDate) }}
-              </template>
-
-              <!--   -->
-              <template v-slot:item.endDate="{ item }">
-                {{ convertDate(item.endDate) }}
+              <template v-slot:item.leaveTypeName="{ item }">
+                <td>{{ shortenFileName(item.leaveTypeName) }}</td>
               </template>
 
               <!-- アクション　設定  -->
@@ -302,10 +298,5 @@ const getStatusColor = (status: string) => {
 
 .action-btn:hover {
   background-color: #f5f5f5;
-}
-
-.table-user-leave {
-  max-width: 40%;
-  font-size: 0.8rem;
 }
 </style>

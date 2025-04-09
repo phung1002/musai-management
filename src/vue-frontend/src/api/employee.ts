@@ -1,7 +1,7 @@
 import { IEmployee } from "@/types/type";
 import axiosIns from "@/plugins/axios";
 
-// call to api create user
+// call to api create employee
 export async function getAllEmployees(key: string): Promise<IEmployee[]> {
   try {
     const response = await axiosIns.get<IEmployee[]>("/employees", {
@@ -9,21 +9,21 @@ export async function getAllEmployees(key: string): Promise<IEmployee[]> {
     });
     return response.data;
   } catch (error) {
-    console.error("List user failed:", error);
+    console.error("List employee failed:", error);
     throw error;
   }
 }
 
-// call to api create user
+// call to api create employee
 export async function createEmployee(params: IEmployee): Promise<void> {
   try {
     await axiosIns.post("/employees", params);
   } catch (error: any) {
-    console.error("Add user failed:", error);
+    console.error("Add employee failed:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
-// call to api update user
+// call to api update employee
 export async function updateEmployee(
   id: number,
   params: IEmployee
@@ -31,17 +31,17 @@ export async function updateEmployee(
   try {
     await axiosIns.put(`/employees/${id}`, params);
   } catch (error: any) {
-    console.error("Update user failed:", error);
+    console.error("Update employee failed:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 
-// call to api delete user
+// call to api delete employee
 export async function deleteEmployee(id: number): Promise<void> {
   try {
     await axiosIns.delete(`/employees/${id}`);
   } catch (error: any) {
-    console.error("Delete user failed:", error);
+    console.error("Delete employee failed:", error);
     throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }

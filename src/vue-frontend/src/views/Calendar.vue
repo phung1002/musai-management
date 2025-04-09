@@ -34,11 +34,11 @@ const fetchEvents = async () => {
       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
         // イベントをtempEventsに追加
         tempEvents.push({
-          title: item.userFullName, // イベントのタイトル（ユーザー名）
-          start: new Date(currentDate), // イベントの開始日時
-          end: new Date(currentDate), // イベントの終了日時
-          color: eventColor, // ランダムで生成した色
-          allDay: allDay, // 終日かどうか
+          title: item.employeeFullName,
+          start: new Date(currentDate),
+          end: new Date(currentDate),
+          color: eventColor,
+          allDay: allDay,
         });
       }
 
@@ -62,7 +62,6 @@ const getDayClass = (date) => {
   }
   return ""; // 平日ならクラスを返さない
 };
-
 // コンポーネントがマウントされた際にイベントを取得
 onMounted(fetchEvents);
 </script>

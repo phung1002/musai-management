@@ -29,6 +29,8 @@ public class EmployeeResponseDTO {
 	private String department;
 
 	private String workPlace;
+	
+	private String mobile;
 
 	private LocalDate joinDate;
 

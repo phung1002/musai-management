@@ -15,7 +15,7 @@ import {
 import { IDocument } from "@/types/type"; // 型定義
 import { useI18n } from "vue-i18n";
 import { toast } from "vue3-toastify"; // トースト通知
-import { shortenFileName } from '@/utils/stringUtils';
+import { shortenFileName } from "@/utils/stringUtils";
 const { t } = useI18n();
 const employeeStore = useEmployeeStore(); // ユーザーストア
 const applyFrom = ref(false); // フォーム表示
@@ -163,6 +163,9 @@ onMounted(() => {
               </template>
               <template v-slot:item.title="{ item }">
                 <span>{{ shortenFileName(item.title) }}</span>
+              </template>
+              <template v-slot:item.uploadBy="{ item }">
+                <td>{{ shortenFileName(item.uploadBy) }}</td>
               </template>
               <!-- アクション　設定  -->
               <template v-slot:item.action="{ item }">
