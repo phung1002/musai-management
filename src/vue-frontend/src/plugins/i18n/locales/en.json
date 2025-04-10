@@ -10,6 +10,7 @@
   "employee_id": "employee id",
   "sign_in": "sign in",
   "email": "email",
+  "mobile_number": "mobile number",
   "invalid_login_input": "invalid username or password.",
   "login_failed": "login failed!",
   "add": "add",
@@ -187,7 +188,8 @@
     "half_width_alphanumeric": "please enter only half-width alphanumeric characters.",
     "invalid_date_range": "selected date does not match.",
     "invalid_date": "invalid date",
-    "employeeId_4digits": "employee id must be 4 digits."
+    "employeeId_4digits": "employee id must be 4 digits.",
+    "mobile_format": "mobile number format is incorrect"
   },
   "application_status": {
     "PENDING": "PENDING",

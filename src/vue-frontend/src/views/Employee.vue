@@ -9,7 +9,8 @@ import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { toast } from "vue3-toastify";
 import { ERole } from "@/constants/role";
 import { shortenFileName } from "@/utils/stringUtils";
-
+import EmployeeDetails from "@/components/ui/EmployeeDetails.vue";
+const detailsCard = ref(false);
 const isConfirmDialogVisible = ref(false);
 const formatRole = (role: string) => role;
 const { t } = useI18n();
@@ -20,6 +21,7 @@ const headers = reactive([
   { title: t("employee_name"), key: "fullName" },
   { title: t("employee_id"), key: "employeeId" },
   { title: t("email"), key: "email" },
+  { title: t("mobile_number"), key: "mobile" },
   { title: t("role"), key: "roles" },
   { title: t("department"), key: "department" },
   { title: t("work_place"), key: "workPlace" },
@@ -46,6 +48,10 @@ const selectedEmployee = ref<IEmployee>({} as IEmployee);
 const openConfirmDialog = (employee: IEmployee) => {
   selectedEmployee.value = employee;
   isConfirmDialogVisible.value = true;
+};
+const details = (employee: IEmployee) => {
+  detailsCard.value = true;
+  selectedEmployee.value = employee;
 };
 // Get list employee from api API
 const fetchEmployees = async (searchQuery: string = "") => {
@@ -202,6 +208,14 @@ onMounted(() => {
                     icon
                     variant="plain"
                     class="action-btn"
+                    @click="details(item)"
+                  >
+                    <VIcon color="black">mdi-information-outline</VIcon>
+                  </VBtn>
+                  <VBtn
+                    icon
+                    variant="plain"
+                    class="action-btn"
                     @click="openUpdateDialog(item)"
                   >
                     <VIcon color="blue">mdi-pencil</VIcon>
@@ -240,8 +254,13 @@ onMounted(() => {
       @confirmed="handledeleteEmployee"
     />
   </VDialog>
+  <VDialog v-model="detailsCard" width="auto" persistent>
+    <EmployeeDetails
+      :employee="selectedEmployee"
+      @form:cancel="detailsCard = false"
+    />
+  </VDialog>
 </template>
-
 <style scoped>
 .page-wrapper {
   padding: 20px;
@@ -271,5 +290,4 @@ onMounted(() => {
 .action-btn:hover {
   background-color: #f5f5f5;
 }
-
 </style>

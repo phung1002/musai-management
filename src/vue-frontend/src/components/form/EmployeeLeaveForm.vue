@@ -124,12 +124,11 @@ const showEmployeeList = () => {
 };
 // 子コンポーネントから受け取る処理
 const handleUserSelect = (employee: {
-  id: number;
   employeeId: number;
-  fullName: string;
+  employeeFullName: string;
 }) => {
   formModel.value.employeeId = employee.employeeId;
-  formModel.value.employeeFullName = employee.fullName;
+  formModel.value.employeeFullName = employee.employeeFullName;
 };
 // 入力初期化
 const handleResetForm = async () => {
@@ -384,7 +383,7 @@ const onConfirmed = async () => {
       <EmployeeList
         v-if="employeeListVisible"
         :title="t('employee_lists')"
-        @selectUser="handleUserSelect"
+        @selectEmployee="handleUserSelect"
         @update:isVisible="employeeListVisible = $event"
     /></VDialog>
   </VCard>
