@@ -38,7 +38,7 @@ public class DocumentController {
 	}
 
 	// API list all document
-	@PreAuthorize("hasRole('MANAGER')")
+	@PreAuthorize("hasRole('MANAGER') or hasRole('ADMIN')")
 	@GetMapping("/all")
 	public ResponseEntity<Object> listFiles() {
 		try {
