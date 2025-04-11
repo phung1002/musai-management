@@ -155,6 +155,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		existingUser.setBirthday(employeeRequestDTO.getBirthday());
 		existingUser.setDepartment(employeeRequestDTO.getDepartment());
 		existingUser.setWorkPlace(employeeRequestDTO.getWorkPlace());
+		existingUser.setMobile(employeeRequestDTO.getMobile());
 		existingUser.setJoinDate(employeeRequestDTO.getJoinDate());
 		existingUser.setGender(employeeRequestDTO.getGender());
 
