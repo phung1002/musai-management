@@ -45,7 +45,7 @@ public class DataInitializer implements CommandLineRunner {
 		// Add users if empty
 		if (employeeRepository.count() == 0) {
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-			String encodedPassword = encoder.encode("admin");
+			String encodedPassword = encoder.encode("123456");
 
 			Employee admin = new Employee("0000", "admin@gmail.com", encodedPassword, "Admin", "アドミン",
 					LocalDate.of(1990, 1, 1), "管理", "本社", "08012345678", LocalDate.of(2023, 1, 1), "male");
@@ -65,11 +65,11 @@ public class DataInitializer implements CommandLineRunner {
 			employeeRepository.save(admin);
 
 			// management
-			Employee user1 = new Employee("0002", "nguyen@gmail.com", encoder.encode("nguyen"), "Nguyen Khanh Phung",
+			Employee user1 = new Employee("0002", "nguyen@gmail.com", encoder.encode("123456"), "Nguyen Khanh Phung",
 					"グエンカンプン", LocalDate.of(1997, 2, 10), "IT", "本社", "08022222222", LocalDate.of(2024, 5, 1), "female");
-			Employee user2 = new Employee("0003", "chamith@gmail.com", encoder.encode("chamith"), "Chamith", "チャミット",
+			Employee user2 = new Employee("0003", "chamith@gmail.com", encoder.encode("123456"), "Chamith", "チャミット",
 					LocalDate.of(1994, 1, 1), "IT", "本社", "08033333333", LocalDate.of(2024, 12, 1), "male");
-			Employee user3 = new Employee("0004", "hoang@gmail.com", encoder.encode("hoang"), "Tran Kim Hoang", "チャミット",
+			Employee user3 = new Employee("0004", "hoang@gmail.com", encoder.encode("123456"), "Tran Kim Hoang", "チャミット",
 					LocalDate.of(1991, 1, 1), "IT", "本社", "08044444444", LocalDate.of(2024, 12, 1), "female");
 			roles.remove(roleAdmin);
 			user1.getRoles().add(roleManagement);
@@ -119,7 +119,7 @@ public class DataInitializer implements CommandLineRunner {
 	public static Employee createUser(int i, BCryptPasswordEncoder encoder) {
 		String employeeId = "001" + i;
 		String email = "user" + i + "@gmail.com";
-		String password = encoder.encode("user" + i);
+		String password = encoder.encode("123456");
 
 		return new Employee(employeeId, email, password, "User " + i, generateRandomHiragana(5),
 				LocalDate.of(1994, 1, 1), "役職 " + i, "支店 " + i, "070" + String.valueOf(i).repeat(8),
