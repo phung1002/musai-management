@@ -143,9 +143,7 @@ onMounted(() => {
   fetchLeaveType();
 });
 // validate and call api
-const submiting = ref(false);
 const handleSubmit = async () => {
-  submiting.value = true;
   if (!props.isEdit) {
     // create
     try {
@@ -170,8 +168,6 @@ const handleSubmit = async () => {
     } catch (error: any) {
       toast.error(t(error.message));
       return;
-    } finally {
-      submiting.value = false;
     }
   }
 };

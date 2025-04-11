@@ -168,8 +168,6 @@ const onConfirmed = async () => {
       handleCancel();
     } catch (error: any) {
       toast.error(t(error.message));
-    } finally {
-      isDialogVisible.value = false;
     }
   } else {
     // 更新処理を実行
@@ -181,11 +179,8 @@ const onConfirmed = async () => {
       emit("refetch-data");
     } catch (error: any) {
       toast.error(t(error.message));
-    } finally {
-      isDialogVisible.value = false;
     }
   }
-  handleCancel(); // フォームを閉じる
 };
 </script>
 

@@ -68,7 +68,7 @@ const loadEmployee = (lst: any) => {
 // 行がクリックされたときの処理
 const onRowClick = (item: IEmployee) => {
   emit("selectEmployee", {
-    employeeId: item.employeeId,
+    employeeId: item.id,
     employeeFullName: item.fullName,
   });
   emit("update:isVisible", false);

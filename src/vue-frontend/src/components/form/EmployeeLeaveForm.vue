@@ -225,7 +225,6 @@ const onConfirmed = async () => {
       return;
     }
   }
-  handleCancel(); // フォームを閉じる
 };
 </script>
 

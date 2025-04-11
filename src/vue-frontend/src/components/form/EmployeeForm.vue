@@ -23,7 +23,6 @@ const formatDate = (date: string | null) =>
   date ? new Date(date).toISOString() : null;
 
 const { t } = useI18n();
-const submiting = ref(false);
 const validator = useValidator(t);
 const isDialogVisible = ref(false);
 const activeTab = ref("detail_information");
@@ -115,7 +114,6 @@ const onConfirmed = async (toLogin: boolean) => {
     birthday: formatDate(formModel.value.birthday),
     joinDate: formatDate(formModel.value.joinDate),
   };
-  submiting.value = true;
   if (!props.isEdit) {
     try {
       // if create employee
@@ -126,8 +124,6 @@ const onConfirmed = async (toLogin: boolean) => {
     } catch (error: any) {
       toast.error(t(error.message));
       return;
-    } finally {
-      submiting.value = false;
     }
   } else {
     try {
@@ -146,8 +142,6 @@ const onConfirmed = async (toLogin: boolean) => {
       }
     } catch (error: any) {
       toast.error(t(error.message));
-    } finally {
-      submiting.value = false;
     }
   }
 };
