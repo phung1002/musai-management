@@ -23,8 +23,8 @@ const headers = reactive([
   { title: t("email"), key: "email" },
   { title: t("mobile_number"), key: "mobile" },
   { title: t("role"), key: "roles" },
-  { title: t("department"), key: "department" },
-  { title: t("work_place"), key: "workPlace" },
+  // { title: t("department"), key: "department" },
+  // { title: t("work_place"), key: "workPlace" },
   { title: t("action"), key: "action" },
 ]);
 
@@ -180,12 +180,12 @@ onMounted(() => {
               <template v-slot:item.fullName="{ item }">
                 <td>{{ shortenFileName(item.fullName) }}</td>
               </template>
-              <template v-slot:item.department="{ item }">
+              <!-- <template v-slot:item.department="{ item }">
                 <td>{{ shortenFileName(item.department) }}</td>
               </template>
               <template v-slot:item.workPlace="{ item }">
                 <td>{{ shortenFileName(item.workPlace) }}</td>
-              </template>
+              </template> -->
 
               <!-- Slot for 'roles' -->
               <template v-slot:item.roles="{ item }">
