@@ -256,7 +256,7 @@ const getStatusColor = (status: string) => {
       :application="selectedRequest"
       @form:cancel="isDialogVisible = false"
       @refetch-data="fetchLeaveRequests"
-      @refetch-userleave="loadEmployeeLeave"
+      @refetch-employeeleave="loadEmployeeLeave"
     />
   </VDialog>
   <VDialog v-model="isConfirmDialogVisible" width="auto" persistent>

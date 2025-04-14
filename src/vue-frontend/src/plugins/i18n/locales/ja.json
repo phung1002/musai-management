@@ -133,6 +133,7 @@
     "cannot_remove_own_admin_role": "自身の管理者権限を削除することは許可されていません。",
     "cancel_only_pending": " ステータスが「承認待ち」の休暇申請のみキャンセルできます。",
     "confirm_leave_application": "{n}日間の休暇を申請しますか？",
+    "confirm_leave_application_half":"0.5日間の休暇を変更申請しますか？",
     "confirm_leave_application_change": "{n}日間の休暇を変更申請しますか？",
     "error_requested_days_exceed": "申請日数が残り日数を超えています。",
     "error_leave_type_or_employee_not_exist": "指定された休暇種類または社員が見つかりません。",
