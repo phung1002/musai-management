@@ -83,6 +83,7 @@ const fetchLeaveRequests = async (searchQuery: string = "") => {
     }));
   } catch (error) {
     isError.value = true;
+    toast.error(t("message.unauthorized_description"));
   } finally {
     isLoading.value = false;
   }
