@@ -1,6 +1,5 @@
 <!-- 社員詳細　画面 -->
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
 import { useI18n } from "vue-i18n";
 import { IEmployee } from "@/types/type";
 import { ERole } from "@/constants/role";
