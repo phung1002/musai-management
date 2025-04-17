@@ -20,7 +20,7 @@ import musai.app.exception.NotFoundException;
 import musai.app.models.LeaveType;
 import musai.app.repositories.LeaveApplicationRepository;
 import musai.app.repositories.LeaveTypeResposity;
-import musai.app.repositories.UserLeaveRepository;
+import musai.app.repositories.EmployeeLeaveRepository;
 import musai.app.services.LeaveTypeService;
 
 @Service
@@ -28,12 +28,12 @@ import musai.app.services.LeaveTypeService;
 public class LeaveTypeServiceImpl implements LeaveTypeService {
 
 	private final LeaveTypeResposity leaveTypeResposity;
-	private final UserLeaveRepository userLeaveRepository;
+	private final EmployeeLeaveRepository employeeLeaveRepository;
 	private final LeaveApplicationRepository leaveApplicationRepository;
 
 	// add
 	@Override
-	public MessageResponse createAddLeaveType(LeaveTypeRequestDTO leaveTypeDTO) {
+	public MessageResponse createLeaveType(LeaveTypeRequestDTO leaveTypeDTO) {
 
 		if (leaveTypeResposity.existsByName(leaveTypeDTO.getName())) {
 			throw new BadRequestException("name_already_taken");
@@ -75,8 +75,8 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 		List<LeaveType> childrenTypes = leaveTypeResposity.findByParentId(id);
 
 		// Check relationship
-		if (userLeaveRepository.existsByLeaveTypeId(id)) {
-			throw new BadRequestException("cannot_delete_leave_type_have_relation_with_user");
+		if (employeeLeaveRepository.existsByLeaveTypeId(id)) {
+			throw new BadRequestException("cannot_delete_leave_type_have_relation_with_employee");
 		}
 		if (leaveApplicationRepository.existsByLeaveTypeId(id)) {
 			throw new BadRequestException("cannot_delete_leave_type_have_relation_with_leave_request");

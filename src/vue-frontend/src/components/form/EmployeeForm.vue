@@ -1,24 +1,24 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from "vue";
-import { IUser } from "@/types/type";
+import { IEmployee } from "@/types/type";
 import { useI18n } from "vue-i18n";
 import { useValidator } from "@/utils/validation";
 import {
   roles,
-  defaultUser,
+  defaultEmployee,
   formRules,
   genders,
-} from "../../configs/userFormConfig";
-import { createUser, updateUser } from "@/api/user";
+} from "@/configs/EmployeeFormConfig";
+import { createEmployee, updateEmployee } from "@/api/employee";
 import { toast } from "vue3-toastify";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import { useUserStore } from "@/store/userStore";
+import { useEmployeeStore } from "@/store/employeeStore";
 import { handleLogout } from "@/api/auth";
 import type { VForm } from "vuetify/lib/components/index.mjs";
-import { fetchUserProfile } from "@/api/auth";
+import { fetchEmployeeProfile } from "@/api/auth";
 
 const formRef = ref<InstanceType<typeof VForm> | null>(null);
-const userStore = useUserStore();
+const employeeStore = useEmployeeStore();
 const formatDate = (date: string | null) =>
   date ? new Date(date).toISOString() : null;
 
@@ -28,10 +28,12 @@ const validator = useValidator(t);
 const isDialogVisible = ref(false);
 const activeTab = ref("detail_information");
 const emit = defineEmits(["form-cancel", "refetch-data"]);
-const props = defineProps<{ user?: IUser; isEdit: boolean }>();
+const props = defineProps<{ employee?: IEmployee; isEdit: boolean }>();
 
-const formModel = ref<IUser>(
-  props.isEdit ? { ...defaultUser, ...props.user } : { ...defaultUser }
+const formModel = ref<IEmployee>(
+  props.isEdit
+    ? { ...defaultEmployee, ...props.employee }
+    : { ...defaultEmployee }
 );
 
 // Form validation rules
@@ -90,8 +92,11 @@ const handleSubmit = async () => {
     isDialogVisible.value = true;
     // 登録処理を実行
   } else {
-    if (formModel.value.id == userStore.id) {
-      if (formModel.value.password.length > 0 || formModel.value.username != userStore.username) {
+    if (formModel.value.id == employeeStore.id) {
+      if (
+        formModel.value.password.length > 0 ||
+        formModel.value.employeeId != employeeStore.employeeId
+      ) {
         toLogin.value = true;
       } else fetchProfile.value = true;
     }
@@ -105,16 +110,16 @@ const handleSubmit = async () => {
 
 // 確認ダイアログで許可されたらイベント発火
 const onConfirmed = async (toLogin: boolean) => {
-  const payload: IUser = {
-    ...(formModel.value as IUser),
+  const payload: IEmployee = {
+    ...(formModel.value as IEmployee),
     birthday: formatDate(formModel.value.birthday),
     joinDate: formatDate(formModel.value.joinDate),
   };
   submiting.value = true;
   if (!props.isEdit) {
     try {
-      // if create user
-      await createUser(payload);
+      // if create employee
+      await createEmployee(payload);
       toast.success(t("message.add_success"));
       emit("refetch-data");
       handleCancel();
@@ -126,16 +131,16 @@ const onConfirmed = async (toLogin: boolean) => {
     }
   } else {
     try {
-      // if update user
+      // if update employee
       if (formModel.value.id == null) return;
-      await updateUser(formModel.value.id, payload);
+      await updateEmployee(formModel.value.id, payload);
       toast.success(t("message.update_success"));
       handleCancel();
       if (toLogin) {
         handleLogout();
       } else if (fetchProfile.value) {
         emit("refetch-data");
-        await fetchUserProfile();
+        await fetchEmployeeProfile();
       } else {
         emit("refetch-data");
       }
@@ -148,8 +153,8 @@ const onConfirmed = async (toLogin: boolean) => {
 };
 const resetForm = async () => {
   formModel.value = props.isEdit
-    ? { ...defaultUser, ...props.user }
-    : { ...defaultUser };
+    ? { ...defaultEmployee, ...props.employee }
+    : { ...defaultEmployee };
   await nextTick();
   if (formRef.value?.resetValidation) {
     formRef.value.resetValidation();
@@ -167,7 +172,7 @@ const handleCancel = () => {
 </script>
 
 <template>
-  <VCard width="940px">
+  <VCard class="v-card-form">
     <VToolbar tag="div">
       <VToolbarTitle v-if="!isEdit">{{ t("employee_register") }}</VToolbarTitle>
       <VToolbarTitle v-else>{{ t("employee_update") }}</VToolbarTitle>
@@ -184,49 +189,18 @@ const handleCancel = () => {
         <VWindow v-model="activeTab">
           <VWindowItem value="account" eager>
             <VRow>
-              <VCol cols="6">
-                <VLabel>{{ t("login_id") }}</VLabel>
+              <VCol cols="12" md="6">
+                <VLabel>{{ t("employee_id") }}</VLabel>
                 <VTextField
-                  v-model="formModel.username"
-                  :rules="formRulesConfig.username"
+                  v-model="formModel.employeeId"
+                  :rules="formRulesConfig.employeeId"
                   variant="outlined"
                   color="primary"
-                  name="username"
+                  name="employee_id"
                 />
               </VCol>
-              <VCol cols="6">
-                <VLabel>{{ t("email") }}</VLabel>
-                <VTextField
-                  v-model="formModel.email"
-                  :rules="formRulesConfig.email"
-                  variant="outlined"
-                  color="primary"
-                  name="email"
-                />
-              </VCol>
-              <VCol cols="6">
-                <VLabel>{{ t("password") }}</VLabel>
-                <VTextField
-                  v-model="formModel.password"
-                  :rules="formRulesConfig.password"
-                  variant="outlined"
-                  color="primary"
-                  name="password"
-                  type="password"
-                />
-              </VCol>
-              <VCol cols="6">
-                <VLabel>{{ t("password_confirm") }}</VLabel>
-                <VTextField
-                  v-model="confirmPassword"
-                  :rules="[validator.checkEqual(formModel.password)]"
-                  variant="outlined"
-                  color="primary"
-                  name="confirmPassword"
-                  type="password"
-                />
-              </VCol>
-              <VCol cols="6">
+
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("role") }}</VLabel>
                 <VAutocomplete
                   v-model="formModel.roles"
@@ -241,11 +215,54 @@ const handleCancel = () => {
                 >
                 </VAutocomplete>
               </VCol>
+              <VCol cols="12" md="6">
+                <VLabel>{{ t("email") }}</VLabel>
+                <VTextField
+                  v-model="formModel.email"
+                  :rules="formRulesConfig.email"
+                  variant="outlined"
+                  color="primary"
+                  name="email"
+                />
+              </VCol>
+
+              <VCol cols="6">
+                <VLabel>{{ t("mobile_number") }}</VLabel>
+                <VTextField
+                  v-model="formModel.mobile"
+                  :rules="formRulesConfig.mobile"
+                  variant="outlined"
+                  color="primary"
+                  name="mobile_number"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VLabel>{{ t("password") }}</VLabel>
+                <VTextField
+                  v-model="formModel.password"
+                  :rules="formRulesConfig.password"
+                  variant="outlined"
+                  color="primary"
+                  name="password"
+                  type="password"
+                />
+              </VCol>
+              <VCol cols="12" md="6">
+                <VLabel>{{ t("password_confirm") }}</VLabel>
+                <VTextField
+                  v-model="confirmPassword"
+                  :rules="[validator.checkEqual(formModel.password)]"
+                  variant="outlined"
+                  color="primary"
+                  name="confirmPassword"
+                  type="password"
+                />
+              </VCol>
             </VRow>
           </VWindowItem>
           <VWindowItem value="detail_information" eager>
             <VRow class="d-flex mb-3">
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("full_name") }}</VLabel>
                 <VTextField
                   v-model="formModel.fullName"
@@ -255,7 +272,7 @@ const handleCancel = () => {
                   name="fullName"
                 />
               </VCol>
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("full_name_furigana") }}</VLabel>
                 <VTextField
                   v-model="formModel.fullNameFurigana"
@@ -265,7 +282,7 @@ const handleCancel = () => {
                   name="fullNameFurigana"
                 />
               </VCol>
-              <VCol cols="3">
+              <VCol cols="6" md="3">
                 <VLabel>{{ t("birthday") }}</VLabel>
                 <VTextField
                   v-model="formattedBirthday"
@@ -277,7 +294,7 @@ const handleCancel = () => {
                   type="date"
                 />
               </VCol>
-              <VCol cols="3">
+              <VCol cols="6" md="3">
                 <VLabel>{{ t("gender") }}</VLabel>
                 <VAutocomplete
                   v-model="formModel.gender"
@@ -289,7 +306,7 @@ const handleCancel = () => {
                 >
                 </VAutocomplete>
               </VCol>
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("department") }}</VLabel>
                 <VTextField
                   v-model="formModel.department"
@@ -299,7 +316,7 @@ const handleCancel = () => {
                   name="department"
                 />
               </VCol>
-              <VCol cols="6">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("work_place") }}</VLabel>
                 <VTextField
                   v-model="formModel.workPlace"
@@ -309,7 +326,7 @@ const handleCancel = () => {
                   name="workPlace"
                 />
               </VCol>
-              <VCol cols="3">
+              <VCol cols="6" md="3">
                 <VLabel>{{ t("join_date") }}</VLabel>
                 <VTextField
                   v-model="formattedJoinDate"

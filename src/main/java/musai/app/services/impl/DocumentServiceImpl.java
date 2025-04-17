@@ -20,9 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import musai.app.DTO.response.DocumentResponseDTO;
 import musai.app.exception.NotFoundException;
 import musai.app.models.Document;
-import musai.app.models.User;
+import musai.app.models.Employee;
 import musai.app.repositories.DocumentRepository;
-import musai.app.repositories.UserRepository;
+import musai.app.repositories.EmployeeRepository;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.DocumentService;
 
@@ -33,12 +33,12 @@ public class DocumentServiceImpl implements DocumentService {
 	private String uploadDir; // Path for saving uploaded files, injected from environment variable
 
 	private final DocumentRepository documentRepository;
-	private final UserRepository userRepository;
+	private final EmployeeRepository employeeRepository;
 
-	public DocumentServiceImpl(DocumentRepository documentRepository, UserRepository userRepository) {
+	public DocumentServiceImpl(DocumentRepository documentRepository, EmployeeRepository employeeRepository) {
 		super();
 		this.documentRepository = documentRepository;
-		this.userRepository = userRepository;
+		this.employeeRepository = employeeRepository;
 	}
 
 	@Override
@@ -54,17 +54,17 @@ public class DocumentServiceImpl implements DocumentService {
 		return processFilesAndSyncDB(principal.getId());
 	}
 
-	private List<DocumentResponseDTO> processFilesAndSyncDB(Long userId) {
+	private List<DocumentResponseDTO> processFilesAndSyncDB(Long loginId) {
 		List<DocumentResponseDTO> response = new ArrayList<>();
 
 		List<Document> documents;
 
 		// Get list from DB
-		if (userId != null) {
-			// Get document of user, if have user id
-			documents = documentRepository.findByUploadById(userId);
+		if (loginId != null) {
+			// Get document of employee, if have employee id
+			documents = documentRepository.findByUploadById(loginId);
 		} else {
-			// Get all, if don't have user id
+			// Get all, if don't have employee id
 			documents = documentRepository.findAllActive();
 		}
 
@@ -107,8 +107,8 @@ public class DocumentServiceImpl implements DocumentService {
 		if (contentType == null || !contentType.equals("application/pdf")) {
 			throw new IllegalArgumentException("only_pdf_allowed");
 		}
-		User user = userRepository.findById(principal.getId())
-				.orElseThrow(() -> new NotFoundException("user_not_exist"));
+		Employee employee = employeeRepository.findById(principal.getId())
+				.orElseThrow(() -> new NotFoundException("employee_not_exist"));
 
 		// Check if the file size exceeds the maximum limit of 5MB
 		final long MAX_SIZE = 5 * 1024 * 1024; // 5MB size limit
@@ -131,18 +131,18 @@ public class DocumentServiceImpl implements DocumentService {
 		Document document = new Document();
 		document.setTitle(fileName);
 		document.setPath("/" + principal.getId() + "/" + fileName);
-		document.setUploadBy(user);
+		document.setUploadBy(employee);
 		document.setUploadAt(LocalDateTime.now());
 
 		return documentRepository.save(document);
 	}
 
 	@Override
-	public void deleteDocument(Long documentId, Long userId) throws Exception {
+	public void deleteDocument(Long documentId, Long employeeId) throws Exception {
 		Document document = documentRepository.findById(documentId)
 				.orElseThrow(() -> new NotFoundException("file_not_found"));
 
-		if (!document.getUploadBy().getId().equals(userId)) {
+		if (!document.getUploadBy().getId().equals(employeeId)) {
 			throw new AccessDeniedException("not_authorized_to_delete");
 		}
 

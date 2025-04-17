@@ -19,17 +19,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @SQLRestriction("deleted_at IS NULL")
-@Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = "username"),
-		@UniqueConstraint(columnNames = "email") })
-public class User {
+@Table(name = "employees", uniqueConstraints = {  @UniqueConstraint(columnNames = "employee_id"), @UniqueConstraint(columnNames = "email") })
+public class Employee {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@NotNull
-	@Column(name = "username", length = 20)
-	private String username;
+	@Column(name = "employee_id", length = 20)
+	private String employeeId;
 
 	@NotNull
 	@Column(name = "email", length = 50)
@@ -53,6 +52,9 @@ public class User {
 
 	@Column(name = "work_place")
 	private String workPlace;
+	
+	@Column(name = "mobile")
+	private String mobile;
 
 	@Column(name = "join_date")
 	private LocalDate joinDate;
@@ -73,12 +75,12 @@ public class User {
 	private LocalDateTime deletedAt;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JoinTable(name = "employee_roles", joinColumns = @JoinColumn(name = "employee_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 
-	public User(String username, String email, String encode, String fullName, String fullNameFurigana,
-			LocalDate birthday, String department, String workPlace, LocalDate joinDate, String gender) {
-		this.username = username;
+	public Employee(String employeeId, String email, String encode, String fullName, String fullNameFurigana,
+			LocalDate birthday, String department, String workPlace, String mobile, LocalDate joinDate, String gender) {
+		this.employeeId = employeeId;
 		this.email = email;
 		this.password = encode;
 		this.fullName = fullName;
@@ -86,6 +88,7 @@ public class User {
 		this.birthday = birthday;
 		this.department = department;
 		this.workPlace = workPlace;
+		this.mobile = mobile;
 		this.joinDate = joinDate;
 		this.gender = gender;
 	}

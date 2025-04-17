@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import ProfileDropdown from '@/components/ui/ProfileDropdown.vue';
-import { useUserStore } from '@/store/userStore';
-import { computed } from 'vue';
+import ProfileDropdown from "@/components/ui/ProfileDropdown.vue";
+import { useEmployeeStore } from "@/store/employeeStore";
+import { computed } from "vue";
+import { shortenFileName } from "@/utils/stringUtils";
 
-const userStore = useUserStore();
-const fullName = computed(() => userStore.fullName);
+const employeeStore = useEmployeeStore();
+const fullName = computed(() => employeeStore.fullName);
 </script>
 
 <template>
   <!------Header-------->
   <VAppBar :elevation="10">
     <VSpacer />
-    <VCardTitle>{{ fullName }}</VCardTitle>
+    <VCardTitle>{{ shortenFileName(fullName) }}</VCardTitle>
     <ProfileDropdown />
   </VAppBar>
 </template>

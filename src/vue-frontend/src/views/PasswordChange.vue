@@ -4,9 +4,9 @@ import { ref, reactive } from "vue";
 import { useI18n } from "vue-i18n";
 import { IPasswordChange } from "@/types/type";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import { changePassword } from "@/api/user"; // API追加
+import { changePassword } from "@/api/employee"; // API追加
 import { useValidator } from "@/utils/validation";
-import { formRules } from "../configs/userFormConfig";
+import { formRules } from "@/configs/EmployeeFormConfig";
 import { toast } from "vue3-toastify";
 import { handleLogout } from "@/api/auth";
 const { t } = useI18n();

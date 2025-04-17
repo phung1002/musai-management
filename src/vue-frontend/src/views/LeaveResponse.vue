@@ -8,6 +8,7 @@ import { allLeaveRequests, updateLeaveRespond } from "@/api/response";
 import { format } from "date-fns"; // 日付フォーマットライブラリ
 import { ELeaveStatus } from "@/constants/leaveStatus";
 import LeaveResponseDetails from "@/components/ui/LeaveResponseDetails.vue";
+import { shortenFileName } from "@/utils/stringUtils";
 const { t } = useI18n();
 const keyWord = ref("");
 const LeaveRequests = ref<ILeaveResponse[]>([]); // 休暇リスト
@@ -18,7 +19,7 @@ const isError = ref(false); // エラーフラグ
 // // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  { title: t("employee_name"), key: "userFullName" },
+  { title: t("employee_name"), key: "employeeFullName" },
   { title: t("leave_type"), key: "leaveTypeName" },
   { title: t("submit_date"), key: "createdAt" },
   { title: t("status"), key: "status" },
@@ -151,6 +152,12 @@ onMounted(() => {
               <template v-slot:item.number="{ index }">
                 {{ index + 1 }}
               </template>
+              <template v-slot:item.employeeFullName="{ item }">
+                    <td>{{ shortenFileName(item.employeeFullName) }}</td>
+                  </template>
+                  <template v-slot:item.leaveTypeName="{ item }">
+                    <td>{{ shortenFileName(item.leaveTypeName) }}</td>
+                  </template>
               <template v-slot:item.status="{ item }">
                 <VChipGroup column active-class="bg-primary text-white">
                   <VChip

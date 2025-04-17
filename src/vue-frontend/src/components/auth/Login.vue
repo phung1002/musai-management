@@ -18,11 +18,10 @@ export default {
     const formValid = ref(false);
     const errorMessage = ref("");
     const formModel = reactive({
-      username: "",
+      employeeId: "",
       password: "",
     });
     const handleSubmit = async () => {
-      // if (formValid.value === true) {
       submiting.value = true;
       try {
         await login(formModel);
@@ -41,7 +40,6 @@ export default {
       } finally {
         submiting.value = false;
       }
-      // }
     };
     return {
       t,
@@ -59,10 +57,8 @@ export default {
 
 <template>
   <div class="auth">
-    <div
-      class="auth-wrapper d-flex flex-column align-center justify-center pt-10"
-    >
-      <VCard rounded="md" elevation="10" class="login-card" width="500">
+    <div class="auth-wrapper d-flex flex-column align-center justify-center pt-10">
+      <VCard rounded="md" elevation="10" class="v-card-form login-card">
         <VCardItem class="pa-sm-8">
           <div class="d-flex flex-column align-center justify-center py-6">
             <v-img
@@ -76,12 +72,12 @@ export default {
           <VForm v-model="formValid" @submit.prevent>
             <VRow class="d-flex mb-3">
               <VCol cols="12">
-                <VLabel class="mb-1">{{ $t("login_id") }}</VLabel>
+                <VLabel class="mb-1">{{ $t("employee_id") }}</VLabel>
                 <VTextField
                   variant="outlined"
                   color="primary"
-                  name="username"
-                  v-model="formModel.username"
+                  name="employee_id"
+                  v-model="formModel.employeeId"
                 />
               </VCol>
               <VCol cols="12">

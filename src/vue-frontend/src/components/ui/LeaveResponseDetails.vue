@@ -40,7 +40,7 @@ const onRevoked = async () => {
 </script>
 
 <template>
-  <VCard min-width="600">
+  <VCard class="v-card-form">
     <VToolbar tag="div">
       <VCardTitle>{{ t("detail_information") }}</VCardTitle>
       <VSpacer />
@@ -53,7 +53,7 @@ const onRevoked = async () => {
             <VIcon icon="mdi-account" class="icon-spacing" />
             {{ t("employee_name") }} :
           </template>
-          <VListItemTitle> {{ LeaveResponse.userFullName }}</VListItemTitle>
+          <VListItemTitle> {{ LeaveResponse.employeeFullName }}</VListItemTitle>
         </VListItem>
         <VListItem>
           <template v-slot:prepend>

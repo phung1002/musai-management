@@ -2,17 +2,17 @@
 import logoImg from "@/assets/images/logo.png";
 import { reactive, computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { useUserStore } from "@/store/userStore";
+import { useEmployeeStore } from "@/store/employeeStore";
 import { ERole } from "@/constants/role";
 
-const userStore = useUserStore();
+const employeeStore = useEmployeeStore();
 const filteredItems = computed(() => {
   return items.filter((item) => {
     if (!item.roles) return true;
-    return item.roles.some((role) => userRoles.value.includes(role));
+    return item.roles.some((role) => employeeRoles.value.includes(role));
   });
 });
-const userRoles = computed(() => userStore.roles || []);
+const employeeRoles = computed(() => employeeStore.roles || []);
 const { t } = useI18n();
 const items = [
   { type: "divider", roles: [ERole.ADMIN] },
@@ -22,10 +22,10 @@ const items = [
     props: {
       prependIcon: "mdi-account-box-multiple-outline",
       link: true,
-      to: "/admin/users",
+      to: "/admin/employees",
       exact: false,
     },
-    value: "/admin/users",
+    value: "/admin/employees",
     roles: [ERole.ADMIN],
   },
   {
@@ -39,16 +39,17 @@ const items = [
     value: "/admin/leave-management",
     roles: [ERole.ADMIN],
   },
+  { type: "divider", roles: [ERole.MANAGER] },
   { type: "subheader", title: t("roles.MANAGER"), roles: [ERole.MANAGER] },
   {
     title: t("employee_leave_management"),
     props: {
       prependIcon: "mdi-badge-account-horizontal-outline",
       link: true,
-      to: "/manager/user-leave-management",
+      to: "/manager/employee-leave-management",
       exact: true,
     },
-    value: "/manager/user-leave-management",
+    value: "/manager/employee-leave-management",
     roles: [ERole.MANAGER],
   },
   {
@@ -136,20 +137,16 @@ const handleDrawerWidth = () => {
     :border="true"
     :elevation="1"
   >
-    <VToolbar color="transparent">
-      <v-img
-        :src="logoImg"
-        alt="logo"
-        contain
-        class="logo py-2"
-        :height="200"
-      ></v-img>
+  <div>
+    <VToolbar color="transparent" class="mr-2">
+      <VImg class="logo-img" :src="logoImg" alt="logo" contain></VImg>
     </VToolbar>
+  </div>
     <div class="app-drawer__inner">
       <VList
         :items="filteredItems"
         color="primary"
-        class="menu-list"
+        class="menu-list pt-0"
         nav
         :slim="true"
       />
@@ -166,7 +163,11 @@ const handleDrawerWidth = () => {
   </VNavigationDrawer>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.logo-img {
+  margin: 4px 2px !important;
+  // width: 60px !important;
+}
 .btn-collapse {
   position: absolute;
   inset-block-start: 50%;

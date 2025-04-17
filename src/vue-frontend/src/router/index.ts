@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useUserStore } from "@/store/userStore";
+import { useEmployeeStore } from "@/store/employeeStore";
 import LoginVue from "@/components/auth/Login.vue";
 import DefaultLayoutVue from "@/components/layout/DefaultLayout.vue";
 import NotFoundVue from "@/components/auth/NotFound.vue";
 import UnauthorizedVue from "@/components/auth/Unauthorized.vue";
-import UserVue from "@/views/User.vue";
+import EmployeeVue from "@/views/Employee.vue";
 import { ERole } from "@/constants/role";
 
-import UserLeaveManagementViewVue from "@/views/UserLeave.vue";
+import EmployeeManagementVue from "@/views/EmployeeLeave.vue";
 import RequestConfirmViewVue from "@/views/LeaveResponse.vue";
 import PasswordChangeVue from "@/views/PasswordChange.vue";
 import CalendarVue from "@/views/Calendar.vue";
@@ -40,9 +40,9 @@ const routes = {
   children: [
     // Admin routes
     {
-      path: "/admin/users",
-      name: "admin-user-list",
-      component: UserVue,
+      path: "/admin/employees",
+      name: "admin-employee-list",
+      component: EmployeeVue,
       meta: {
         requiresAuth: true,
         requiredRoles: [ERole.ADMIN],
@@ -58,9 +58,9 @@ const routes = {
       },
     },
     {
-      path: "/manager/user-leave-management",
-      name: "manager-user-leave-management",
-      component: UserLeaveManagementViewVue,
+      path: "/manager/employee-leave-management",
+      name: "manager-employee-leave-management",
+      component: EmployeeManagementVue,
       meta: {
         requiresAuth: true,
         requiredRoles: [ERole.MANAGER],
@@ -128,29 +128,29 @@ const router = createRouter({
   ],
 });
 
-// Helper function: Check user roles
-const hasRequiredRoles = (userRoles, requiredRoles) => {
+// Helper function: Check employee roles
+const hasRequiredRoles = (employeeRoles, requiredRoles) => {
   return requiredRoles
-    ? userRoles.some((role) => requiredRoles.includes(role))
+    ? employeeRoles.some((role) => requiredRoles.includes(role))
     : true;
 };
 
 // Navigation guard
 router.beforeEach(async (to, from, next) => {
-  const userStore = useUserStore();
-  const isAuthenticated = userStore.authenticated;
+  const employeeStore = useEmployeeStore();
+  const isAuthenticated = employeeStore.authenticated;
 
-  // Check if authentication is required or if the user is authenticated
+  // Check if authentication is required or if authenticated
   if (!to.meta.requiresAuth || isAuthenticated) {
     try {
       // Validate token if authenticated
       if (isAuthenticated && !(await validateToken())) {
         await logout();
       }
-      // Check if user has required roles
+      // Check if required roles
       if (
         isAuthenticated &&
-        !hasRequiredRoles(userStore.roles, to.meta.requiredRoles)
+        !hasRequiredRoles(employeeStore.roles, to.meta.requiredRoles)
       ) {
         return next({ name: "unauthorized" });
       }

@@ -9,10 +9,11 @@ export interface ILeaveRequest {
   leaveTypeValue: string;
 }
 
-export interface IUser {
+export interface IEmployee {
   id: number | null;
-  username: string;
+  employeeId: string;
   email: string;
+  mobile: string;
   password: string;
   fullName: string;
   fullNameFurigana: string;
@@ -35,13 +36,13 @@ export interface ILeaveTypes {
   parentId: number | null; // 親カテゴリのID（ルートカテゴリなら省略）
   children?: ILeaveTypes[]; // 子カテゴリ（サブカテゴリー）
 }
-export interface IUserLeaves {
+export interface IEmployeeLeaves {
   id: number | null; // ����ID
   leaveTypeId: number; // 休暇のタイプ
   leaveTypeName: string; //
   leaveTypeValue: string;
-  userId: number; // 一意のID
-  userFullName: string; // 休暇の名前
+  employeeId: number; // 一意のID
+  employeeFullName: string; // 休暇の名前
   totalDays: number;
   usedDays: number;
   remainedDays: number;
@@ -51,7 +52,7 @@ export interface IUserLeaves {
 }
 export interface ILeaveResponse {
   id: number;
-  userFullName: string;
+  employeeFullName: string;
   leaveTypeName: string;
   leaveTypeValue: string;
   createdAt: string;
@@ -66,9 +67,10 @@ export interface ILeaveResponse {
 export interface IDocument {
   id: number;
   title: string;
+  uploadBy: string;
   filePath: string;
   submitDate: string;
-  userId: string;
+  employeeId: string;
 }
 
 export interface IEvent {

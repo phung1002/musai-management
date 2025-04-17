@@ -32,9 +32,9 @@ public class LeaveApplication {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false)
+	@JoinColumn(name = "employee_id", nullable = false)
 	@JsonIgnore
-	private User user;
+	private Employee employee;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "leave_type_id", nullable = false)
@@ -60,7 +60,7 @@ public class LeaveApplication {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "responded_by")
 	@JsonIgnore
-	private User respondedBy;
+	private Employee respondedBy;
 
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)

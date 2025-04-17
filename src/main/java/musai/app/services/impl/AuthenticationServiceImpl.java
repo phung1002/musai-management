@@ -13,10 +13,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import musai.app.DTO.request.LoginRequest;
-import musai.app.DTO.response.UserResponseDTO;
+import musai.app.DTO.response.EmployeeResponseDTO;
 import musai.app.exception.BadRequestException;
-import musai.app.models.User;
-import musai.app.repositories.UserRepository;
+import musai.app.models.Employee;
+import musai.app.repositories.EmployeeRepository;
 import musai.app.security.jwt.JwtUtils;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.AuthenticationService;
@@ -31,23 +31,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private JwtUtils jwtUtils;
 
 	@Autowired
-	private UserRepository userRepository;
+	private EmployeeRepository employeeRepository;
 
 	/**
-	 * Authenticate user and generate JWT token.
+	 * Authenticate employee and generate JWT token.
 	 *
-	 * @param loginRequest The login request containing username and password.
+	 * @param loginRequest The login request containing employee id and password.
 	 * @param response     The HTTP response to set the cookie.
 	 */
 	@Override
 	public void login(LoginRequest loginRequest, HttpServletResponse response) {
-		// Authenticate user credentials
+		// Authenticate employee credentials
 		Authentication authentication = authenticateUser(loginRequest);
 
 		// Generate JWT token
 		String jwt = jwtUtils.generateJwtToken(authentication);
 
-		// Get user details from authentication
+		// Get employee details from authentication
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		validateUserAccount(userDetails);
 
@@ -57,7 +57,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	/**
-	 * Logout user by removing JWT token from cookies.
+	 * Logout employee by removing JWT token from cookies.
 	 *
 	 * @param response The HTTP response to remove the cookie.
 	 */
@@ -72,12 +72,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	/**
-	 * Validate the current user based on the JWT token in the cookies.
+	 * Validate the current employee based on the JWT token in the cookies.
 	 *
 	 * @param request The HTTP request containing the cookies.
 	 */
 	@Override
-	public void validateUser(HttpServletRequest request) {
+	public void validateEmployee(HttpServletRequest request) {
 		String jwt = jwtUtils.getJwtFromCookies(request);
 
 		if (jwt == null) {
@@ -93,7 +93,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	/**
-	 * Authenticate user credentials using AuthenticationManager.
+	 * Authenticate employee credentials using AuthenticationManager.
 	 *
 	 * @param loginRequest The login request.
 	 * @return Authentication object.
@@ -101,56 +101,56 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private Authentication authenticateUser(LoginRequest loginRequest) {
 		try {
 			return authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+					new UsernamePasswordAuthenticationToken(loginRequest.getEmployeeId(), loginRequest.getPassword()));
 		} catch (Exception ex) {
-			throw new BadRequestException("Invalid username or password.");
+			throw new BadRequestException("Invalid employee id or password.");
 		}
 	}
 
 	/**
-	 * Validate user account status.
+	 * Validate employee account status.
 	 *
 	 * @param userDetails The user details.
 	 */
 	private void validateUserAccount(UserDetailsImpl userDetails) {
 		if (userDetails.getDeletedAt() != null) {
-			throw new BadRequestException("Invalid username or password.");
+			throw new BadRequestException("Invalid employee id or password.");
 		}
 	}
 
 	/**
-	 * Get profile of user logging in
+	 * Get profile of employee logging in
 	 * 
 	 * @param request
 	 * @return
 	 */
-	public UserResponseDTO getProfile(HttpServletRequest request) {
+	public EmployeeResponseDTO getProfile(HttpServletRequest request) {
 		// Get JWT from cookies
 		String jwt = jwtUtils.getJwtFromCookies(request);
 
 		if (jwt == null || !jwtUtils.validateJwtToken(jwt)) {
 			throw new BadRequestException("Invalid or expired token.");
 		}
-		String username = jwtUtils.getUserNameFromJwtToken(jwt);
+		String employeeId = jwtUtils.getUserNameFromJwtToken(jwt);
 
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+		Employee employee = employeeRepository.findByEmployeeId(employeeId)
+				.orElseThrow(() -> new UsernameNotFoundException("employee_not_exist"));
 
-		UserResponseDTO userResponseDTO = new UserResponseDTO();
-		userResponseDTO.setId(user.getId());
-		userResponseDTO.setUsername(user.getUsername());
-		userResponseDTO.setFullName(user.getFullName());
-		userResponseDTO.setFullNameFurigana(user.getFullNameFurigana());
-		userResponseDTO.setEmail(user.getEmail());
-		userResponseDTO.setGender(user.getGender());
-		userResponseDTO.setJoinDate(user.getJoinDate());
-		userResponseDTO.setBirthday(user.getBirthday());
-		userResponseDTO.setDepartment(user.getDepartment());
-		userResponseDTO.setWorkPlace(user.getWorkPlace());
-		userResponseDTO
-				.setRoles(user.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()));
+		EmployeeResponseDTO employeeResponseDTO = new EmployeeResponseDTO();
+		employeeResponseDTO.setId(employee.getId());
+		employeeResponseDTO.setEmployeeId(employee.getEmployeeId());
+		employeeResponseDTO.setFullName(employee.getFullName());
+		employeeResponseDTO.setFullNameFurigana(employee.getFullNameFurigana());
+		employeeResponseDTO.setEmail(employee.getEmail());
+		employeeResponseDTO.setGender(employee.getGender());
+		employeeResponseDTO.setJoinDate(employee.getJoinDate());
+		employeeResponseDTO.setBirthday(employee.getBirthday());
+		employeeResponseDTO.setDepartment(employee.getDepartment());
+		employeeResponseDTO.setWorkPlace(employee.getWorkPlace());
+		employeeResponseDTO
+				.setRoles(employee.getRoles().stream().map(role -> role.getName().name()).collect(Collectors.toSet()));
 
-		return userResponseDTO;
+		return employeeResponseDTO;
 	}
 
 	private void setJwtCookie(HttpServletResponse response, String jwt) {

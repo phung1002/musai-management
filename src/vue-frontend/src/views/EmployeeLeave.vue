@@ -1,20 +1,21 @@
 <!-- 社員休暇管理 画面　-->
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from "vue";
-import UserLeaveForm from "@/components/form/UserLeaveForm.vue";
+import EmployeeLeaveForm from "@/components/form/EmployeeLeaveForm.vue";
 import { useI18n } from "vue-i18n";
 import { VTab } from "vuetify/lib/components/index.mjs";
-import { IUserLeaves } from "@/types/type";
-import { getUserLeaves } from "@/api/userLeave";
+import { IEmployeeLeaves } from "@/types/type";
+import { getEmployeeLeaves } from "@/api/employeeLeave";
+import { shortenFileName } from "@/utils/stringUtils";
 const { t } = useI18n();
 const keyWord = ref("");
 const addFrom = ref(false); // 追加プラグ
 const editForm = ref(false); //編集プラグ
 const activeTab = ref("有休"); // タブの初期値
-const userLeaves = ref<IUserLeaves[]>([]); // 休暇リスト
+const EmployeeLeaves = ref<IEmployeeLeaves[]>([]); // 休暇リスト
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
-const selectedLeave = ref<IUserLeaves | undefined>(undefined); // 編集する休暇情報
+const selectedLeave = ref<IEmployeeLeaves | undefined>(undefined); // 編集する休暇情報
 const isEdit = ref(false); // 編集モードかどうか
 const selectedTab = ref("paid_leave");
 // メイン休暇タブで分類
@@ -25,7 +26,7 @@ const tabs = ref([
 // // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
-  { title: t("employee_name"), key: "userFullName" },
+  { title: t("employee_name"), key: "employeeFullName" },
   { title: t("valid_leaves"), key: "totalDays" },
   { title: t("used_leaves"), key: "usedDays" },
   { title: t("available_leaves"), key: "remainedDays" },
@@ -35,7 +36,7 @@ const headers = reactive([
 ]);
 // データを分類する計算プロパティ
 const filteredLeaves = computed(() => {
-  return userLeaves.value.filter(
+  return EmployeeLeaves.value.filter(
     (leave) =>
       (selectedTab.value === "paid_leave" &&
         leave.leaveTypeValue == "PAID_LEAVE") ||
@@ -45,8 +46,8 @@ const filteredLeaves = computed(() => {
 });
 // 休暇リストをロード
 const loadLeave = (lst: any) => {
-  userLeaves.value = lst.map((userLeave: IUserLeaves) => ({
-    ...userLeave,
+  EmployeeLeaves.value = lst.map((EmployeeLeave: IEmployeeLeaves) => ({
+    ...EmployeeLeave,
   }));
 };
 // ユーザー休暇リスト取得 API呼び出し
@@ -54,7 +55,7 @@ const fetchLeaveType = async (searchQuery: string = "") => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const response = await getUserLeaves(searchQuery); // API呼び出
+    const response = await getEmployeeLeaves(searchQuery); // API呼び出
     loadLeave(response); // リスト更新
   } catch (error) {
     isError.value = true;
@@ -77,14 +78,14 @@ const handleClear = () => {
   fetchLeaveType(); // 全ユーザーを再表示
 };
 // 追加用ダイアログ表示
-const handleCreateItem = (leaveType: IUserLeaves) => {
+const handleCreateItem = (leaveType: IEmployeeLeaves) => {
   selectedLeave.value = leaveType; // 新規作成なのでリセット
   addFrom.value = true;
   isEdit.value = false;
 };
 // 編集用ダイアログ表示
-const handleEditItem = (userLeave: IUserLeaves) => {
-  selectedLeave.value = { ...userLeave }; // 選択データをセット
+const handleEditItem = (EmployeeLeave: IEmployeeLeaves) => {
+  selectedLeave.value = { ...EmployeeLeave }; // 選択データをセット
   addFrom.value = true;
   isEdit.value = true;
 };
@@ -156,6 +157,9 @@ onMounted(() => {
                   <template v-slot:item.number="{ index }">
                     {{ index + 1 }}
                   </template>
+                  <template v-slot:item.employeeFullName="{ item }">
+                    <td>{{ shortenFileName(item.employeeFullName) }}</td>
+                  </template>
                   <!-- アクション　設定  -->
                   <template v-slot:item.action="{ item }">
                     <div class="action-buttons">
@@ -186,9 +190,9 @@ onMounted(() => {
   </VRow>
   <!-- 追加・修正確認 -->
   <VDialog v-model="addFrom" width="auto" persistent>
-    <UserLeaveForm
+    <EmployeeLeaveForm
       :isEdit="isEdit"
-      :userLeave="selectedLeave"
+      :employeeLeave="selectedLeave"
       @form-cancel="addFrom = false"
       @refetch-data="fetchLeaveType"
     />

@@ -19,7 +19,11 @@ const { t } = useI18n();
 
 const isLoading = ref(false);
 const isError = ref(false);
-const emit = defineEmits(["form:cancel", "refetch-data", "refetch-userleave"]);
+const emit = defineEmits([
+  "form:cancel",
+  "refetch-data",
+  "refetch-employeeleave",
+]);
 const validator = useValidator(t);
 const formValid = ref(false);
 const props = defineProps<{
@@ -148,7 +152,7 @@ const handleSubmit = async () => {
       await requestLeave(formModel.value);
       toast.success(t("message.add_success"));
       emit("refetch-data");
-      emit("refetch-userleave");
+      emit("refetch-employeeleave");
       handleCancel();
     } catch (error: any) {
       toast.error(t(error.message));
@@ -157,13 +161,12 @@ const handleSubmit = async () => {
   } else {
     //update
     try {
-      // if update user
       if (formModel.value.id == null) return;
       await updateLeaveRequest(formModel.value.id, formModel.value);
       toast.success(t("message.update_success"));
       handleCancel();
       emit("refetch-data");
-      emit("refetch-userleave");
+      emit("refetch-employeeleave");
     } catch (error: any) {
       toast.error(t(error.message));
       return;
@@ -256,7 +259,7 @@ const handleCancel = () => {
 </script>
 
 <template>
-  <VCard class="leave_form">
+  <VCard class="v-card-form">
     <VToolbar tag="div">
       <VToolbarTitle>
         <VIcon icon="mdi-lead-pencil" />{{ t("leave_request") }}
@@ -412,7 +415,13 @@ const handleCancel = () => {
       </VBtn>
     </VCardActions>
     <!-- 確認ダイアログ表示 -->
-    <VDialog v-model="isDialogVisible" width="auto" eager persistent>
+    <VDialog
+      v-model="isDialogVisible"
+      width="auto"
+      max-width="90%"
+      eager
+      persistent
+    >
       <ConfimDialogView
         :title="t('confirm')"
         :message="messageConfirm"

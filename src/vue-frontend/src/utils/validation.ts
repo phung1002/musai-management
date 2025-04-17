@@ -9,7 +9,9 @@ export const useValidator = (t: Function) => ({
       : t("validation.required_input"),
 
   emailFormat: (value: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || !value
+    (/^[\x00-\x7F]+$/.test(value) &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) ||
+    !value
       ? true
       : t("validation.email_format"),
 
@@ -21,13 +23,27 @@ export const useValidator = (t: Function) => ({
   },
 
   halfSize: (value: string) => {
-    const halfSizeRegex = /^[\x20-\x7E]+$/;
+    const halfSizeRegex = /^[a-zA-Z0-9]+$/;
     if (!halfSizeRegex.test(value)) {
-      return t("validation.half_size");
+      return t("validation.half_width_alphanumeric");
     }
     return true;
   },
-
+  checkNumber: (value: string) => {
+    // 数字が4桁かどうかをチェック
+    const numberRegex = /^[0-9]{4}$/;
+    if (!numberRegex.test(value)) {
+      return t("validation.employeeId_4digits");
+    }
+    return true;
+  },
+  checkMobileNumber: (value: string) => {
+    const mobileRegex = /^0[5789]0\d{4}\d{4}$/;
+    if (!mobileRegex.test(value)) {
+      return t("validation.mobile_format");
+    }
+    return true;
+  },
   checkFurigana: (value: string) => {
     const furiganaRegex = /^[ぁ-ゖァ-ヴーｧ-ﾝﾞﾟ]+$/u;
     if (!furiganaRegex.test(value)) {

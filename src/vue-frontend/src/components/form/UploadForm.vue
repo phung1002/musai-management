@@ -6,12 +6,15 @@ import ConfimDialogView from "@/components/common/ConfimDialog.vue"; // 確認�
 import { useValidator } from "@/utils/validation"; // バリデーション
 import { uploadDocument } from "@/api/document"; // API関数
 import { toast } from "vue3-toastify"; // トースト通知
+import { shortenFileName } from "@/utils/stringUtils";
+
 const { t } = useI18n();
 const isDialogVisible = ref(false); // 確認ダイアログ表示
 const validator = useValidator(t); // バリデーション
 const selectedFile = ref<File | null>(null); // 選択されたファイル
 const pdfPreviewUrl = ref<string | null>(null); // PDF プレビュー URL
 const emit = defineEmits(["form:cancel", "fetch"]);
+
 // ファイルリセット
 const resetFile = () => {
   selectedFile.value = null;
@@ -76,7 +79,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <VCard width="940px">
+  <VCard class="v-card-form">
     <VToolbar tag="div">
       <VToolbarTitle
         ><VIcon icon="mdi-file-upload-outline" />{{
@@ -86,20 +89,20 @@ onUnmounted(() => {
       <VBtn icon="mdi-close" @click="handleCancel"></VBtn>
     </VToolbar>
     <VForm @submit.prevent="() => {}">
-      <v-container>
-        <VRow>
-          <VCol cols="6">
-            <v-file-input
-              v-model="selectedFile"
-              label="PDF をアップロード"
-              accept="application/pdf"
-              @change="handleFileUpload"
-              :rules="[validator.required]"
-              :clearable="!selectedFile"
-            ></v-file-input>
-          </VCol>
-        </VRow>
-      </v-container>
+      <VContainer>
+        <VFileInput
+          v-model="selectedFile"
+          label="PDF をアップロード"
+          accept="application/pdf"
+          @change="handleFileUpload"
+          :rules="[validator.required]"
+          :clearable="!selectedFile"
+        >
+          <template #selection="{ fileNames }">
+            <span>{{ shortenFileName(fileNames[0]) }}</span>
+          </template>
+        </VFileInput>
+      </VContainer>
     </VForm>
     <!-- PDF プレビュー -->
     <VCard flat elevation="0" v-if="pdfPreviewUrl" class="mt-4">

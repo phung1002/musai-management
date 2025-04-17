@@ -4,9 +4,9 @@ import { computed, ref } from "vue";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import ProfileDropdown from "@/components/auth/ProfileCard.vue";
 import { handleLogout } from "@/api/auth";
-import { useUserStore } from "@/store/userStore";
+import { useEmployeeStore } from "@/store/employeeStore";
 
-const userStore = useUserStore();
+const employeeStore = useEmployeeStore();
 const isDialogVisible = ref(false);
 const showProfileView = ref(false);
 const { t } = useI18n();
@@ -16,7 +16,7 @@ const handleSubmit = () => {
 const showProfile = () => {
   showProfileView.value = true;
 };
-const gender = computed(() => userStore.gender);
+const gender = computed(() => employeeStore.gender);
 const onConfirmed = () => {
   handleLogout();
   sessionStorage.clear();

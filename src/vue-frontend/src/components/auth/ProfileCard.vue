@@ -3,7 +3,7 @@
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { profile } from "@/api/auth";
-import { IUser } from "@/types/type";
+import { IEmployee } from "@/types/type";
 const { t } = useI18n();
 import { ERole } from "@/constants/role";
 const emit = defineEmits(["form:cancel"]);
@@ -20,7 +20,7 @@ const convertDate = (date: string | null): string | null => {
   return `${year}-${month}-${day}`;
 };
 
-const infor = ref<IUser>({} as IUser);
+const infor = ref<IEmployee>({} as IEmployee);
 const getProfile = async () => {
   try {
     const response = await profile();
@@ -49,7 +49,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <VCard class="profile-card" min-width="600">
+  <VCard class="profile-card v-card-form">
     <VToolbar tag="div" color="transparent">
       <VSpacer />
       <VCardActions>
@@ -75,12 +75,19 @@ onMounted(() => {
     </VCardText>
     <VCardItem>
       <VList>
-        <!-- ユーザーID -->
+        <!-- 社員番号 -->
         <VListItem>
           <template v-slot:prepend>
             <v-icon icon="mdi-card-account-details-outline"></v-icon>
           </template>
-          <VListItemTitle>{{ infor.username }}</VListItemTitle>
+          <VListItemTitle>{{ infor.employeeId }}</VListItemTitle>
+        </VListItem>
+        <!-- 氏名（フリガナ） -->
+        <VListItem>
+          <template v-slot:prepend>
+            <v-icon icon="mdi-account"></v-icon>
+          </template>
+          <VListItemTitle>{{ infor.fullNameFurigana }}</VListItemTitle>
         </VListItem>
         <!-- 権限 -->
         <VListItem>
@@ -114,6 +121,20 @@ onMounted(() => {
           </template>
           <VListItemTitle>{{ t(`${infor.gender}`) }}</VListItemTitle>
         </VListItem>
+        <!-- 生年月日 -->
+        <VListItem>
+          <template v-slot:prepend>
+            <v-icon icon="mdi-cake-variant-outline"></v-icon>
+          </template>
+          <VListItemTitle>{{ convertDate(infor.birthday) }}</VListItemTitle>
+        </VListItem>
+        <!-- 入社日 -->
+        <VListItem>
+          <template v-slot:prepend>
+            <v-icon icon="mdi-bank-transfer-in"></v-icon>
+          </template>
+          <VListItemTitle>{{ convertDate(infor.joinDate) }}</VListItemTitle>
+        </VListItem>
         <!-- 部署 -->
         <VListItem>
           <template v-slot:prepend>
@@ -127,20 +148,6 @@ onMounted(() => {
             <v-icon icon="mdi-briefcase"></v-icon>
           </template>
           <VListItemTitle>{{ infor.workPlace }}</VListItemTitle>
-        </VListItem>
-        <!-- 入社日 -->
-        <VListItem>
-          <template v-slot:prepend>
-            <v-icon icon="mdi-bank-transfer-in"></v-icon>
-          </template>
-          <VListItemTitle>{{ convertDate(infor.joinDate) }}</VListItemTitle>
-        </VListItem>
-        <!-- 生年月日 -->
-        <VListItem>
-          <template v-slot:prepend>
-            <v-icon icon="mdi-cake-variant-outline"></v-icon>
-          </template>
-          <VListItemTitle>{{ convertDate(infor.birthday) }}</VListItemTitle>
         </VListItem>
       </VList>
     </VCardItem>

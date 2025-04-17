@@ -4,24 +4,27 @@ import { ref, Ref, onMounted, watch, nextTick, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { VSelect, VTab } from "vuetify/lib/components/index.mjs";
 import { useValidator } from "@/utils/validation";
-import { IUserLeaves, ILeaveTypes } from "@/types/type";
-import { addUserLeave, updateUserLeave } from "@/api/userLeave";
+import { IEmployeeLeaves, ILeaveTypes } from "@/types/type";
+import { addEmployeeLeave, updateEmployeeLeave } from "@/api/employeeLeave";
 import { getLeavesTree } from "@/api/leave";
 import { toast } from "vue3-toastify";
 import { ELeaveType } from "@/constants/leaveType";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
-import UserList from "@/components/ui/UserSearchBox.vue";
+import EmployeeList from "@/components/ui/EmployeeSearchBox.vue";
 import type { VForm } from "vuetify/lib/components/index.mjs";
 
 const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const { t } = useI18n(); //日本語にローカル変更用
 const emit = defineEmits(["form-cancel", "refetch-data"]);
 const errors = ref<{ leave_type?: string; leave_name?: string }>({});
-const props = defineProps<{ userLeave?: IUserLeaves; isEdit: boolean }>(); // 編集対象情報
+const props = defineProps<{
+  employeeLeave?: IEmployeeLeaves;
+  isEdit: boolean;
+}>(); // 編集対象情報
 const leaves = ref<ILeaveTypes[]>([]); // 休暇リスト
 const validator = useValidator(t); // バリデーション
 const isDialogVisible = ref(false); // 確認ダイアログ表示
-const userListVisible = ref(false); // ユーザー一覧ポップアップの表示状態
+const employeeListVisible = ref(false); // ユーザー一覧ポップアップの表示状態
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 const formValid = ref(false);
@@ -32,13 +35,13 @@ const tabs = ref([
   { title: "", icon: "mdi-pine-tree-box", tab: ELeaveType.PUBLIC_LEAVE },
 ]);
 // デフォルト値
-const defaultUserLeave = {
+const defaultEmployeeLeave = {
   id: null,
   leaveTypeId: 0,
   leaveTypeName: "",
   leaveTypeValue: "",
-  userFullName: "",
-  userId: 0,
+  employeeFullName: "",
+  employeeId: 0,
   remainedDays: 0,
   totalDays: 0,
   usedDays: 0,
@@ -63,10 +66,10 @@ const childBox = ref(null);
 const numberOptions = Array.from({ length: 26 }, (_, i) => i + 0);
 
 // フォームデータの初期化
-const formModel = ref<IUserLeaves>(
+const formModel = ref<IEmployeeLeaves>(
   props.isEdit
-    ? { ...defaultUserLeave, ...props.userLeave }
-    : { ...defaultUserLeave }
+    ? { ...defaultEmployeeLeave, ...props.employeeLeave }
+    : { ...defaultEmployeeLeave }
 );
 // `validFrom` を動的に取得して `validTo` のバリデーションを実行
 const checkDateRange = computed(
@@ -116,19 +119,22 @@ const setleaveTypeId = (selectedTab: string) => {
   }
 };
 // フォーカス時にユーザー一覧ポップアップを表示
-const showUserList = () => {
-  userListVisible.value = true;
+const showEmployeeList = () => {
+  employeeListVisible.value = true;
 };
 // 子コンポーネントから受け取る処理
-const handleUserSelect = (user: { id: number; name: string }) => {
-  formModel.value.userId = user.id;
-  formModel.value.userFullName = user.name;
+const handleUserSelect = (employee: {
+  employeeId: number;
+  employeeFullName: string;
+}) => {
+  formModel.value.employeeId = employee.employeeId;
+  formModel.value.employeeFullName = employee.employeeFullName;
 };
 // 入力初期化
 const handleResetForm = async () => {
   formModel.value = props.isEdit
-    ? { ...defaultUserLeave, ...props.userLeave }
-    : { ...defaultUserLeave };
+    ? { ...defaultEmployeeLeave, ...props.employeeLeave }
+    : { ...defaultEmployeeLeave };
   await nextTick();
   if (formRef.value?.resetValidation) {
     formRef.value.resetValidation();
@@ -196,7 +202,7 @@ const onConfirmed = async () => {
     // 新規登録処理を実行
     setleaveTypeId(activeTab.value);
     try {
-      await addUserLeave(formModel.value);
+      await addEmployeeLeave(formModel.value);
       toast.success(t("message.add_success"));
       handleCancel();
       emit("refetch-data");
@@ -209,7 +215,7 @@ const onConfirmed = async () => {
     // 更新処理を実行
     try {
       if (formModel.value.id == null) return;
-      await updateUserLeave(formModel.value.id, formModel.value);
+      await updateEmployeeLeave(formModel.value.id, formModel.value);
       toast.success(t("message.update_success"));
       handleCancel();
       emit("refetch-data");
@@ -224,7 +230,7 @@ const onConfirmed = async () => {
 </script>
 
 <template>
-  <VCard class="leave_form">
+  <VCard class="v-card-form">
     <VToolbar tag="div">
       <!-- 新規登録際タイトルの表示 -->
       <VToolbarTitle v-if="!isEdit">
@@ -284,13 +290,13 @@ const onConfirmed = async () => {
               <VCol>
                 <VToolbar tag="div" color="transparent" flat>
                   <VTextField
-                    v-model="formModel.userFullName"
+                    v-model="formModel.employeeFullName"
                     :rules="[validator.required]"
                     variant="outlined"
                     color="primary"
                     clearable
                     class="search"
-                    name="userFullName"
+                    name="employeeFullName"
                     :disabled="isEdit"
                     readonly
                   >
@@ -298,7 +304,7 @@ const onConfirmed = async () => {
                       <VBtn
                         icon="mdi-magnify"
                         variant="text"
-                        @click="showUserList"
+                        @click="showEmployeeList"
                         :disabled="isEdit"
                         density="comfortable"
                       />
@@ -308,7 +314,7 @@ const onConfirmed = async () => {
               </VCol>
             </VRow>
             <VRow>
-              <VCol cols="4">
+              <VCol cols="12" md="4">
                 <VLabel>{{ t("valid_leaves") }}</VLabel>
                 <VSelect
                   v-model="formModel.totalDays"
@@ -318,7 +324,7 @@ const onConfirmed = async () => {
                   name="totalDays"
                 />
               </VCol>
-              <VCol cols="4">
+              <VCol cols="12" md="4">
                 <VLabel>{{ t("leave_start") }}</VLabel>
                 <VTextField
                   v-model="formModel.validFrom"
@@ -330,7 +336,7 @@ const onConfirmed = async () => {
                   type="date"
                 />
               </VCol>
-              <VCol cols="4">
+              <VCol cols="12" md="4">
                 <VLabel>{{ t("leave_expired") }}</VLabel>
                 <VTextField
                   v-model="formModel.validTo"
@@ -373,12 +379,12 @@ const onConfirmed = async () => {
       />
     </VDialog>
     <!-- ユーザー一覧ポップアップ -->
-    <VDialog v-model="userListVisible" width="auto" eager persistent>
-      <UserList
-        v-if="userListVisible"
-        :title="t('user_lists')"
-        @selectUser="handleUserSelect"
-        @update:isVisible="userListVisible = $event"
+    <VDialog v-model="employeeListVisible" width="auto" eager persistent>
+      <EmployeeList
+        v-if="employeeListVisible"
+        :title="t('employee_lists')"
+        @selectEmployee="handleUserSelect"
+        @update:isVisible="employeeListVisible = $event"
     /></VDialog>
   </VCard>
 </template>

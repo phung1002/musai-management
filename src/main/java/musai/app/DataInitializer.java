@@ -1,17 +1,6 @@
 package musai.app;
 
-import musai.app.models.ELeaveValue;
-import musai.app.models.ERole;
-import musai.app.models.LeaveType;
-import musai.app.models.Role;
-import musai.app.models.User;
-import musai.app.repositories.LeaveTypeResposity;
-import musai.app.repositories.RoleRepository;
-import musai.app.repositories.UserRepository;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -20,18 +9,27 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import musai.app.models.ELeaveValue;
+import musai.app.models.ERole;
+import musai.app.models.Employee;
+import musai.app.models.LeaveType;
+import musai.app.models.Role;
+import musai.app.repositories.EmployeeRepository;
+import musai.app.repositories.LeaveTypeResposity;
+import musai.app.repositories.RoleRepository;
+
 @Component
 public class DataInitializer implements CommandLineRunner {
 
 	private final RoleRepository roleRepository;
-	private final UserRepository userRepository;
+	private final EmployeeRepository employeeRepository;
 	private final LeaveTypeResposity leaveTypeResposity;
 
 	// Inject RoleRepository to save Role in DB
-	public DataInitializer(RoleRepository roleRepository, UserRepository userRepository,
+	public DataInitializer(RoleRepository roleRepository, EmployeeRepository employeeRepository,
 			LeaveTypeResposity leaveTypeResposity) {
 		this.roleRepository = roleRepository;
-		this.userRepository = userRepository;
+		this.employeeRepository = employeeRepository;
 		this.leaveTypeResposity = leaveTypeResposity;
 	}
 
@@ -45,12 +43,12 @@ public class DataInitializer implements CommandLineRunner {
 		}
 
 		// Add users if empty
-		if (userRepository.count() == 0) {
+		if (employeeRepository.count() == 0) {
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 			String encodedPassword = encoder.encode("admin");
 
-			User admin = new User("admin", "admin@gmail.com", encodedPassword, "Admin", "アドミン",
-					LocalDate.of(1990, 1, 1), "管理", "本社", LocalDate.of(2023, 1, 1), "male");
+			Employee admin = new Employee("0000", "admin@gmail.com", encodedPassword, "Admin", "アドミン",
+					LocalDate.of(1990, 1, 1), "管理", "本社", "080000000", LocalDate.of(2023, 1, 1), "male");
 
 			Role roleAdmin = roleRepository.findByName(ERole.ADMIN)
 					.orElseThrow(() -> new RuntimeException("Error: Role ADMIN is not found."));
@@ -64,25 +62,28 @@ public class DataInitializer implements CommandLineRunner {
 			roles.add(roleManagement);
 			roles.add(roleMember);
 			admin.setRoles(roles);
-			userRepository.save(admin);
+			employeeRepository.save(admin);
 
 			// management
-			User user1 = new User("nguyen", "nguyen@gmail.com", encoder.encode("nguyen"), "Nguyen Khanh Phung",
-					"グエンカンプン", LocalDate.of(1997, 2, 10), "IT", "本社", LocalDate.of(2024, 5, 1), "female");
-			User user2 = new User("chamith", "chamith@gmail.com", encoder.encode("chamith"), "Chamith",
-					"チャミット", LocalDate.of(1994, 1, 1), "IT", "本社", LocalDate.of(2024, 12, 1), "male");
+			Employee user1 = new Employee("0002", "nguyen@gmail.com", encoder.encode("nguyen"), "Nguyen Khanh Phung",
+					"グエンカンプン", LocalDate.of(1997, 2, 10), "IT", "本社", "080000222", LocalDate.of(2024, 5, 1), "female");
+			Employee user2 = new Employee("0003", "chamith@gmail.com", encoder.encode("chamith"), "Chamith", "チャミット",
+					LocalDate.of(1994, 1, 1), "IT", "本社", "080000333", LocalDate.of(2024, 12, 1), "male");
+			Employee user3 = new Employee("0004", "hoang@gmail.com", encoder.encode("hoang"), "Tran Kim Hoang", "チャミット",
+					LocalDate.of(1991, 1, 1), "IT", "本社", "080000444", LocalDate.of(2024, 12, 1), "female");
 			roles.remove(roleAdmin);
-			user1.getRoles().add(roleManagement);	
+			user1.getRoles().add(roleManagement);
 			user2.getRoles().add(roleManagement);
-			userRepository.save(user1);
-			userRepository.save(user2);
-
+			user3.getRoles().add(roleManagement);
+			employeeRepository.save(user1);
+			employeeRepository.save(user2);
+			employeeRepository.save(user3);
 
 			// member
-			for (int i = 1; i <= 10; i++) {
-				User user = createUser(i, encoder);
-				user.getRoles().add(roleMember);
-				userRepository.save(user);
+			for (int i = 1; i <= 9; i++) {
+				Employee employee = createUser(i, encoder);
+				employee.getRoles().add(roleMember);
+				employeeRepository.save(employee);
 			}
 		}
 
@@ -115,13 +116,13 @@ public class DataInitializer implements CommandLineRunner {
 		}
 	}
 
-	public static User createUser(int i, BCryptPasswordEncoder encoder) {
-		String username = "user" + i;
+	public static Employee createUser(int i, BCryptPasswordEncoder encoder) {
+		String employeeId = "001" + i;
 		String email = "user" + i + "@gmail.com";
 		String password = encoder.encode("user" + i);
 
-		return new User(username, email, password, "User " + i, generateRandomHiragana(5),
-				LocalDate.of(1994, 1, 1), "役職 " + i, "支店 " + i,
+		return new Employee(employeeId, email, password, "User " + i, generateRandomHiragana(5),
+				LocalDate.of(1994, 1, 1), "役職 " + i, "支店 " + i, "070" + String.valueOf(i).repeat(6),
 				LocalDate.of(2025, 1, 1), "male");
 	}
 

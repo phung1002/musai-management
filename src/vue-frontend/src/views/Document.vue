@@ -4,7 +4,7 @@ import { ref, reactive, onMounted, computed } from "vue";
 import UploadForm from "@/components/form/UploadForm.vue"; // フォームコンポーネント
 import ConfimDialogView from "@/components/common/ConfimDialog.vue"; // 確認ダイアログ
 import PdfPreview from "@/components/ui/PdfPreview.vue"; // PDFプレビュー
-import { useUserStore } from "@/store/userStore";
+import { useEmployeeStore } from "@/store/employeeStore";
 import { ERole } from "@/constants/role";
 import {
   getDocuments,
@@ -15,8 +15,9 @@ import {
 import { IDocument } from "@/types/type"; // 型定義
 import { useI18n } from "vue-i18n";
 import { toast } from "vue3-toastify"; // トースト通知
+import { shortenFileName } from "@/utils/stringUtils";
 const { t } = useI18n();
-const userStore = useUserStore(); // ユーザーストア
+const employeeStore = useEmployeeStore(); // ユーザーストア
 const applyFrom = ref(false); // フォーム表示
 const isDialogVisible = ref(false); // 確認ダイアログ表示
 const documents = ref<IDocument[]>([]); // 動的データ
@@ -26,8 +27,8 @@ const isPreviewDialogVisible = ref(false); // プレビューダイアログ表�
 const pdfUrl = ref<string>(""); // PDFファイルURL
 const isLoading = ref(false); // ローディング
 const isError = ref(false); // エラープラグ
-const userRoles = computed(() => userStore.roles || []);
-const isUser = computed(() => userStore.id); // ユーザーかどうかの判定
+const employeeRoles = computed(() => employeeStore.roles || []);
+const isEmployee = computed(() => employeeStore.id); // ユーザーかどうかの判定
 // // テーブル　ヘッダー
 const headers = reactive([
   { title: t("number"), key: "number" },
@@ -45,8 +46,8 @@ const fetchDocuments = async () => {
     let response;
     // ユーザーのロールに基づいて API 呼び出しを変更
     if (
-      userRoles.value.includes(ERole.MANAGER) ||
-      userRoles.value.includes(ERole.ADMIN)
+      employeeRoles.value.includes(ERole.MANAGER) ||
+      employeeRoles.value.includes(ERole.ADMIN)
     ) {
       // 管理者 または 担当者の場合は全ての書類を取得
       response = await getDocuments();
@@ -115,7 +116,6 @@ const onDeleted = async () => {
 
 // 初期化時にデータ取得
 onMounted(() => {
-  // userStore.setId(); // 仮のIDを設定
   fetchDocuments();
 });
 </script>
@@ -133,12 +133,12 @@ onMounted(() => {
             <VCardActions>
               <VSpacer />
               <VBtn
-                v-if="userRoles.includes(ERole.MEMBER)"
+                v-if="employeeRoles.includes(ERole.MEMBER)"
                 color="primary"
                 @click="handleCreateItem"
                 variant="elevated"
                 ><v-icon icon="mdi-plus" start></v-icon>{{ t("upload") }}
-                <VDialog v-model="applyFrom" width="auto" eager persistent>
+                <VDialog v-model="applyFrom" width="auto" persistent>
                   <UploadForm
                     @form:cancel="applyFrom = false"
                     @fetch="fetchDocuments"
@@ -161,15 +161,21 @@ onMounted(() => {
               <template v-slot:item.number="{ index }">
                 {{ index + 1 }}
               </template>
+              <template v-slot:item.title="{ item }">
+                <span>{{ shortenFileName(item.title) }}</span>
+              </template>
+              <template v-slot:item.uploadBy="{ item }">
+                <td>{{ shortenFileName(item.uploadBy) }}</td>
+              </template>
               <!-- アクション　設定  -->
               <template v-slot:item.action="{ item }">
                 <div class="action-buttons">
                   <VBtn
                     icon
-                    v-if="userRoles.includes(ERole.MEMBER)"
+                    v-if="employeeRoles.includes(ERole.MEMBER)"
                     variant="plain"
                     class="action-btn"
-                    :disabled="item.userId !== isUser"
+                    :disabled="item.employeeId !== isEmployee"
                     @click="handleDeleteItem(item.id)"
                   >
                     <VIcon color="red">mdi-delete</VIcon>

@@ -8,10 +8,10 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class UserLeaveResponseDTO {
+public class EmployeeLeaveResponseDTO {
 	private Long id;
-	private Long userId;
-    private String userFullName;
+	private Long employeeId;
+    private String employeeFullName;
     private Long leaveTypeId;  
     private String leaveTypeName;
     private String leaveTypeValue;
