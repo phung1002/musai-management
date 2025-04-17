@@ -2,16 +2,12 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import { handleLogout } from "@/api/auth";
 const { t } = useI18n();
 const router = useRouter();
 const backHome = () => {
   router.push({
     path: "/calendar",
-  });
-};
-const backLogin = () => {
-  router.push({
-    path: "/login",
   });
 };
 </script>
@@ -23,7 +19,7 @@ const backLogin = () => {
       <h2>{{ t("message.page_not_found") }}</h2>
       <p>{{ t("message.page_not_found_description") }}</p>
       <VBtn @click="backHome()" class="mr-4 mb-2">{{ t("back_home") }}</VBtn>
-      <VBtn @click="backLogin()" class="mb-2">{{ t("back_login") }}</VBtn>
+      <VBtn @click="handleLogout()" class="mb-2">{{ t("back_login") }}</VBtn>
     </div>
   </div>
 </template>

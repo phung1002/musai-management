@@ -143,9 +143,7 @@ onMounted(() => {
   fetchLeaveType();
 });
 // validate and call api
-const submiting = ref(false);
 const handleSubmit = async () => {
-  submiting.value = true;
   if (!props.isEdit) {
     // create
     try {
@@ -170,8 +168,6 @@ const handleSubmit = async () => {
     } catch (error: any) {
       toast.error(t(error.message));
       return;
-    } finally {
-      submiting.value = false;
     }
   }
 };
@@ -199,7 +195,7 @@ const onConfirm = async () => {
       }
     }
   }
-  if (halfDayId == paidBox.value) {
+  if (halfDayId == paidBox.value || props.application?.leaveTypeValue == ELeaveType.HALF_DAY) {
     if (formModel.value.startDate != formModel.value.endDate) {
       toast.error(t("error.half_day_date_must_match"));
       return;

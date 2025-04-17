@@ -63,6 +63,7 @@ const fetchEmployees = async (searchQuery: string = "") => {
     loadEmployee(response);
   } catch (error) {
     isError.value = true;
+    toast.error(t("message.unauthorized_description"));
   } finally {
     isLoading.value = false;
   }

@@ -7,6 +7,7 @@ import { VTab } from "vuetify/lib/components/index.mjs";
 import { IEmployeeLeaves } from "@/types/type";
 import { getEmployeeLeaves } from "@/api/employeeLeave";
 import { shortenFileName } from "@/utils/stringUtils";
+import { toast } from "vue3-toastify";
 const { t } = useI18n();
 const keyWord = ref("");
 const addFrom = ref(false); // 追加プラグ
@@ -59,7 +60,7 @@ const fetchLeaveType = async (searchQuery: string = "") => {
     loadLeave(response); // リスト更新
   } catch (error) {
     isError.value = true;
-    console.error("Error fetching leaves:", error);
+    toast.error(t("message.unauthorized_description"));
   } finally {
     isLoading.value = false;
   }

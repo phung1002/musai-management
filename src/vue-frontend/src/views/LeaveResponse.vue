@@ -44,7 +44,7 @@ const fetchLeaveType = async (searchQuery: string = "") => {
     loadLeave(response); // リスト更新
   } catch (error) {
     isError.value = true;
-    console.error("Error fetching leaves:", error);
+    toast.error(t("message.unauthorized_description"));
   } finally {
     isLoading.value = false;
   }

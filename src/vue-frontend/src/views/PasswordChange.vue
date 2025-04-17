@@ -6,9 +6,9 @@ import { IPasswordChange } from "@/types/type";
 import ConfimDialogView from "@/components/common/ConfimDialog.vue";
 import { changePassword } from "@/api/employee"; // API追加
 import { useValidator } from "@/utils/validation";
-import { formRules } from "@/configs/EmployeeFormConfig";
 import { toast } from "vue3-toastify";
 import { handleLogout } from "@/api/auth";
+import type { VForm } from "vuetify/lib/components/index.mjs";
 const { t } = useI18n();
 const validator = useValidator(t);
 // formModel を IPasswordChange 型として一元管理
@@ -17,23 +17,24 @@ const formModel = reactive<IPasswordChange>({
   newPassword: "",
   confirmPassword: "",
 });
-const formRulesConfig = formRules(validator, true); // 編集モードの場合
+// const formRulesConfig = formRules(validator, true); // 編集モードの場合
 const formValid = ref(false);
-// const formRef = ref<VForm | null>(null);
-// フォームデータ
-const currentPassword = ref("");
-const newPassword = ref("");
-const confirmPassword = ref("");
+const formRef = ref<InstanceType<typeof VForm> | null>(null);
 
 // ローディング状態 & メッセージ
 const loading = ref(false);
 const isDialogVisible = ref(false);
-
+const showCurrent = ref(false);
+const showNew = ref(false);
+const showConfirm = ref(false);
 // 入力初期化
-const handleResetFilter = () => {
-  currentPassword.value = "";
-  newPassword.value = "";
-  confirmPassword.value = "";
+const resetForm = () => {
+  if (formRef.value?.resetValidation) {
+    formRef.value.resetValidation();
+  }
+  formModel.currentPassword = "";
+  formModel.newPassword = "";
+  formModel.confirmPassword = "";
 };
 
 // 登録処理
@@ -54,7 +55,7 @@ const onSubmit = async () => {
       newPassword: formModel.newPassword,
     });
     toast.success(t("message.add_success"));
-    handleResetFilter();
+    resetForm();
     handleLogout();
   } catch (error: any) {
     toast.error(t(error.message));
@@ -83,20 +84,32 @@ const onSubmit = async () => {
                 <VCol cols="12" md="6">
                   <VTextField
                     v-model="formModel.currentPassword"
-                    :rules="[validator.required]"
+                    :rules="[
+                      validator.required,
+                      validator.checkLength(6, 20),
+                      validator.validPasswordFormat,
+                    ]"
                     id="current-currentPassword"
                     :placeholder="t('current_password')"
-                    type="password"
+                    :type="showCurrent ? 'text' : 'password'"
+                    :append-inner-icon="showCurrent ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append-inner="showCurrent = !showCurrent"
                   />
                 </VCol>
-                <VCol cols="12" md="6"> </VCol>
+                <VCol cols="12" md="6" class="d-none d-md-flex"> </VCol>
                 <VCol cols="12" md="6">
                   <VTextField
                     v-model="formModel.newPassword"
                     id="new-password"
                     :placeholder="t('new_password')"
-                    :rules="formRulesConfig.password"
-                    type="password"
+                    :rules="[
+                      validator.required,
+                      validator.checkLength(6, 20),
+                      validator.validPasswordFormat,
+                    ]"
+                    :type="showNew ? 'text' : 'password'"
+                    :append-inner-icon="showNew ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append-inner="showNew = !showNew"
                   />
                 </VCol>
                 <VCol cols="12" md="6">
@@ -105,7 +118,9 @@ const onSubmit = async () => {
                     id="confirm-password"
                     :placeholder="t('new_password_confirm')"
                     :rules="[validator.checkEqual(formModel.newPassword)]"
-                    type="password"
+                    :type="showConfirm ? 'text' : 'password'"
+                    :append-inner-icon="showConfirm ? 'mdi-eye-off' : 'mdi-eye'"
+                    @click:append-inner="showConfirm = !showConfirm"
                   />
                 </VCol>
               </VRow>
@@ -119,7 +134,7 @@ const onSubmit = async () => {
               @click="handleSubmit(formValid)"
               >{{ t("change_password") }}</VBtn
             >
-            <VBtn type="reset" variant="tonal" @click="handleResetFilter">
+            <VBtn type="reset" variant="tonal" @click="resetForm">
               {{ t("reset") }}
             </VBtn>
           </VCardActions>

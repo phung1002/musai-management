@@ -83,6 +83,7 @@ const fetchLeaveRequests = async (searchQuery: string = "") => {
     }));
   } catch (error) {
     isError.value = true;
+    toast.error(t("message.unauthorized_description"));
   } finally {
     isLoading.value = false;
   }
@@ -256,7 +257,7 @@ const getStatusColor = (status: string) => {
       :application="selectedRequest"
       @form:cancel="isDialogVisible = false"
       @refetch-data="fetchLeaveRequests"
-      @refetch-userleave="loadEmployeeLeave"
+      @refetch-employeeleave="loadEmployeeLeave"
     />
   </VDialog>
   <VDialog v-model="isConfirmDialogVisible" width="auto" persistent>

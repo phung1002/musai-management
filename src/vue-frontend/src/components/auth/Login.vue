@@ -114,3 +114,8 @@ export default {
     </div>
   </div>
 </template>
+<style scoped>
+::v-deep(.v-field__overlay) {
+  background-color: rgb(232, 240, 254) !important;
+}
+</style>

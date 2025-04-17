@@ -12,7 +12,7 @@ const fullName = computed(() => employeeStore.fullName);
   <!------Header-------->
   <VAppBar :elevation="10">
     <VSpacer />
-    <VCardTitle>{{ shortenFileName(fullName) }}</VCardTitle>
+    <VCardTitle>{{ fullName }}</VCardTitle>
     <ProfileDropdown />
   </VAppBar>
 </template>

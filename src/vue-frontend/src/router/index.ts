@@ -29,87 +29,89 @@ const publicRoutes = [
   },
 ];
 
-const routes = {
-  path: "/",
-  name: "home",
-  meta: {
-    requiresAuth: true,
+const privateRoutes = [
+  {
+    path: "/",
+    name: "home",
+    meta: {
+      requiresAuth: true,
+    },
+    redirect: "/calendar",
+    component: DefaultLayoutVue,
+    children: [
+      // Admin routes
+      {
+        path: "/admin/employees",
+        name: "admin-employee-list",
+        component: EmployeeVue,
+        meta: {
+          requiresAuth: true,
+          requiredRoles: [ERole.ADMIN],
+        },
+      },
+      {
+        path: "/admin/leave-management",
+        name: "admin-leave-management",
+        component: LeaveType,
+        meta: {
+          requiresAuth: true,
+          requiredRoles: [ERole.ADMIN],
+        },
+      },
+      {
+        path: "/manager/employee-leave-management",
+        name: "manager-employee-leave-management",
+        component: EmployeeManagementVue,
+        meta: {
+          requiresAuth: true,
+          requiredRoles: [ERole.MANAGER],
+        },
+      },
+      {
+        path: "/manager/request-confirm",
+        name: "manager-request-confirm",
+        component: RequestConfirmViewVue,
+        meta: {
+          requiresAuth: true,
+          requiredRoles: [ERole.MANAGER],
+        },
+      },
+      {
+        path: "/member/leave-applications",
+        name: "member-leave-applications",
+        component: LeaveRequestVue,
+        meta: {
+          requiresAuth: true,
+          requiredRoles: [ERole.MEMBER],
+        },
+      },
+      {
+        path: "/calendar",
+        name: "calendar",
+        component: CalendarVue,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "/document",
+        name: "document",
+        component: DocumentVue,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+      {
+        path: "/change-password",
+        name: "change-password",
+        component: PasswordChangeVue,
+        meta: {
+          requiresAuth: true,
+        },
+      },
+    ],
   },
-  redirect: "/calendar",
-  component: DefaultLayoutVue,
-  children: [
-    // Admin routes
-    {
-      path: "/admin/employees",
-      name: "admin-employee-list",
-      component: EmployeeVue,
-      meta: {
-        requiresAuth: true,
-        requiredRoles: [ERole.ADMIN],
-      },
-    },
-    {
-      path: "/admin/leave-management",
-      name: "admin-leave-management",
-      component: LeaveType,
-      meta: {
-        requiresAuth: true,
-        requiredRoles: [ERole.ADMIN],
-      },
-    },
-    {
-      path: "/manager/employee-leave-management",
-      name: "manager-employee-leave-management",
-      component: EmployeeManagementVue,
-      meta: {
-        requiresAuth: true,
-        requiredRoles: [ERole.MANAGER],
-      },
-    },
-    {
-      path: "/manager/request-confirm",
-      name: "manager-request-confirm",
-      component: RequestConfirmViewVue,
-      meta: {
-        requiresAuth: true,
-        requiredRoles: [ERole.MANAGER],
-      },
-    },
-    {
-      path: "/member/leave-applications",
-      name: "member-leave-applications",
-      component: LeaveRequestVue,
-      meta: {
-        requiresAuth: true,
-        requiredRoles: [ERole.MEMBER],
-      },
-    },
-    {
-      path: "/calendar",
-      name: "calendar",
-      component: CalendarVue,
-      meta: {
-        requiresAuth: true,
-      },
-    },
-    {
-      path: "/document",
-      name: "document",
-      component: DocumentVue,
-      meta: {
-        requiresAuth: true,
-      },
-    },
-    {
-      path: "/change-password",
-      name: "change-password",
-      component: PasswordChangeVue,
-      meta: {
-        requiresAuth: true,
-      },
-    },
-  ],
-};
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -123,7 +125,7 @@ const router = createRouter({
       path: "/:pathMatch(.*)*",
       component: NotFoundVue,
     },
-    routes,
+    ...privateRoutes,
     ...publicRoutes,
   ],
 });
@@ -139,7 +141,10 @@ const hasRequiredRoles = (employeeRoles, requiredRoles) => {
 router.beforeEach(async (to, from, next) => {
   const employeeStore = useEmployeeStore();
   const isAuthenticated = employeeStore.authenticated;
-
+  // try to direct to /login when is authenticated: redirect to calendar
+  if (isAuthenticated && to.name === "login") {
+    return next({ name: "calendar" });
+  }
   // Check if authentication is required or if authenticated
   if (!to.meta.requiresAuth || isAuthenticated) {
     try {

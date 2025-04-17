@@ -22,13 +22,22 @@ export const useValidator = (t: Function) => ({
     return true;
   },
 
-  halfSize: (value: string) => {
+  halfAlphanumeric: (value: string) => {
     const halfSizeRegex = /^[a-zA-Z0-9]+$/;
     if (!halfSizeRegex.test(value)) {
       return t("validation.half_width_alphanumeric");
     }
     return true;
   },
+  validPasswordFormat: (value: string) => {
+    // 半角記号を含む英数字、かつ各種1つ以上を含むことをチェック
+    const regex = /^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!-/:-@[-`{-~])[a-zA-Z0-9!-/:-@[-`{-~]+$/;
+    if (!regex.test(value)) {
+      return t("validation.password_format");
+    }
+    return true;
+  },
+
   checkNumber: (value: string) => {
     // 数字が4桁かどうかをチェック
     const numberRegex = /^[0-9]{4}$/;
