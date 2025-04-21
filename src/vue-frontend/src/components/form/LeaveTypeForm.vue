@@ -189,7 +189,7 @@ const onConfirmed = async () => {
     <VToolbar tag="div">
       <!-- 新規登録際タイトルの表示 -->
       <VToolbarTitle v-if="!isEdit">
-        <VIcon icon="mdi-lead-pencil" />{{ t("leave_request") }}
+        <VIcon icon="mdi-lead-pencil" />{{ t("create_leave") }}
       </VToolbarTitle>
       <!-- 編集再タイトルの表示 -->
       <VToolbarTitle v-else>

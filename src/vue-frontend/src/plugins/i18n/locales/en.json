@@ -100,6 +100,7 @@
   "account": "account",
   "detail_information": "detail information",
   "leave_name": "leave name",
+  "create_leave": "create leave",
   "update_leave": "update leave",
   "update": "update",
   "parent_id": "parent id",
