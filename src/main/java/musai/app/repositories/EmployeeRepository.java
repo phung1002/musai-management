@@ -14,9 +14,11 @@ import musai.app.models.Employee;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	Optional<Employee> findByEmployeeId(String employeeId);
 
-	Boolean existsByEmployeeId(String employeeId);
-
-	Boolean existsByEmail(String email);
+	@Query(value = "SELECT COUNT(*) FROM employees WHERE employee_id = :empId", nativeQuery = true)
+	Long countByEmployeeIdIgnoreSoftDelete(@Param("empId") String empId);
+	
+	@Query(value = "SELECT COUNT(*) FROM employees WHERE email = :email", nativeQuery = true)
+	Long countByEmailIgnoreSoftDelete(@Param("email") String email);
 
 	@Query("SELECT e FROM Employee e WHERE e.deletedAt IS NULL "
 			+ "AND LOWER(e.employeeId) LIKE LOWER(CONCAT('%', :keyword, '%'))"

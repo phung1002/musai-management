@@ -83,11 +83,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 	 * @return MessageResponse add success/fail
 	 */
 	public MessageResponse createEmployee(EmployeeRequestDTO employeeRequestDTO) {
-		if (employeeRepository.existsByEmployeeId(employeeRequestDTO.getEmployeeId())) {
+		if (employeeRepository.countByEmployeeIdIgnoreSoftDelete(employeeRequestDTO.getEmployeeId()) > 0) {
 			throw new BadRequestException("employee_id_already_exist");
 		}
 
-		if (employeeRepository.existsByEmail(employeeRequestDTO.getEmail())) {
+		if (employeeRepository.countByEmailIgnoreSoftDelete(employeeRequestDTO.getEmail()) > 0) {
 			throw new BadRequestException("email_already_exists");
 		}
 
@@ -148,12 +148,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 		// Check employee name or email exist (unless belong to current employee)
 		if (!existingUser.getEmployeeId().equals(employeeRequestDTO.getEmployeeId())
-				&& employeeRepository.existsByEmployeeId(employeeRequestDTO.getEmployeeId())) {
+				&& employeeRepository.countByEmployeeIdIgnoreSoftDelete(employeeRequestDTO.getEmployeeId()) > 0) {
 			throw new BadRequestException("employee_id_already_exist");
 		}
 
 		if (!existingUser.getEmail().equals(employeeRequestDTO.getEmail())
-				&& employeeRepository.existsByEmail(employeeRequestDTO.getEmail())) {
+				&& employeeRepository.countByEmailIgnoreSoftDelete(employeeRequestDTO.getEmail()) >0 ) {
 			throw new BadRequestException("email_already_exists");
 		}
 
