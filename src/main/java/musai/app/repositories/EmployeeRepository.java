@@ -28,4 +28,13 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 			+ "OR LOWER(e.mobile) LIKE CONCAT('%', :keyword, '%')")
 	List<Employee> findActiveByKeyContaining(@Param("keyword") String keyword);
 
+	@Query("SELECT e FROM Employee e JOIN e.roles r WHERE e.deletedAt IS NULL "
+			+ "AND r.name = 'MEMBER' "
+			+ "AND (LOWER(e.employeeId) LIKE LOWER(CONCAT('%', :keyword, '%'))"
+			+ "OR LOWER(e.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+	List<Employee> findMemberActiveByKeyContaining(@Param("keyword") String keyword);
+	
+	@Query("SELECT e FROM Employee e JOIN e.roles r WHERE e.deletedAt IS NULL AND r.name = 'MEMBER'")
+	List<Employee> findByRoleMember();
+
 }

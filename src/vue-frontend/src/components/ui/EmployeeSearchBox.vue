@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { getAllEmployees } from "@/api/employee";
+import { getAllMembers } from "@/api/employee";
 import { IEmployee } from "@/types/type";
 const { t } = useI18n();
 
@@ -37,7 +37,7 @@ const fetchEmployees = async (searchQuery: string = "") => {
   isError.value = false;
   try {
     // 検索キーワードが空でも呼び出せる
-    const response = await getAllEmployees(searchQuery);
+    const response = await getAllMembers(searchQuery);
     loadEmployee(response);
   } catch (error) {
     isError.value = true;

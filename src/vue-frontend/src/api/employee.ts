@@ -1,7 +1,7 @@
 import { IEmployee } from "@/types/type";
 import axiosIns from "@/plugins/axios";
 
-// call to api create employee
+// call to api list employee
 export async function getAllEmployees(key: string): Promise<IEmployee[]> {
   try {
     const response = await axiosIns.get<IEmployee[]>("/employees", {
@@ -14,6 +14,17 @@ export async function getAllEmployees(key: string): Promise<IEmployee[]> {
   }
 }
 
+export async function getAllMembers(key: string): Promise<IEmployee[]> {
+  try {
+    const response = await axiosIns.get<IEmployee[]>("/employees/list-member", {
+      params: { keyword: key },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("List employee failed:", error);
+    throw error;
+  }
+}
 // call to api create employee
 export async function createEmployee(params: IEmployee): Promise<void> {
   try {

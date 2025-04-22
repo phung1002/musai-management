@@ -47,15 +47,25 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public List<EmployeeResponseDTO> getEmployees(String keyword) {
 		List<Employee> employees = StringUtils.hasText(keyword) ? employeeRepository.findActiveByKeyContaining(keyword)
 				: employeeRepository.findAll();
-
-		// If the list is empty, return an empty list
 		if (employees.isEmpty()) {
 			return Collections.emptyList();
 		}
-
-		// Map each User entity to UserResponseDTO using the convertToDTO method
 		return employees.stream().map(this::convertToDTO) // Convert each employee to DTO
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Service get all members
+	 */
+	@Override
+	public List<EmployeeResponseDTO> getMembers(String keyword) {
+		List<Employee> employees = StringUtils.hasText(keyword)
+				? employeeRepository.findMemberActiveByKeyContaining(keyword)
+				: employeeRepository.findByRoleMember();
+		if (employees.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return employees.stream().map(this::convertToDTO).collect(Collectors.toList());
 	}
 
 	private EmployeeResponseDTO convertToDTO(Employee employee) {

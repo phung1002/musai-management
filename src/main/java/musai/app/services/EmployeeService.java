@@ -11,6 +11,8 @@ import musai.app.security.services.UserDetailsImpl;
 public interface EmployeeService {
 	List<EmployeeResponseDTO> getEmployees(String keyword);
 
+	List<EmployeeResponseDTO> getMembers(String keyword);
+
 	MessageResponse createEmployee(EmployeeRequestDTO employeeRequestDTO);
 
 	MessageResponse updateEmployee(Long employeeId, EmployeeRequestDTO employeeRequestDTO, UserDetailsImpl principal);

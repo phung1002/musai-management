@@ -39,6 +39,14 @@ public class EmployeeController {
 		return ResponseEntity.ok(response);
 	}
 
+	// API get all members
+	@PreAuthorize("hasRole('MANAGER')")
+	@GetMapping("/list-member")
+	public ResponseEntity<?> listMembers(@RequestParam String keyword) {
+		List<EmployeeResponseDTO> response = employeeService.getMembers(keyword);
+		return ResponseEntity.ok(response);
+	}
+	
 	// API create
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
