@@ -179,7 +179,8 @@
     "name_already_taken": "この名前は既に使用されています。",
     "cannot_delete_employee_have_request": "この社員には未処理の休暇申請があります。",
     "cannot_delete_employee_have_leave": "この社員には割り当てられた休暇があります。",
-    "exceeded_leave_days_limit":"社員は既に有効休暇日数を超える日数を使用している。"
+    "exceeded_leave_days_limit":"社員は既に有効休暇日数を超える日数を使用している。",
+    "auth_required_login_message": "認証が必要です。再ログインしてください。"
   },
   "validation": {
     "required_input": "このフィールドは必須です。",

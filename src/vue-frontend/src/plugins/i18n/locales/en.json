@@ -179,7 +179,9 @@
     "name_already_taken": "This name is already taken.",
     "cannot_delete_employee_have_request": "This employee has active leave requests.",
     "cannot_delete_employee_have_leave": "This employee has assigned leave types.",
-    "exceeded_leave_days_limit":" The employee has used more days than the available paid leave balance."
+    "exceeded_leave_days_limit":" The employee has used more days than the available paid leave balance.",
+    "auth_required_login_message": "Authentication is required. Please log in again."
+
   },
   "validation": {
     "required_input": "this field is required",
