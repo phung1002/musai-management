@@ -22,18 +22,18 @@ export async function getDocuments(): Promise<IDocument[]> {
   try {
     const response = await axiosIns.get<IDocument[]>("/documents/all");
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     console.error("List documents failed:", error);
-    throw error;
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 export async function getDocumentsOfMember(): Promise<IDocument[]> {
   try {
     let response = await axiosIns.get<IDocument[]>(`/documents`);
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     console.error("List documents failed:", error);
-    throw error;
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 // ドキュメント削除API呼び出し

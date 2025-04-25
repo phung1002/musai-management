@@ -42,9 +42,9 @@ const fetchLeaveType = async (searchQuery: string = "") => {
     // 検索キーワードが空でも呼び出せる
     const response = await allLeaveRequests(searchQuery); // API呼び出
     loadLeave(response); // リスト更新
-  } catch (error) {
+  } catch (error:any) {
     isError.value = true;
-    toast.error(t("message.unauthorized_description"));
+    toast.error(t(error.message));
   } finally {
     isLoading.value = false;
   }

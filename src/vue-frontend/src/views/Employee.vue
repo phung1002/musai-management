@@ -61,9 +61,9 @@ const fetchEmployees = async (searchQuery: string = "") => {
     // 検索キーワードが空でも呼び出せる
     const response = await getAllEmployees(searchQuery);
     loadEmployee(response);
-  } catch (error) {
+  } catch (error:any) {
     isError.value = true;
-    toast.error(t("message.unauthorized_description"));
+    toast.error(t(error.message));
   } finally {
     isLoading.value = false;
   }

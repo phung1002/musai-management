@@ -13,18 +13,18 @@ export async function getEmployeeLeaves(
       }
     );
     return response.data;
-  } catch (error) {
+  } catch (error : any) {
     console.error("List leave of employee failed:", error);
-    throw error;
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 export async function getEmployeeLeavesForMember(): Promise<IEmployeeLeaves[]> {
   try {
     const response = await axiosIns.get<IEmployeeLeaves[]>("/employee-leaves");
     return response.data;
-  } catch (error) {
+  } catch (error : any) {
     console.error("List leave of employee failed:", error);
-    throw error;
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 // 休社員休暇更新API呼び出し

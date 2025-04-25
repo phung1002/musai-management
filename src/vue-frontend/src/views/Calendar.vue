@@ -5,6 +5,9 @@ import { ref, onMounted } from "vue";
 import { IEvent } from "@/types/type";
 import { fetchApprovedLeaveRequests } from "@/api/response";
 import { ELeaveType } from "@/constants/leaveType";
+import { toast } from "vue3-toastify";
+import { useI18n } from "vue-i18n";
+const { t } = useI18n();
 
 // イベントリストを格納するためのrefを定義
 const events = ref<IEvent[]>([]);
@@ -17,36 +20,40 @@ const getRandomColor = () => {
 
 // イベントデータを取得する非同期関数
 const fetchEvents = async () => {
-  const response = await fetchApprovedLeaveRequests(); // 承認された休暇リクエストを取得
-  const tempEvents: IEvent[] = []; // 一時的にイベントデータを格納する配列
+  try {
+    const response = await fetchApprovedLeaveRequests(); // 承認された休暇リクエストを取得
+    const tempEvents: IEvent[] = []; // 一時的にイベントデータを格納する配列
 
-  response.forEach((item) => {
-    const allDay = item.leaveTypeValue == ELeaveType.HALF_DAY ? false : true; // 半日休暇の場合は終日フラグをfalseに設定
-    let currentDate = new Date(item.startDate); // 休暇開始日をcurrentDateに設定
-    const endDate = new Date(item.endDate); // 休暇終了日をendDateに設定
-    const eventColor = getRandomColor(); // ランダムな色を生成
+    response.forEach((item) => {
+      const allDay = item.leaveTypeValue == ELeaveType.HALF_DAY ? false : true; // 半日休暇の場合は終日フラグをfalseに設定
+      let currentDate = new Date(item.startDate); // 休暇開始日をcurrentDateに設定
+      const endDate = new Date(item.endDate); // 休暇終了日をendDateに設定
+      const eventColor = getRandomColor(); // ランダムな色を生成
 
-    // 休暇期間内の日付を1日ずつ処理
-    while (currentDate <= endDate) {
-      const dayOfWeek = currentDate.getDay(); // 現在の日付が週の何日かを取得
+      // 休暇期間内の日付を1日ずつ処理
+      while (currentDate <= endDate) {
+        const dayOfWeek = currentDate.getDay(); // 現在の日付が週の何日かを取得
 
-      // 土日（0:日曜日、6:土曜日）はスキップ
-      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-        // イベントをtempEventsに追加
-        tempEvents.push({
-          title: item.employeeFullName,
-          start: new Date(currentDate),
-          end: new Date(currentDate),
-          color: eventColor,
-          allDay: allDay,
-        });
+        // 土日（0:日曜日、6:土曜日）はスキップ
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+          // イベントをtempEventsに追加
+          tempEvents.push({
+            title: item.employeeFullName,
+            start: new Date(currentDate),
+            end: new Date(currentDate),
+            color: eventColor,
+            allDay: allDay,
+          });
+        }
+
+        // 次の日に進める
+        currentDate.setDate(currentDate.getDate() + 1);
       }
-
-      // 次の日に進める
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-  });
-  events.value = tempEvents; // イベントリストに取得したイベントをセット
+    });
+    events.value = tempEvents; // イベントリストに取得したイベントをセット
+  } catch (error: any) {
+    toast.error(t(error.message));
+  }
 };
 
 // 指定された範囲内でランダムな数字を生成する関数

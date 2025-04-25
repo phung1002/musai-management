@@ -81,10 +81,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		String jwt = jwtUtils.getJwtFromCookies(request);
 
 		if (jwt == null) {
-		    throw new BadRequestException("Token not found.");
+		    throw new BadRequestException("auth_required_login_message");
 		}
 		if (!jwtUtils.isTokenExpired(jwt)) {
-		    throw new BadRequestException("Token has expired.");
+		    throw new BadRequestException("auth_required_login_message");
 		}
 		if (!jwtUtils.validateJwtToken(jwt)) {
 		    throw new BadRequestException("Invalid token.");
