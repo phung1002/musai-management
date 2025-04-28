@@ -66,6 +66,7 @@ const loadEmployeeLeave = async () => {
       ({ leaveTypeName, remainedDays, validTo }) => ({
         leaveTypeName,
         remainedDays,
+        validFrom,
         validTo,
       })
     );
@@ -81,9 +82,9 @@ const fetchLeaveRequests = async (searchQuery: string = "") => {
     leaveRequests.value = response.map((leaveRequestList: ILeaveRequest) => ({
       ...leaveRequestList,
     }));
-  } catch (error) {
+  } catch (error:any) {
     isError.value = true;
-    toast.error(t("message.unauthorized_description"));
+    toast.error(t(error.message));
   } finally {
     isLoading.value = false;
   }

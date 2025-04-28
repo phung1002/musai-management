@@ -58,9 +58,9 @@ const fetchLeaveType = async (searchQuery: string = "") => {
   try {
     const response = await getEmployeeLeaves(searchQuery); // API呼び出
     loadLeave(response); // リスト更新
-  } catch (error) {
+  } catch (error:any) {
     isError.value = true;
-    toast.error(t("message.unauthorized_description"));
+    toast.error(t(error.message));
   } finally {
     isLoading.value = false;
   }

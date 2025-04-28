@@ -8,9 +8,9 @@ export async function getAllEmployees(key: string): Promise<IEmployee[]> {
       params: { keyword: key },
     });
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     console.error("List employee failed:", error);
-    throw error;
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 
@@ -20,9 +20,9 @@ export async function getAllMembers(key: string): Promise<IEmployee[]> {
       params: { keyword: key },
     });
     return response.data;
-  } catch (error) {
+  } catch (error:any) {
     console.error("List employee failed:", error);
-    throw error;
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 // call to api create employee

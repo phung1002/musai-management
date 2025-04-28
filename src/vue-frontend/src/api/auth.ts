@@ -17,7 +17,7 @@ export async function login(params: LoginParams): Promise<void> {
   } catch (error: any) {
     // エラーが発生した場合、エラーメッセージを表示
     console.error("Login failed:", error.response?.data || error);
-    throw error;
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 
@@ -71,10 +71,10 @@ export async function validate() {
     // トークン検証APIを呼び出し、成功した場合はレスポンスを返す
     const response = await axiosIns.get("/auth/validate");
     return response;
-  } catch (error) {
+  } catch (error : any) {
     // エラーが発生した場合、エラーメッセージを表示
     console.error("Token validation failed:", error);
-    throw error;
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }
 
@@ -104,9 +104,9 @@ export async function profile() {
     // プロフィールAPIを呼び出し、成功した場合はデータを返す
     const response = await axiosIns.get("/auth/profile");
     return response.data;
-  } catch (error) {
+  } catch (error :any) {
     // エラーが発生した場合、エラーメッセージを表示
     console.error("Failed to fetch profile:", error);
-    throw error;
+    throw new Error("error." + (error.response?.data?.message ?? "unexpected"));
   }
 }

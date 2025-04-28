@@ -66,8 +66,9 @@ const fetchDocuments = async () => {
       }
       return doc;
     });
-  } catch (error) {
+  } catch (error:any) {
     isError.value = true;
+    toast.error(t(error.message));
   } finally {
     isLoading.value = false;
   }
