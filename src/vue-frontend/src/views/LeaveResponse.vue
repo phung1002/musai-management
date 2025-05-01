@@ -119,7 +119,7 @@ onMounted(() => {
               {{ t("request_confirm") }}
             </VToolbarTitle>
           </VToolbar>
-          <VDivider />
+          <VDivider/>
           <!-- 検索バー -->
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>
@@ -139,9 +139,8 @@ onMounted(() => {
               </VBtn>
             </VToolbar>
           </VCardItem>
-          <VDivider />
           <!-- 申請情報　表示 -->
-          <VCardItem>
+          <VCardItem class="pt-0">
             <VDataTable
               :items-per-page-text="t('items_per_page')"
               :headers="headers"
@@ -241,5 +240,9 @@ onMounted(() => {
 
 .action-btn:hover {
   background-color: #ebf5f8;
+}
+
+::v-deep(thead) {
+  background-color: rgba(0, 86, 247, 0.2) !important;
 }
 </style>

@@ -58,7 +58,7 @@ const fetchLeaveType = async (searchQuery: string = "") => {
   try {
     const response = await getEmployeeLeaves(searchQuery); // API呼び出
     loadLeave(response); // リスト更新
-  } catch (error:any) {
+  } catch (error: any) {
     isError.value = true;
     toast.error(t(error.message));
   } finally {
@@ -136,16 +136,15 @@ onMounted(() => {
           <VDivider />
           <!-- 休暇タイプタブ設定 -->
           <VTable>
-            <VTabs v-model="selectedTab" color="primary">
-              <VTab v-for="tab in tabs" :key="tab.title" :value="tab.title">
-                <!-- <VIcon size="20" start :icon="item.icon" /> -->
-                <v-icon>{{ tab.icon }}</v-icon>
-                {{ tab.tab }}
-              </VTab>
-            </VTabs>
             <VCardItem>
-              <VDivider />
-              <VWindow v-model="activeTab">
+              <VTabs v-model="selectedTab" color="primary">
+                <VTab v-for="tab in tabs" :key="tab.title" :value="tab.title">
+                  <!-- <VIcon size="20" start :icon="item.icon" /> -->
+                  <v-icon>{{ tab.icon }}</v-icon>
+                  {{ tab.tab }}
+                </VTab>
+              </VTabs>
+              <VWindow v-model="activeTab" >
                 <VWindowItem value="paid"></VWindowItem>
                 <VWindowItem value="public"></VWindowItem>
                 <VDataTable
@@ -227,5 +226,9 @@ onMounted(() => {
 
 .action-btn:hover {
   background-color: #f5f5f5;
+}
+
+::v-deep(thead) {
+  background-color: rgba(0, 86, 247, 0.2) !important;
 }
 </style>

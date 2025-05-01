@@ -145,6 +145,7 @@ onMounted(() => {
               </VBtn>
             </VCardActions>
           </VToolbar>
+          <VDivider/>
           <!-- Search -->
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>
@@ -164,15 +165,15 @@ onMounted(() => {
               </VBtn>
             </VToolbar>
           </VCardItem>
-          <VDivider />
           <!--Table list employee -->
-          <VCardItem>
+          <VCardItem class="pt-0">
             <VDataTable
               :headers="headers"
               :items="employees"
               :items-per-page-text="t('items_per_page')"
               :no-data-text="t('no_records_found')"
               v-if="!isLoading && !isError"
+              class="data-table"
             >
               <!-- Slot for 'no'  -->
               <template v-slot:item.number="{ index }">
@@ -290,5 +291,8 @@ onMounted(() => {
 
 .action-btn:hover {
   background-color: #f5f5f5;
+}
+::v-deep(thead) {
+  background-color: rgba(0, 86, 247, 0.2) !important;
 }
 </style>

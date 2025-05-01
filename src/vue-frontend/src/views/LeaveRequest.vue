@@ -173,6 +173,7 @@ const getStatusColor = (status: string) => {
               </VBtn>
             </VCardActions>
           </VToolbar>
+          <VDivider/>
           <!-- 検索バー -->
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>
@@ -193,9 +194,8 @@ const getStatusColor = (status: string) => {
               </VBtn>
             </VToolbar>
           </VCardItem>
-          <VDivider />
           <!-- 申請情報　表示 -->
-          <VCardItem>
+          <VCardItem class="pt-0">
             <VDataTable
               :headers="headers"
               :items="leaveRequests"
@@ -299,5 +299,9 @@ const getStatusColor = (status: string) => {
 
 .action-btn:hover {
   background-color: #f5f5f5;
+}
+
+::v-deep(thead) {
+  background-color: rgba(0, 86, 247, 0.2) !important;
 }
 </style>

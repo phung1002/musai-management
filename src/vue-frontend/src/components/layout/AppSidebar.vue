@@ -111,29 +111,12 @@ const items = [
     roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN],
   },
 ];
-
-const drawerProps = reactive({
-  rail: false,
-  railWidth: 256,
-  icon: "mdi-arrow-left",
-});
-
-const handleDrawerWidth = () => {
-  const rail = drawerProps.rail;
-  const railWidth = drawerProps.railWidth;
-  drawerProps.rail = !rail;
-  drawerProps.railWidth = railWidth == 64 ? 256 : 64;
-  drawerProps.icon =
-    drawerProps.railWidth === 256
-      ? "mdi-arrow-expand-left  "
-      : "mdi-arrow-expand-right";
-};
 </script>
 
 <template>
   <VNavigationDrawer
-    :rail-width="drawerProps.railWidth"
-    :rail="drawerProps.rail"
+    rail-width="256"
+    :rail="false"
     :border="true"
     :elevation="1"
   >
@@ -156,9 +139,8 @@ const handleDrawerWidth = () => {
       rounded="lg"
       color="white"
       size="x-small"
-      :icon="drawerProps.icon"
-      @click="handleDrawerWidth"
-      :style="{ left: drawerProps.railWidth - 12 + 'px' }"
+      icon="mdi-arrow-left"
+      :style="{ left: '244px' }"
     />
   </VNavigationDrawer>
 </template>

@@ -245,4 +245,8 @@ onMounted(() => {
 .action-btn:hover {
   background-color: #f5f5f5;
 }
+
+::v-deep(thead) {
+  background-color: rgba(0, 86, 247, 0.2) !important;
+}
 </style>
