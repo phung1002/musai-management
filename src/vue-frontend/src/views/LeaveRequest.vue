@@ -45,19 +45,19 @@ const openUpdateDialog = (application: ILeaveRequest) => {
   selectedRequest.value = application;
 };
 const headersUserLeave = ref([
-  { title: t("leave_type"), key: "leaveTypeName" },
-  { title: t("available_leaves"), key: "remainedDays" },
-  { title: t("leave_expired"), key: "validTo" },
+  { title: t("leave_type"), key: "leaveTypeName", sortable: false },
+  { title: t("available_leaves"), key: "remainedDays", sortable: false },
+  { title: t("leave_expired"), key: "validTo", sortable: false },
 ]);
 // テーブル　ヘッダー
 const headers = reactive([
-  { title: t("number"), key: "number" },
+  { title: t("number"), key: "number", sortable: false },
   { title: t("leave_type"), key: "leaveTypeName" },
   { title: t("leave_duration_from"), key: "startDate" },
   { title: t("leave_duration_to"), key: "endDate" },
   { title: t("leave_reason"), key: "reason" },
   { title: t("status"), key: "status" },
-  { title: t("action"), key: "action" },
+  { title: t("action"), key: "action", sortable: false },
 ]);
 const loadEmployeeLeave = async () => {
   try {
@@ -66,7 +66,6 @@ const loadEmployeeLeave = async () => {
       ({ leaveTypeName, remainedDays, validTo }) => ({
         leaveTypeName,
         remainedDays,
-        validFrom,
         validTo,
       })
     );
@@ -174,6 +173,7 @@ const getStatusColor = (status: string) => {
               </VBtn>
             </VCardActions>
           </VToolbar>
+          <VDivider/>
           <!-- 検索バー -->
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>
@@ -194,14 +194,14 @@ const getStatusColor = (status: string) => {
               </VBtn>
             </VToolbar>
           </VCardItem>
-          <VDivider />
           <!-- 申請情報　表示 -->
-          <VCardItem>
+          <VCardItem class="pt-0">
             <VDataTable
               :headers="headers"
               :items="leaveRequests"
               :items-per-page-text="t('items_per_page')"
               :no-data-text="t('no_records_found')"
+              class="data-table"
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->
@@ -300,5 +300,18 @@ const getStatusColor = (status: string) => {
 
 .action-btn:hover {
   background-color: #f5f5f5;
+}
+
+::v-deep(thead) {
+  background-color: rgba(0, 86, 247, 0.2) !important;
+}
+::v-deep(.data-table table) {
+  min-width: 808px !important;
+}
+::v-deep(.table-leave-of-employee table *){
+  padding-right: 0px !important;
+}
+::v-deep(.table-leave-of-employee table) {
+  min-width: 251px !important;
 }
 </style>

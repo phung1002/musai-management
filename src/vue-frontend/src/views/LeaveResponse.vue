@@ -18,12 +18,12 @@ const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 // // テーブル　ヘッダー
 const headers = reactive([
-  { title: t("number"), key: "number" },
+  { title: t("number"), key: "number", sortable: false },
   { title: t("employee_name"), key: "employeeFullName" },
   { title: t("leave_type"), key: "leaveTypeName" },
   { title: t("submit_date"), key: "createdAt" },
   { title: t("status"), key: "status" },
-  { title: t("action"), key: "action" },
+  { title: t("action"), key: "action", sortable: false },
 ]);
 // 申請リストをロード
 const loadLeave = (lst: any) => {
@@ -119,7 +119,7 @@ onMounted(() => {
               {{ t("request_confirm") }}
             </VToolbarTitle>
           </VToolbar>
-          <VDivider />
+          <VDivider/>
           <!-- 検索バー -->
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>
@@ -139,13 +139,13 @@ onMounted(() => {
               </VBtn>
             </VToolbar>
           </VCardItem>
-          <VDivider />
           <!-- 申請情報　表示 -->
-          <VCardItem>
+          <VCardItem class="pt-0">
             <VDataTable
               :items-per-page-text="t('items_per_page')"
               :headers="headers"
               :items="LeaveRequests"
+              class="data-table"
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->
@@ -241,5 +241,12 @@ onMounted(() => {
 
 .action-btn:hover {
   background-color: #ebf5f8;
+}
+
+::v-deep(thead) {
+  background-color: rgba(0, 86, 247, 0.2) !important;
+}
+::v-deep(.data-table table) {
+  min-width: 711px !important;
 }
 </style>

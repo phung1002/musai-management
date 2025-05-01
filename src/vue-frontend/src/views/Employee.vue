@@ -17,7 +17,7 @@ const { t } = useI18n();
 
 // Headers of table
 const headers = reactive([
-  { title: t("number"), key: "number" },
+  { title: t("number"), key: "number", sortable: false },
   { title: t("employee_name"), key: "fullName" },
   { title: t("employee_id"), key: "employeeId" },
   { title: t("email"), key: "email" },
@@ -25,7 +25,7 @@ const headers = reactive([
   { title: t("role"), key: "roles" },
   // { title: t("department"), key: "department" },
   // { title: t("work_place"), key: "workPlace" },
-  { title: t("action"), key: "action" },
+  { title: t("action"), key: "action", sortable: false },
 ]);
 
 const keyWord = ref("");
@@ -145,6 +145,7 @@ onMounted(() => {
               </VBtn>
             </VCardActions>
           </VToolbar>
+          <VDivider/>
           <!-- Search -->
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>
@@ -164,15 +165,15 @@ onMounted(() => {
               </VBtn>
             </VToolbar>
           </VCardItem>
-          <VDivider />
           <!--Table list employee -->
-          <VCardItem>
+          <VCardItem class="pt-0">
             <VDataTable
               :headers="headers"
               :items="employees"
               :items-per-page-text="t('items_per_page')"
               :no-data-text="t('no_records_found')"
               v-if="!isLoading && !isError"
+              class="data-table"
             >
               <!-- Slot for 'no'  -->
               <template v-slot:item.number="{ index }">
@@ -290,5 +291,16 @@ onMounted(() => {
 
 .action-btn:hover {
   background-color: #f5f5f5;
+}
+::v-deep(thead) {
+  background-color: rgba(0, 86, 247, 0.2) !important;
+}
+.data-table .v-table {
+  overflow-x: auto;
+  display: block;
+}
+
+::v-deep(.data-table table) {
+  min-width: 1014px !important;
 }
 </style>

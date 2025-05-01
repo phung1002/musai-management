@@ -31,11 +31,11 @@ const employeeRoles = computed(() => employeeStore.roles || []);
 const isEmployee = computed(() => employeeStore.id); // ユーザーかどうかの判定
 // // テーブル　ヘッダー
 const headers = reactive([
-  { title: t("number"), key: "number" },
+  { title: t("number"), key: "number", sortable: false },
   { title: t("title"), key: "title" },
   { title: t("submitter"), key: "uploadBy" },
   { title: t("submit_date"), key: "uploadAt" },
-  { title: t("action"), key: "action" },
+  { title: t("action"), key: "action", sortable: false },
 ]);
 // データ取得
 const fetchDocuments = async () => {
@@ -156,6 +156,7 @@ onMounted(() => {
               :items-per-page-text="t('items_per_page')"
               :headers="headers"
               :no-data-text="t('no_records_found')"
+              class="data-table"
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->
@@ -244,5 +245,12 @@ onMounted(() => {
 
 .action-btn:hover {
   background-color: #f5f5f5;
+}
+
+::v-deep(thead) {
+  background-color: rgba(0, 86, 247, 0.2) !important;
+}
+::v-deep(.data-table table) {
+  min-width: 525px !important;
 }
 </style>

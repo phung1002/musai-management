@@ -21,9 +21,9 @@ const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 // テーブル　ヘッダー
 const headers = reactive([
-  { title: t("number"), key: "number" }, // 表示番号
+  { title: t("number"), key: "number", sortable: false }, // 表示番号
   { title: t("leave_name"), key: "name" }, // 休暇名
-  { title: t("action"), key: "action" }, // アクション
+  { title: t("action"), key: "action", sortable: false }, // アクション
 ]);
 // 休暇リストをロード
 const loadLeave = (lst: any) => {
@@ -135,13 +135,13 @@ onMounted(() => {
               </VBtn>
             </VToolbar>
           </VCardItem>
-          <VDivider />
           <!-- 申請情報　表示 -->
-          <VCardItem>
+          <VCardItem class="pt-0">
             <VDataTable
               :items-per-page-text="t('items_per_page')"
               :headers="headers"
               :items="leaves"
+              class="data-table"
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->
@@ -228,5 +228,12 @@ onMounted(() => {
 
 .action-btn:hover {
   background-color: #f5f5f5;
+}
+
+::v-deep(thead) {
+  background-color: rgba(0, 86, 247, 0.2) !important;
+}
+::v-deep(.data-table table) {
+  min-width: 312px !important;
 }
 </style>
