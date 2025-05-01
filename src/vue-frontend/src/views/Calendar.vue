@@ -2,13 +2,19 @@
 <script setup lang="ts">
 import { VCalendar } from "vuetify/labs/VCalendar";
 import { ref, onMounted } from "vue";
+import { useDisplay } from "vuetify";
 import { IEvent } from "@/types/type";
 import { fetchApprovedLeaveRequests } from "@/api/response";
 import { ELeaveType } from "@/constants/leaveType";
 import { toast } from "vue3-toastify";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
-
+const display = useDisplay();
+const isDesktop = ref(false);
+const tooltipActive = ref(false);
+onMounted(() => {
+  isDesktop.value = display.mdAndUp.value;
+});
 // イベントリストを格納するためのrefを定義
 const events = ref<IEvent[]>([]);
 
@@ -56,11 +62,15 @@ const fetchEvents = async () => {
   }
 };
 
-// 指定された範囲内でランダムな数字を生成する関数
-const rnd = (a: number, b: number): number => {
-  return Math.floor((b - a + 1) * Math.random()) + a; // aからbの範囲でランダムな整数を生成
+const getEventStyle = (color: string) => ({
+  backgroundColor: color,
+  border: `1px solid ${color}`,
+  padding: "2px 4px",
+});
+const onClick = (event) => {
+  tooltipActive.value = !tooltipActive.value;
+  console.log("Event clicked:", event);
 };
-
 // 日付にクラスを設定する関数
 const getDayClass = (date) => {
   const day = date.getDay(); // 曜日を取得
@@ -83,6 +93,43 @@ onMounted(fetchEvents);
       hide-week-number
       :day-class="getDayClass"
     >
+      <template #event="{ event }">
+        <VTooltip
+          v-if="isDesktop"
+          location="top"
+          v-model:active="tooltipActive"
+        >
+          <template #activator="{ props }">
+            <div
+              v-bind="props"
+              class="custom-event"
+              :style="getEventStyle(event.color as string)"
+            >
+              {{ event.title }}
+            </div>
+          </template>
+          <span>{{ event.title }}</span>
+        </VTooltip>
+
+        <VTooltip
+          v-else
+          location="top"
+          persistent
+          v-model:active="tooltipActive"
+        >
+          <template #activator="{ props }">
+            <div
+              v-bind="props"
+              class="custom-event"
+              :style="getEventStyle(event.color as string)"
+              @click="onClick(event)"
+            >
+              {{ event.title }}
+            </div>
+          </template>
+          <span>{{ event.title }}</span>
+        </VTooltip>
+      </template>
     </VCalendar>
   </VContainer>
 </template>
@@ -123,5 +170,21 @@ onMounted(fetchEvents);
 .v-calendar-weekly__head-weekday:nth-child(n + 2):nth-child(-n + 6) {
   background-color: rgba(0, 86, 247, 0.2);
   color: rgba(0, 14, 136, 0.945) !important;
+}
+.v-calendar-month__days > .v-calendar-month__day {
+  min-height: 100px !important;
+}
+.v-badge--inline {
+  display: none !important;
+}
+.custom-event {
+  padding: 5px;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
