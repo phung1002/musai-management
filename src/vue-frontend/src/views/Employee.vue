@@ -17,7 +17,7 @@ const { t } = useI18n();
 
 // Headers of table
 const headers = reactive([
-  { title: t("number"), key: "number" },
+  { title: t("number"), key: "number", sortable: false },
   { title: t("employee_name"), key: "fullName" },
   { title: t("employee_id"), key: "employeeId" },
   { title: t("email"), key: "email" },
@@ -25,7 +25,7 @@ const headers = reactive([
   { title: t("role"), key: "roles" },
   // { title: t("department"), key: "department" },
   // { title: t("work_place"), key: "workPlace" },
-  { title: t("action"), key: "action" },
+  { title: t("action"), key: "action", sortable: false },
 ]);
 
 const keyWord = ref("");

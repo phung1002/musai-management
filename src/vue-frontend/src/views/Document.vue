@@ -31,11 +31,11 @@ const employeeRoles = computed(() => employeeStore.roles || []);
 const isEmployee = computed(() => employeeStore.id); // ユーザーかどうかの判定
 // // テーブル　ヘッダー
 const headers = reactive([
-  { title: t("number"), key: "number" },
+  { title: t("number"), key: "number", sortable: false },
   { title: t("title"), key: "title" },
   { title: t("submitter"), key: "uploadBy" },
   { title: t("submit_date"), key: "uploadAt" },
-  { title: t("action"), key: "action" },
+  { title: t("action"), key: "action", sortable: false },
 ]);
 // データ取得
 const fetchDocuments = async () => {

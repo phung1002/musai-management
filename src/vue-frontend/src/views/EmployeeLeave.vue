@@ -12,8 +12,8 @@ const { t } = useI18n();
 const keyWord = ref("");
 const addFrom = ref(false); // 追加プラグ
 const editForm = ref(false); //編集プラグ
-const activeTab = ref("有休"); // タブの初期値
-const EmployeeLeaves = ref<IEmployeeLeaves[]>([]); // 休暇リスト
+const activeTab = ref("paid_leave"); // タブの初期値
+const employeeLeaves = ref<IEmployeeLeaves[]>([]); // 休暇リスト
 const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 const selectedLeave = ref<IEmployeeLeaves | undefined>(undefined); // 編集する休暇情報
@@ -21,43 +21,38 @@ const isEdit = ref(false); // 編集モードかどうか
 const selectedTab = ref("paid_leave");
 // メイン休暇タブで分類
 const tabs = ref([
-  { title: "paid_leave", icon: "mdi-gift-open", tab: "有休" },
-  { title: "public_leave", icon: "mdi-pine-tree-box", tab: "夏休み" },
+  { title: t("paid_leave"), icon: "mdi-gift-open", tab: "paid_leave" },
+  { title: t("public_leave"), icon: "mdi-pine-tree-box", tab: "public_leave" },
 ]);
 // // テーブル　ヘッダー
 const headers = reactive([
-  { title: t("number"), key: "number" },
+  { title: t("number"), key: "number", sortable: false },
   { title: t("employee_name"), key: "employeeFullName" },
   { title: t("valid_leaves"), key: "totalDays" },
   { title: t("used_leaves"), key: "usedDays" },
   { title: t("available_leaves"), key: "remainedDays" },
   { title: t("leave_start"), key: "validFrom" },
   { title: t("leave_expired"), key: "validTo" },
-  { title: t("action"), key: "action" },
+  { title: t("action"), key: "action", sortable: false },
 ]);
 // データを分類する計算プロパティ
 const filteredLeaves = computed(() => {
-  return EmployeeLeaves.value.filter(
-    (leave) =>
-      (selectedTab.value === "paid_leave" &&
-        leave.leaveTypeValue == "PAID_LEAVE") ||
-      (selectedTab.value === "public_leave" &&
-        leave.leaveTypeValue == "SUMMER_DAY")
-  );
+  switch (selectedTab.value) {
+    case "paid_leave":
+      return employeeLeaves.value.filter(leave => leave.leaveTypeValue === "PAID_LEAVE");
+    case "public_leave":
+      return employeeLeaves.value.filter(leave => leave.leaveTypeValue === "SUMMER_DAY");
+    default:
+      return employeeLeaves.value;
+  }
 });
-// 休暇リストをロード
-const loadLeave = (lst: any) => {
-  EmployeeLeaves.value = lst.map((EmployeeLeave: IEmployeeLeaves) => ({
-    ...EmployeeLeave,
-  }));
-};
 // ユーザー休暇リスト取得 API呼び出し
 const fetchLeaveType = async (searchQuery: string = "") => {
   isLoading.value = true;
   isError.value = false;
   try {
     const response = await getEmployeeLeaves(searchQuery); // API呼び出
-    loadLeave(response); // リスト更新
+    employeeLeaves.value = [...response];
   } catch (error: any) {
     isError.value = true;
     toast.error(t(error.message));
@@ -137,16 +132,15 @@ onMounted(() => {
           <!-- 休暇タイプタブ設定 -->
           <VTable>
             <VCardItem>
-              <VTabs v-model="selectedTab" color="primary">
-                <VTab v-for="tab in tabs" :key="tab.title" :value="tab.title">
-                  <!-- <VIcon size="20" start :icon="item.icon" /> -->
+              <VTabs v-model="selectedTab" color="primary" >
+                <VTab v-for="tab in tabs" :key="tab.title" :value="tab.tab">
                   <v-icon>{{ tab.icon }}</v-icon>
-                  {{ tab.tab }}
+                  {{ tab.title }}
                 </VTab>
               </VTabs>
-              <VWindow v-model="activeTab" >
-                <VWindowItem value="paid"></VWindowItem>
-                <VWindowItem value="public"></VWindowItem>
+              <VWindow v-model="selectedTab" :touch="false">
+                <VWindowItem value="paid_leave"></VWindowItem>
+                <VWindowItem value="public_leave"></VWindowItem>
                 <VDataTable
                   :items-per-page-text="t('items_per_page')"
                   :headers="headers"

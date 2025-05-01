@@ -18,12 +18,12 @@ const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 // // テーブル　ヘッダー
 const headers = reactive([
-  { title: t("number"), key: "number" },
+  { title: t("number"), key: "number", sortable: false },
   { title: t("employee_name"), key: "employeeFullName" },
   { title: t("leave_type"), key: "leaveTypeName" },
   { title: t("submit_date"), key: "createdAt" },
   { title: t("status"), key: "status" },
-  { title: t("action"), key: "action" },
+  { title: t("action"), key: "action", sortable: false },
 ]);
 // 申請リストをロード
 const loadLeave = (lst: any) => {

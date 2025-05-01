@@ -21,9 +21,9 @@ const isLoading = ref(false); // ローディングフラグ
 const isError = ref(false); // エラーフラグ
 // テーブル　ヘッダー
 const headers = reactive([
-  { title: t("number"), key: "number" }, // 表示番号
+  { title: t("number"), key: "number", sortable: false }, // 表示番号
   { title: t("leave_name"), key: "name" }, // 休暇名
-  { title: t("action"), key: "action" }, // アクション
+  { title: t("action"), key: "action", sortable: false }, // アクション
 ]);
 // 休暇リストをロード
 const loadLeave = (lst: any) => {

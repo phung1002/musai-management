@@ -51,13 +51,13 @@ const headersUserLeave = ref([
 ]);
 // テーブル　ヘッダー
 const headers = reactive([
-  { title: t("number"), key: "number" },
+  { title: t("number"), key: "number", sortable: false },
   { title: t("leave_type"), key: "leaveTypeName" },
   { title: t("leave_duration_from"), key: "startDate" },
   { title: t("leave_duration_to"), key: "endDate" },
   { title: t("leave_reason"), key: "reason" },
   { title: t("status"), key: "status" },
-  { title: t("action"), key: "action" },
+  { title: t("action"), key: "action", sortable: false },
 ]);
 const loadEmployeeLeave = async () => {
   try {
