@@ -141,6 +141,7 @@ onMounted(() => {
               :items-per-page-text="t('items_per_page')"
               :headers="headers"
               :items="leaves"
+              class="data-table"
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->
@@ -231,5 +232,8 @@ onMounted(() => {
 
 ::v-deep(thead) {
   background-color: rgba(0, 86, 247, 0.2) !important;
+}
+::v-deep(.data-table table) {
+  min-width: 312px !important;
 }
 </style>

@@ -45,9 +45,9 @@ const openUpdateDialog = (application: ILeaveRequest) => {
   selectedRequest.value = application;
 };
 const headersUserLeave = ref([
-  { title: t("leave_type"), key: "leaveTypeName" },
-  { title: t("available_leaves"), key: "remainedDays" },
-  { title: t("leave_expired"), key: "validTo" },
+  { title: t("leave_type"), key: "leaveTypeName", sortable: false },
+  { title: t("available_leaves"), key: "remainedDays", sortable: false },
+  { title: t("leave_expired"), key: "validTo", sortable: false },
 ]);
 // テーブル　ヘッダー
 const headers = reactive([
@@ -201,6 +201,7 @@ const getStatusColor = (status: string) => {
               :items="leaveRequests"
               :items-per-page-text="t('items_per_page')"
               :no-data-text="t('no_records_found')"
+              class="data-table"
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->
@@ -303,5 +304,14 @@ const getStatusColor = (status: string) => {
 
 ::v-deep(thead) {
   background-color: rgba(0, 86, 247, 0.2) !important;
+}
+::v-deep(.data-table table) {
+  min-width: 808px !important;
+}
+::v-deep(.table-leave-of-employee table *){
+  padding-right: 0px !important;
+}
+::v-deep(.table-leave-of-employee table) {
+  min-width: 251px !important;
 }
 </style>

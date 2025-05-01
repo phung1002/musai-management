@@ -156,6 +156,7 @@ onMounted(() => {
               :items-per-page-text="t('items_per_page')"
               :headers="headers"
               :no-data-text="t('no_records_found')"
+              class="data-table"
               v-if="!isLoading && !isError"
             >
               <!-- 表示　番号設定  -->
@@ -248,5 +249,8 @@ onMounted(() => {
 
 ::v-deep(thead) {
   background-color: rgba(0, 86, 247, 0.2) !important;
+}
+::v-deep(.data-table table) {
+  min-width: 525px !important;
 }
 </style>

@@ -151,6 +151,7 @@ onMounted(() => {
                   :items-per-page-text="t('items_per_page')"
                   :headers="headers"
                   :items="filteredLeaves"
+                  class="data-table"
                   v-if="!isLoading && !isError"
                 >
                   <!-- 表示　番号設定  -->
@@ -173,8 +174,6 @@ onMounted(() => {
                         <VDialog
                           v-model="editForm"
                           width="auto"
-                          eager
-                          persistent
                         >
                         </VDialog>
                       </VBtn>
@@ -230,5 +229,8 @@ onMounted(() => {
 
 ::v-deep(thead) {
   background-color: rgba(0, 86, 247, 0.2) !important;
+}
+::v-deep(.data-table table) {
+  min-width: 970px !important;
 }
 </style>
