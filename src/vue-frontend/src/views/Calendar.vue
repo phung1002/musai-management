@@ -2,19 +2,12 @@
 <script setup lang="ts">
 import { VCalendar } from "vuetify/labs/VCalendar";
 import { ref, onMounted } from "vue";
-import { useDisplay } from "vuetify";
 import { IEvent } from "@/types/type";
 import { fetchApprovedLeaveRequests } from "@/api/response";
 import { ELeaveType } from "@/constants/leaveType";
 import { toast } from "vue3-toastify";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
-const display = useDisplay();
-const isDesktop = ref(false);
-const tooltipActive = ref(false);
-onMounted(() => {
-  isDesktop.value = display.mdAndUp.value;
-});
 // イベントリストを格納するためのrefを定義
 const events = ref<IEvent[]>([]);
 
@@ -65,12 +58,15 @@ const fetchEvents = async () => {
 const getEventStyle = (color: string) => ({
   backgroundColor: color,
   border: `1px solid ${color}`,
+  borderRadius: "4px",
   padding: "2px 4px",
+  color: "#fff",
+  fontSize: "12px",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
 });
-const onClick = (event) => {
-  tooltipActive.value = !tooltipActive.value;
-  console.log("Event clicked:", event);
-};
+
 // 日付にクラスを設定する関数
 const getDayClass = (date) => {
   const day = date.getDay(); // 曜日を取得
@@ -94,11 +90,7 @@ onMounted(fetchEvents);
       :day-class="getDayClass"
     >
       <template #event="{ event }">
-        <VTooltip
-          v-if="isDesktop"
-          location="top"
-          v-model:active="tooltipActive"
-        >
+        <VTooltip location="top">
           <template #activator="{ props }">
             <div
               v-bind="props"
@@ -108,26 +100,7 @@ onMounted(fetchEvents);
               {{ event.title }}
             </div>
           </template>
-          <span>{{ event.title }}</span>
-        </VTooltip>
-
-        <VTooltip
-          v-else
-          location="top"
-          persistent
-          v-model:active="tooltipActive"
-        >
-          <template #activator="{ props }">
-            <div
-              v-bind="props"
-              class="custom-event"
-              :style="getEventStyle(event.color as string)"
-              @click="onClick(event)"
-            >
-              {{ event.title }}
-            </div>
-          </template>
-          <span>{{ event.title }}</span>
+          {{ event.title }}
         </VTooltip>
       </template>
     </VCalendar>
@@ -176,15 +149,5 @@ onMounted(fetchEvents);
 }
 .v-badge--inline {
   display: none !important;
-}
-.custom-event {
-  padding: 5px;
-  border-radius: 4px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 </style>
