@@ -66,7 +66,6 @@ const loadEmployeeLeave = async () => {
       ({ leaveTypeName, remainedDays, validTo }) => ({
         leaveTypeName,
         remainedDays,
-        validFrom,
         validTo,
       })
     );
