@@ -3,16 +3,18 @@
 import { RouterView, useRoute } from "vue-router";
 import AppSidebar from "@/components/layout/AppSidebar.vue";
 import AppToolbar from "@/components/layout/AppToolbar.vue";
+import { ref } from "vue";
 
 const route = useRoute();
+const drawer = ref(window.innerWidth >= 1280);
 </script>
 
 <template>
   <VApp class="app">
     <!------Sidebar-------->
-    <AppSidebar />
+    <AppSidebar v-model:drawer="drawer" />
     <!------Header-------->
-    <AppToolbar />
+    <AppToolbar @toggle-menu="drawer = !drawer" />
     <!------Page-------->
     <VMain class="app-main">
       <VContainer class="app-container">

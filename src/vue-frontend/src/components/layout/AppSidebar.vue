@@ -1,9 +1,18 @@
 <script setup lang="ts">
 import logoImg from "@/assets/images/logo.png";
-import { reactive, computed } from "vue";
+import { computed, defineProps } from "vue";
 import { useI18n } from "vue-i18n";
 import { useEmployeeStore } from "@/store/employeeStore";
-import { ERole } from "@/constants/role";
+import { getMenuItems } from "@/constants/menuItems";
+import { ref } from "vue";
+import { watch } from "vue";
+
+const props = defineProps<{ drawer: boolean }>();
+const emit = defineEmits(["update:drawer"]);
+const localDrawer = ref(props.drawer);
+
+watch(() => props.drawer, (val) => (localDrawer.value = val));
+watch(localDrawer, (val) => emit("update:drawer", val));
 
 const employeeStore = useEmployeeStore();
 const filteredItems = computed(() => {
@@ -14,117 +23,22 @@ const filteredItems = computed(() => {
 });
 const employeeRoles = computed(() => employeeStore.roles || []);
 const { t } = useI18n();
-const items = [
-  { type: "divider", roles: [ERole.ADMIN] },
-  { type: "subheader", title: t("roles.ADMIN"), roles: [ERole.ADMIN] },
-  {
-    title: t("employee_management"),
-    props: {
-      prependIcon: "mdi-account-box-multiple-outline",
-      link: true,
-      to: "/admin/employees",
-      exact: false,
-    },
-    value: "/admin/employees",
-    roles: [ERole.ADMIN],
-  },
-  {
-    title: t("leave_management"),
-    props: {
-      prependIcon: "mdi-calendar-star-outline",
-      link: true,
-      to: "/admin/leave-management",
-      exact: false,
-    },
-    value: "/admin/leave-management",
-    roles: [ERole.ADMIN],
-  },
-  { type: "divider", roles: [ERole.MANAGER] },
-  { type: "subheader", title: t("roles.MANAGER"), roles: [ERole.MANAGER] },
-  {
-    title: t("employee_leave_management"),
-    props: {
-      prependIcon: "mdi-badge-account-horizontal-outline",
-      link: true,
-      to: "/manager/employee-leave-management",
-      exact: true,
-    },
-    value: "/manager/employee-leave-management",
-    roles: [ERole.MANAGER],
-  },
-  {
-    title: t("request_confirm"),
-    props: {
-      prependIcon: "mdi-message-check-outline",
-      link: true,
-      to: "/manager/request-confirm",
-      exact: true,
-    },
-    value: "/manager/request-confirm",
-    roles: [ERole.MANAGER],
-  },
-  { type: "divider", roles: [ERole.MEMBER] },
-  { type: "subheader", title: t("roles.MEMBER"), roles: [ERole.MEMBER] },
-  {
-    title: t("leave_request"),
-    props: {
-      prependIcon: "mdi-email-arrow-right-outline",
-      link: true,
-      to: "/member/leave-applications",
-      exact: true,
-    },
-    value: "/member/leave-applications",
-    roles: [ERole.MEMBER],
-  },
-  { type: "divider" },
-  {
-    title: t("submit_document"),
-    props: {
-      prependIcon: "mdi-invoice-text-multiple-outline",
-      link: true,
-      to: "/document",
-      exact: true,
-    },
-    value: "/document",
-    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN],
-  },
-  {
-    title: t("calendar"),
-    props: {
-      prependIcon: "mdi-calendar-month-outline",
-      link: true,
-      to: "/calendar",
-      exact: true,
-    },
-    value: "/calendar",
-    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN],
-  },
-  {
-    title: t("change_password"),
-    props: {
-      prependIcon: "mdi-account-convert",
-      link: true,
-      to: "/change-password",
-      exact: true,
-    },
-    value: "/change-password",
-    roles: [ERole.MEMBER, ERole.MANAGER, ERole.ADMIN],
-  },
-];
+const items = getMenuItems(t);
 </script>
 
 <template>
   <VNavigationDrawer
+  v-model="localDrawer"
     rail-width="256"
     :rail="false"
     :border="true"
     :elevation="1"
   >
-  <div>
-    <VToolbar color="transparent" class="mr-2">
-      <VImg class="logo-img" :src="logoImg" alt="logo" contain></VImg>
-    </VToolbar>
-  </div>
+    <div>
+      <VToolbar color="transparent" class="mr-2">
+        <VImg class="logo-img" :src="logoImg" alt="logo" contain></VImg>
+      </VToolbar>
+    </div>
     <div class="app-drawer__inner">
       <VList
         :items="filteredItems"
@@ -134,14 +48,6 @@ const items = [
         :slim="true"
       />
     </div>
-    <VBtn
-      class="btn-collapse"
-      rounded="lg"
-      color="white"
-      size="x-small"
-      icon="mdi-arrow-left"
-      :style="{ left: '244px' }"
-    />
   </VNavigationDrawer>
 </template>
 
@@ -155,7 +61,6 @@ const items = [
   inset-block-start: 50%;
   transform: translateY(-50%);
 }
-
 .menu-list {
   .v-list-subheader__text {
     text-transform: uppercase;
@@ -169,7 +74,6 @@ const items = [
     text-transform: capitalize;
   }
 }
-
 .v-navigation-drawer--border {
   border-width: inherit;
   box-shadow: none;
