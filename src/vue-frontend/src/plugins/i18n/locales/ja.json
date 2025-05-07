@@ -77,6 +77,8 @@
   "delete_confirm_message": "削除してもよろしいですか？",
   "cancel_confirm_message": "キャンセルてもよろしいですか？",
   "revoked_confirm_message": "取り消してもよろしいですか？",
+  "employees_on_leave": "休暇者一覧",
+  "close": "閉じる",
   "yes": "はい",
   "no": "いいえ",
   "status": "状態",
