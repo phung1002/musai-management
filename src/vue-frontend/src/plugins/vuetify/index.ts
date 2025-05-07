@@ -8,7 +8,6 @@ import "@mdi/font/css/materialdesignicons.css";
 
 import { ja } from "vuetify/locale";
 import jaMessages from "@/plugins/i18n/locales/ja.json";
-
 export default createVuetify({
   components,
   directives,
@@ -20,7 +19,7 @@ export default createVuetify({
     messages: {
       ja: {
         ...ja,
-        jaMessages,
+        ...jaMessages,
       },
     },
   },
