@@ -1,41 +1,40 @@
 <!-- カレンダー -->
 <script setup lang="ts">
 import { VCalendar } from "vuetify/labs/VCalendar";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { IEvent } from "@/types/type";
 import { fetchApprovedLeaveRequests } from "@/api/response";
 import { ELeaveType } from "@/constants/leaveType";
 import { toast } from "vue3-toastify";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
-// イベントリストを格納するためのrefを定義
 const events = ref<IEvent[]>([]);
+const eventCut = ref<IEvent[]>([]);
+const selectedDateEvents = ref<IEvent[]>([]);
+const dialog = ref(false);
+interface ICalendarDay {
+  date: string;
+}
 
-// ランダムな色を生成する関数
 const getRandomColor = () => {
   let color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-  return color.length === 7 ? color : "#000000"; // 6桁のカラーコードが生成されなければ、デフォルトで黒を返す
+  return color.length === 7 ? color : "#000000";
 };
 
-// イベントデータを取得する非同期関数
 const fetchEvents = async () => {
   try {
-    const response = await fetchApprovedLeaveRequests(); // 承認された休暇リクエストを取得
-    const tempEvents: IEvent[] = []; // 一時的にイベントデータを格納する配列
+    const response = await fetchApprovedLeaveRequests();
+    const tempEvents: IEvent[] = [];
 
     response.forEach((item) => {
-      const allDay = item.leaveTypeValue == ELeaveType.HALF_DAY ? false : true; // 半日休暇の場合は終日フラグをfalseに設定
-      let currentDate = new Date(item.startDate); // 休暇開始日をcurrentDateに設定
-      const endDate = new Date(item.endDate); // 休暇終了日をendDateに設定
-      const eventColor = getRandomColor(); // ランダムな色を生成
+      const allDay = item.leaveTypeValue == ELeaveType.HALF_DAY ? false : true;
+      let currentDate = new Date(item.startDate);
+      const endDate = new Date(item.endDate);
+      const eventColor = getRandomColor();
 
-      // 休暇期間内の日付を1日ずつ処理
       while (currentDate <= endDate) {
-        const dayOfWeek = currentDate.getDay(); // 現在の日付が週の何日かを取得
-
-        // 土日（0:日曜日、6:土曜日）はスキップ
+        const dayOfWeek = currentDate.getDay();
         if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-          // イベントをtempEventsに追加
           tempEvents.push({
             title: item.employeeFullName,
             start: new Date(currentDate),
@@ -44,12 +43,11 @@ const fetchEvents = async () => {
             allDay: allDay,
           });
         }
-
-        // 次の日に進める
         currentDate.setDate(currentDate.getDate() + 1);
       }
     });
-    events.value = tempEvents; // イベントリストに取得したイベントをセット
+    events.value = tempEvents;
+    eventCut.value = events.value.slice(0, 3);
   } catch (error: any) {
     toast.error(t(error.message));
   }
@@ -67,18 +65,36 @@ const getEventStyle = (color: string) => ({
   textOverflow: "ellipsis",
 });
 
-// 日付にクラスを設定する関数
 const getDayClass = (date) => {
-  const day = date.getDay(); // 曜日を取得
+  const day = date.getDay();
   if (day === 0 || day === 6) {
-    return "weekend"; // 土日なら"weekend"クラスを返す
+    return "weekend";
   }
-  return ""; // 平日ならクラスを返さない
+  return "";
 };
-// コンポーネントがマウントされた際にイベントを取得
+
+const getEventsByDate = (date: Date) => {
+  return events.value.filter(
+    (e) => new Date(e.start).toDateString() === date.toDateString()
+  );
+};
+
+const handleMoreClick = (date: Date) => {
+  selectedDateEvents.value = getEventsByDate(date);
+  dialog.value = true;
+  let dateStr = date.toDateString();
+  renderedDays.delete(dateStr);
+};
+const renderedDays = new Set<string>();
+const shouldDisplayEvent = (day: any, event: any) => {
+  let dayEvents = getEventsByDate(new Date(day.date));
+  return dayEvents.length && dayEvents[0] === event;
+};
+watch(events, () => {
+  renderedDays.clear();
+});
 onMounted(fetchEvents);
 </script>
-
 <template>
   <VContainer>
     <VCalendar
@@ -89,21 +105,51 @@ onMounted(fetchEvents);
       hide-week-number
       :day-class="getDayClass"
     >
-      <template #event="{ event }">
-        <VTooltip location="top">
-          <template #activator="{ props }">
-            <div
-              v-bind="props"
-              class="custom-event"
-              :style="getEventStyle(event.color as string)"
-            >
-              {{ event.title }}
-            </div>
+      <template #event="{ day, event }">
+        <template v-if="shouldDisplayEvent(day, event)">
+          <template
+            v-for="(ev) in getEventsByDate(new Date((day as ICalendarDay).date)).slice(0, 3)"
+            :key="ev.title"
+          >
+            <VTooltip location="top">
+              <template #activator="{ props }">
+                <div
+                  v-bind="props"
+                  class="custom-event"
+                  :style="getEventStyle(ev.color)"
+                >
+                  {{ ev.title }}
+                </div>
+              </template>
+              {{ ev.title }}
+            </VTooltip>
           </template>
-          {{ event.title }}
-        </VTooltip>
+          <div
+            v-if="getEventsByDate(new Date((day as ICalendarDay).date)).length > 3"
+            class="more-events"
+            @click="handleMoreClick(new Date((day as ICalendarDay).date))"
+          >
+            <VIcon size="18" icon="mdi-dots-horizontal" />
+          </div>
+        </template>
       </template>
     </VCalendar>
+
+    <VDialog v-model="dialog" width="400">
+      <VCard>
+        <VCardTitle>{{ t("employees_on_leave") }}</VCardTitle>
+        <VCardText>
+          <div v-for="(ev, i) in selectedDateEvents" :key="i">
+            <div :style="getEventStyle(ev.color)">
+              {{ ev.title }}
+            </div>
+          </div>
+        </VCardText>
+        <VCardActions>
+          <VBtn @click="dialog = false">{{ t("close") }}</VBtn>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </VContainer>
 </template>
 
@@ -119,27 +165,19 @@ onMounted(fetchEvents);
 }
 .weekend {
   background-color: rgba(255, 0, 0, 0.2) !important;
-  color: red !important; /* Red text */
+  color: red !important;
 }
-
-/* Add a specific style for event days */
 .v-calendar-weekly__head-weekday {
   font-weight: bold;
 }
-
-/* (Saturday) */
 .v-calendar-weekly__head-weekday:nth-child(7) {
   background-color: rgba(196, 0, 0, 0.199);
   color: rgb(180, 0, 0) !important;
 }
-
-/* (Sunday) */
 .v-calendar-weekly__head-weekday:nth-child(1) {
   background-color: rgba(255, 0, 0, 0.199);
   color: rgb(180, 0, 0) !important;
 }
-
-/* Weekdays */
 .v-calendar-weekly__head-weekday:nth-child(n + 2):nth-child(-n + 6) {
   background-color: rgba(0, 86, 247, 0.2);
   color: rgba(0, 14, 136, 0.945) !important;
@@ -147,7 +185,18 @@ onMounted(fetchEvents);
 .v-calendar-month__days > .v-calendar-month__day {
   min-height: 100px !important;
 }
+@media (min-width: 640px) {
+  .v-calendar-month__days > .v-calendar-month__day {
+    min-height: 150px !important;
+  }
+}
 .v-badge--inline {
   display: none !important;
+}
+.more-events {
+  cursor: pointer;
+  color: #1976d2;
+  margin-top: 4px;
+  text-align: center;
 }
 </style>

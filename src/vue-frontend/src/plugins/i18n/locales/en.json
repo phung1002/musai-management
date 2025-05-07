@@ -77,6 +77,8 @@
   "delete_confirm_message": "are you sure to delete?",
   "cancel_confirm_message": "are you sure to cancel?",
   "revoked_confirm_message": "are you sure to revoked?",
+  "employees_on_leave": "List of Employees on Leave",
+  "close": "close",
   "yes": "yes",
   "no": "no",
   "status": "status",
