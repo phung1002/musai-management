@@ -17,7 +17,7 @@ import musai.app.exception.NotFoundException;
 import musai.app.models.LeaveType;
 import musai.app.models.Employee;
 import musai.app.models.EmployeeLeave;
-import musai.app.repositories.LeaveTypeResposity;
+import musai.app.repositories.LeaveTypeRepository;
 import musai.app.repositories.EmployeeLeaveRepository;
 import musai.app.repositories.EmployeeRepository;
 import musai.app.services.EmployeeLeaveService;
@@ -29,7 +29,7 @@ public class EmployeeLeaveServiceImpl implements EmployeeLeaveService {
 	@Autowired
 	private final EmployeeRepository employeeRepository;
 	@Autowired
-	private final LeaveTypeResposity leaveTypeResposity;
+	private final LeaveTypeRepository leaveTypeRepository;
 
 	// List All
 	@Override
@@ -101,7 +101,7 @@ public class EmployeeLeaveServiceImpl implements EmployeeLeaveService {
 		Employee employee = employeeRepository.findById(employeeLeaveRequestDTO.getEmployeeId())
 				.orElseThrow(() -> new NotFoundException("employee_not_exist"));
 		// leaveTypeId
-		LeaveType leaveType = leaveTypeResposity.findById(employeeLeaveRequestDTO.getLeaveTypeId())
+		LeaveType leaveType = leaveTypeRepository.findById(employeeLeaveRequestDTO.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
 		if (employeeLeaveRequestDTO.getValidTo().isBefore(employeeLeaveRequestDTO.getValidFrom())) {
 			throw new BadRequestException("requested_day_unavailble");
@@ -128,7 +128,7 @@ public class EmployeeLeaveServiceImpl implements EmployeeLeaveService {
 		Employee employee = employeeRepository.findById(employeeLeaveRequestDTO.getEmployeeId())
 				.orElseThrow(() -> new NotFoundException("employee_not_exist"));
 		// leaveTypeId
-		LeaveType leaveType = leaveTypeResposity.findById(employeeLeaveRequestDTO.getLeaveTypeId())
+		LeaveType leaveType = leaveTypeRepository.findById(employeeLeaveRequestDTO.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("leave_type_not_found"));
 
 		if (employeeLeaveRequestDTO.getValidTo().isBefore(employeeLeaveRequestDTO.getValidFrom())) {

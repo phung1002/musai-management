@@ -28,7 +28,7 @@ import musai.app.models.LeaveApplication;
 import musai.app.models.LeaveType;
 import musai.app.models.Employee;
 import musai.app.repositories.LeaveApplicationRepository;
-import musai.app.repositories.LeaveTypeResposity;
+import musai.app.repositories.LeaveTypeRepository;
 import musai.app.repositories.EmployeeRepository;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.LeaveApplicationService;
@@ -42,7 +42,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	@Autowired
 	private final EmployeeRepository employeeRepository;
 	@Autowired
-	private final LeaveTypeResposity leaveTypeResposity;
+	private final LeaveTypeRepository leaveTypeRepository;
 	@Autowired
 	private final EmployeeLeaveService employeeLeaveService;
 
@@ -96,7 +96,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 
 		Employee employee = employeeRepository.findById(principal.getId())
 				.orElseThrow(() -> new NotFoundException("employee_not_exist"));
-		LeaveType leaveType = leaveTypeResposity.findById(request.getLeaveTypeId())
+		LeaveType leaveType = leaveTypeRepository.findById(request.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("leave_type_not_exist"));
 		if (leaveType.getValue() != null) {
 			// check condition: remainDays > requestDays
@@ -148,7 +148,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		}
 		// case REJECTED, REVOKED: update usedDays
 		if (status.equals(ELeaveStatus.REJECTED.name()) || status.equals(ELeaveStatus.REVOKED.name())) {
-			LeaveType leaveType = leaveTypeResposity.findById(application.getLeaveType().getId())
+			LeaveType leaveType = leaveTypeRepository.findById(application.getLeaveType().getId())
 					.orElseThrow(() -> new NotFoundException("leave_type_not_exist"));
 			List<EmployeeLeaveResponseDTO> employeeLeaves = getEmployeeLeavesForMember(leaveType, application.getEmployee().getId());
 			double cancelDays = calculateLeaveDays(leaveType, application.getStartDate(), application.getEndDate());
@@ -168,7 +168,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 	public MessageResponse cancelLeave(Long id, UserDetailsImpl principal) {
 		LeaveApplication application = leaveApplicationRepository.findById(id)
 				.orElseThrow(() -> new NotFoundException("leave_application_not_exist"));
-		LeaveType leaveType = leaveTypeResposity.findById(application.getLeaveType().getId())
+		LeaveType leaveType = leaveTypeRepository.findById(application.getLeaveType().getId())
 				.orElseThrow(() -> new NotFoundException("leave_tpye_not_exist"));
 		// Can only be cancel if the status is 'pending'.
 		if (!application.getStatus().equals(ELeaveStatus.PENDING)) {
@@ -198,7 +198,7 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 				|| leaveApplication.getStatus().equals(ELeaveStatus.REQUESTED_CHANGE))) {
 			throw new BadRequestException("can_only_be_update_if_pending_or_request_change");
 		}
-		LeaveType leaveType = leaveTypeResposity.findById(request.getLeaveTypeId())
+		LeaveType leaveType = leaveTypeRepository.findById(request.getLeaveTypeId())
 				.orElseThrow(() -> new NotFoundException("leave_type_not_exist"));
 		// case not change leaveType
 		if (leaveType.getValue() != null) {

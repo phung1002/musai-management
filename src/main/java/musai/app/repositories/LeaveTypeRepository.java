@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import musai.app.models.LeaveType;
 
 @Repository
-public interface LeaveTypeResposity extends JpaRepository<LeaveType, Long> {
+public interface LeaveTypeRepository extends JpaRepository<LeaveType, Long> {
 
 	Boolean existsByName(String name);
 

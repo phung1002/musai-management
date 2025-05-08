@@ -15,7 +15,7 @@ import musai.app.models.Employee;
 import musai.app.models.LeaveType;
 import musai.app.models.Role;
 import musai.app.repositories.EmployeeRepository;
-import musai.app.repositories.LeaveTypeResposity;
+import musai.app.repositories.LeaveTypeRepository;
 import musai.app.repositories.RoleRepository;
 
 @Component
@@ -23,14 +23,14 @@ public class DataInitializer implements CommandLineRunner {
 
 	private final RoleRepository roleRepository;
 	private final EmployeeRepository employeeRepository;
-	private final LeaveTypeResposity leaveTypeResposity;
+	private final LeaveTypeRepository leaveTypeRepository;
 
 	// Inject RoleRepository to save Role in DB
 	public DataInitializer(RoleRepository roleRepository, EmployeeRepository employeeRepository,
-			LeaveTypeResposity leaveTypeResposity) {
+			LeaveTypeRepository leaveTypeRepository) {
 		this.roleRepository = roleRepository;
 		this.employeeRepository = employeeRepository;
-		this.leaveTypeResposity = leaveTypeResposity;
+		this.leaveTypeRepository = leaveTypeRepository;
 	}
 
 	@Override
@@ -88,31 +88,31 @@ public class DataInitializer implements CommandLineRunner {
 		}
 
 		// Add leave type if empty
-		if (leaveTypeResposity.count() == 0) {
-			leaveTypeResposity.save(new LeaveType("有休", null, ELeaveValue.PAID_LEAVE.name()));
-			leaveTypeResposity.save(new LeaveType("公休", null, ELeaveValue.PUBLIC_LEAVE.toString()));
+		if (leaveTypeRepository.count() == 0) {
+			leaveTypeRepository.save(new LeaveType("有休", null, ELeaveValue.PAID_LEAVE.name()));
+			leaveTypeRepository.save(new LeaveType("公休", null, ELeaveValue.PUBLIC_LEAVE.toString()));
 
-			LeaveType paidLeave = leaveTypeResposity.findByName("有休");
-			leaveTypeResposity.save(new LeaveType("半休", paidLeave, ELeaveValue.HALF_DAY.toString()));
-			leaveTypeResposity.save(new LeaveType("全休", paidLeave, ELeaveValue.FULL_DAY.name()));
+			LeaveType paidLeave = leaveTypeRepository.findByName("有休");
+			leaveTypeRepository.save(new LeaveType("半休", paidLeave, ELeaveValue.HALF_DAY.toString()));
+			leaveTypeRepository.save(new LeaveType("全休", paidLeave, ELeaveValue.FULL_DAY.name()));
 
-			LeaveType publicLeave = leaveTypeResposity.findByName("公休");
-			leaveTypeResposity.save(new LeaveType("特別休暇", publicLeave, ELeaveValue.SPECIAL_LEAVE.name()));
-			leaveTypeResposity.save(new LeaveType("年末年始", publicLeave, null));
-			leaveTypeResposity.save(new LeaveType("慶弔休暇", publicLeave, null));
+			LeaveType publicLeave = leaveTypeRepository.findByName("公休");
+			leaveTypeRepository.save(new LeaveType("特別休暇", publicLeave, ELeaveValue.SPECIAL_LEAVE.name()));
+			leaveTypeRepository.save(new LeaveType("年末年始", publicLeave, null));
+			leaveTypeRepository.save(new LeaveType("慶弔休暇", publicLeave, null));
 
-			LeaveType specialLeave = leaveTypeResposity.findByName("特別休暇");
-			leaveTypeResposity.save(new LeaveType("BBQ", specialLeave, null));
-			leaveTypeResposity.save(new LeaveType("健康診断", specialLeave, null));
-			leaveTypeResposity.save(new LeaveType("夏季休暇", specialLeave, "SUMMER_DAY"));
-			leaveTypeResposity.save(new LeaveType("社員旅行", specialLeave, null));
+			LeaveType specialLeave = leaveTypeRepository.findByName("特別休暇");
+			leaveTypeRepository.save(new LeaveType("BBQ", specialLeave, null));
+			leaveTypeRepository.save(new LeaveType("健康診断", specialLeave, null));
+			leaveTypeRepository.save(new LeaveType("夏季休暇", specialLeave, "SUMMER_DAY"));
+			leaveTypeRepository.save(new LeaveType("社員旅行", specialLeave, null));
 
-			LeaveType familyLeave = leaveTypeResposity.findByName("慶弔休暇");
-			leaveTypeResposity.save(new LeaveType("本人が結婚する", familyLeave, null));
-			leaveTypeResposity.save(new LeaveType("子が結婚する", familyLeave, null));
-			leaveTypeResposity.save(new LeaveType("妻が出産する", familyLeave, null));
-			leaveTypeResposity.save(new LeaveType("父母、配偶者また子が死亡した", familyLeave, null));
-			leaveTypeResposity.save(new LeaveType("祖父母、配偶者父母、兄弟姉妹が死亡した", familyLeave, null));
+			LeaveType familyLeave = leaveTypeRepository.findByName("慶弔休暇");
+			leaveTypeRepository.save(new LeaveType("本人が結婚する", familyLeave, null));
+			leaveTypeRepository.save(new LeaveType("子が結婚する", familyLeave, null));
+			leaveTypeRepository.save(new LeaveType("妻が出産する", familyLeave, null));
+			leaveTypeRepository.save(new LeaveType("父母、配偶者また子が死亡した", familyLeave, null));
+			leaveTypeRepository.save(new LeaveType("祖父母、配偶者父母、兄弟姉妹が死亡した", familyLeave, null));
 		}
 	}
 
