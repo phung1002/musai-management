@@ -20,7 +20,7 @@ const fullName = computed(() => employeeStore.fullName);
       <VIcon size="30" icon="mdi-menu" />
     </VBtn>
     <VSpacer />
-    <VCardTitle>{{ fullName }}</VCardTitle>
+    <VCardTitle class="truncate-name">{{ fullName }}</VCardTitle>
     <ProfileDropdown />
   </VAppBar>
 </template>
@@ -30,5 +30,11 @@ const fullName = computed(() => employeeStore.fullName);
   .mobile-menu {
     display: none;
   }
+}
+.truncate-name {
+  flex-shrink: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

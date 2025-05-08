@@ -175,12 +175,9 @@
     "file_not_found_in_directory": "指定されたディレクトリにファイルが見つかりませんでした。",
     "requested_day_unavailble": "選択された日付が一致しません。",
     "cannot_delete_leave_type_have_children":"この休暇は既存のレコードと関連付けられています。",
-    "cannot_delete_leave_type_have_relation_with_employee":"この休暇は1人以上の社員と関連付けられています。",
-    "cannot_delete_leave_type_have_relation_with_leave_request": "この休暇は1つ以上の休暇申請と関連付けられています。",
+    "cannot_delete_fixed_leave_type":"この休暇種別は固定されているため、削除できません。",
     "itself_can_not_be_parent": "休暇は自分自身を親にすることはできません。",
     "name_already_taken": "この名前は既に使用されています。",
-    "cannot_delete_employee_have_request": "この社員には未処理の休暇申請があります。",
-    "cannot_delete_employee_have_leave": "この社員には割り当てられた休暇があります。",
     "exceeded_leave_days_limit":"社員は既に有効休暇日数を超える日数を使用している。",
     "auth_required_login_message": "認証が必要です。再ログインしてください。"
   },
