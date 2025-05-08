@@ -134,8 +134,6 @@ public class EmployeeLeaveServiceImpl implements EmployeeLeaveService {
 		if (employeeLeaveRequestDTO.getValidTo().isBefore(employeeLeaveRequestDTO.getValidFrom())) {
 			throw new BadRequestException("requested_day_unavailble");
 		}
-		System.out.println(employeeLeaveRequestDTO.getTotalDays());
-		System.out.println(employeeLeave.getUsedDays());
 		if(employeeLeaveRequestDTO.getTotalDays() < employeeLeave.getUsedDays()) {
 			throw new BadRequestException("exceeded_leave_days_limit");
 		}

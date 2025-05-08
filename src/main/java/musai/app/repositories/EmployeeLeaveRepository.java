@@ -18,10 +18,6 @@ public interface EmployeeLeaveRepository extends JpaRepository<EmployeeLeave, Lo
 
 	List<EmployeeLeave> findByEmployeeId(Long id);
 
-	boolean existsByLeaveTypeId(Long leaveTypeId);
- 
-	boolean existsByEmployeeId(Long id);
-
 	@Query("SELECT el FROM EmployeeLeave el WHERE el.deletedAt IS NULL AND el.employee.deletedAt IS NULL "
 			+ "AND el.leaveType.deletedAt IS NULL ORDER BY el.validTo DESC")
 	List<EmployeeLeave> findAllActive();

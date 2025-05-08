@@ -17,10 +17,9 @@ import musai.app.DTO.response.LeaveTypeParentResponseDTO;
 import musai.app.DTO.response.MessageResponse;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
+import musai.app.models.ELeaveValue;
 import musai.app.models.LeaveType;
-import musai.app.repositories.LeaveApplicationRepository;
 import musai.app.repositories.LeaveTypeRepository;
-import musai.app.repositories.EmployeeLeaveRepository;
 import musai.app.services.LeaveTypeService;
 
 @Service
@@ -28,8 +27,6 @@ import musai.app.services.LeaveTypeService;
 public class LeaveTypeServiceImpl implements LeaveTypeService {
 
 	private final LeaveTypeRepository leaveTypeRepository;
-	private final EmployeeLeaveRepository employeeLeaveRepository;
-	private final LeaveApplicationRepository leaveApplicationRepository;
 
 	// add
 	@Override
@@ -74,12 +71,11 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 
 		List<LeaveType> childrenTypes = leaveTypeRepository.findByParentId(id);
 
-		// Check relationship
-		if (employeeLeaveRepository.existsByLeaveTypeId(id)) {
-			throw new BadRequestException("cannot_delete_leave_type_have_relation_with_employee");
-		}
-		if (leaveApplicationRepository.existsByLeaveTypeId(id)) {
-			throw new BadRequestException("cannot_delete_leave_type_have_relation_with_leave_request");
+		// Can not delete summer day, allday, halfday
+		String value = existingLeaveType.getValue();
+		if (value != null && (value.equals(ELeaveValue.HALF_DAY.name()) || value.equals(ELeaveValue.FULL_DAY.name())
+				|| value.equals(ELeaveValue.SUMMER_DAY.name()))) {
+			throw new BadRequestException("cannot_delete_fixed_leave_type");
 		}
 
 		if (!childrenTypes.isEmpty()) {

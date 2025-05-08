@@ -11,10 +11,6 @@ import musai.app.models.LeaveApplication;
 
 @Repository
 public interface LeaveApplicationRepository extends JpaRepository<LeaveApplication, Long> {
-
-	 boolean existsByLeaveTypeId(Long leaveTypeId);
-	 
-	 boolean existsByEmployeeId(Long employeeId);
 	 
 	// 削除されていない全データを取得
 	@Query("SELECT la FROM LeaveApplication la WHERE la.employee.deletedAt IS NULL "

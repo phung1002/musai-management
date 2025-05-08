@@ -14,18 +14,16 @@ import org.springframework.util.StringUtils;
 import lombok.AllArgsConstructor;
 import musai.app.DTO.request.ChangePasswordRequestDTO;
 import musai.app.DTO.request.EmployeeRequestDTO;
-import musai.app.DTO.response.MessageResponse;
 import musai.app.DTO.response.EmployeeResponseDTO;
+import musai.app.DTO.response.MessageResponse;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.ForbiddenException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.ERole;
-import musai.app.models.Role;
 import musai.app.models.Employee;
-import musai.app.repositories.LeaveApplicationRepository;
-import musai.app.repositories.RoleRepository;
-import musai.app.repositories.EmployeeLeaveRepository;
+import musai.app.models.Role;
 import musai.app.repositories.EmployeeRepository;
+import musai.app.repositories.RoleRepository;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.EmployeeService;
 
@@ -33,8 +31,6 @@ import musai.app.services.EmployeeService;
 @AllArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 	private final EmployeeRepository employeeRepository;
-	private final EmployeeLeaveRepository employeeLeaveRepository;
-	private final LeaveApplicationRepository leaveApplicationRepository;
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder encoder;
 
@@ -153,7 +149,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		}
 
 		if (!existingUser.getEmail().equals(employeeRequestDTO.getEmail())
-				&& employeeRepository.countByEmailIgnoreSoftDelete(employeeRequestDTO.getEmail()) >0 ) {
+				&& employeeRepository.countByEmailIgnoreSoftDelete(employeeRequestDTO.getEmail()) > 0) {
 			throw new BadRequestException("email_already_exists");
 		}
 
@@ -223,13 +219,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		}
 		Employee existingUser = employeeRepository.findById(employeeId)
 				.orElseThrow(() -> new NotFoundException("employee_not_exist"));
-		// Check relationship
-		if (employeeLeaveRepository.existsByEmployeeId(employeeId)) {
-			throw new BadRequestException("cannot_delete_employee_have_leave");
-		}
-		if (leaveApplicationRepository.existsByEmployeeId(employeeId)) {
-			throw new BadRequestException("cannot_delete_employee_have_request");
-		}
+
 		existingUser.setDeletedAt(LocalDateTime.now());
 		employeeRepository.save(existingUser); // Update deleted_at
 		return new MessageResponse("delete_success");
