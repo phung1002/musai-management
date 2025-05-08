@@ -2,14 +2,12 @@ package musai.app.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import musai.app.models.Employee;
 import musai.app.models.EmployeeLeave;
 import musai.app.models.LeaveType;
@@ -21,63 +19,98 @@ import musai.app.services.PaidLeaveGrantService;
 @Service
 public class PaidLeaveGrantServiceImpl implements PaidLeaveGrantService {
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+	@Autowired
+	private EmployeeRepository employeeRepository;
 
-    @Autowired
-    private EmployeeLeaveRepository employeeLeaveRepository;
+	@Autowired
+	private EmployeeLeaveRepository employeeLeaveRepository;
 
-    @Autowired
-    private LeaveTypeRepository leaveTypeRepository;
+	@Autowired
+	private LeaveTypeRepository leaveTypeRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(PaidLeaveGrantService.class);
+	private static final Logger logger = LoggerFactory.getLogger(PaidLeaveGrantService.class);
 
-    public void grantPaidLeave() {
-        logger.info("有給休暇の付与処理を開始します...");
+	@Transactional
+	public void grantPaidLeave() {
+		logger.info("Starting the paid leave granting process...");
 
-        LeaveType paidLeaveType = leaveTypeRepository.findByValue("PAID_LEAVE");
-        if (paidLeaveType == null) {
-            logger.error("有給休暇の種類 'PAID_LEAVE' が見つかりません。");
-            return;
-        }
+		LeaveType paidLeaveType = leaveTypeRepository.findByValue("PAID_LEAVE");
+		if (paidLeaveType == null) {
+			logger.error("Could not find 'PAID_LEAVE' leave type.");
+			return;
+		}
 
-        List<Employee> allEmployees = employeeRepository.findAll();
+		List<Employee> allEmployees = employeeRepository.findAll();
+		for (Employee employee : allEmployees) {
+			processEmployeeGrant(employee, paidLeaveType);
+		}
 
-        for (Employee employee : allEmployees) {
-            LocalDate joinDate = employee.getJoinDate();
-            if (joinDate == null) continue;
+		logger.info("Paid leave granting process completed.");
+	}
 
-            long monthsWorked = ChronoUnit.MONTHS.between(joinDate, LocalDate.now());
+	private void processEmployeeGrant(Employee employee, LeaveType paidLeaveType) {
+		LocalDate joinDate = employee.getJoinDate();
+		if (joinDate == null)
+			return;
 
-            if (monthsWorked < 6) continue; // 入社6ヶ月未満
+		long monthsWorked = ChronoUnit.MONTHS.between(joinDate, LocalDate.now());
+		if (monthsWorked < 6)
+			return;
 
-            List<EmployeeLeave> existingGrants = employeeLeaveRepository.findByEmployeeAndLeaveType(employee, paidLeaveType);
+		List<EmployeeLeave> existingGrants = employeeLeaveRepository.findByEmployeeAndLeaveType(employee,
+				paidLeaveType);
 
-            int grantsSoFar = existingGrants.size();
-            int expectedGrants = (int) ((monthsWorked - 6) / 12) + 1;
+		int grantsSoFar = existingGrants.size();
+		int expectedGrants = (int) ((monthsWorked - 6) / 12) + 1;
 
-            if (grantsSoFar >= expectedGrants) continue; // すでに付与済み
+		for (int i = grantsSoFar; i < expectedGrants; i++) {
+			int daysToGrant = calculatePaidLeaveDays(joinDate, i);
+			if (daysToGrant == 0)
+				continue;
 
-            int days = 10 + (expectedGrants - 1);
+			LocalDate validFrom = joinDate.plusMonths(6).plusYears(i);
+			LocalDate validTo = validFrom.plusYears(2);
 
-            LocalDate validFrom = joinDate.plusMonths(6).plusYears(expectedGrants - 1);
-            LocalDate validTo = validFrom.plusYears(2);
+			EmployeeLeave newLeave = new EmployeeLeave();
+			newLeave.setEmployee(employee);
+			newLeave.setLeaveType(paidLeaveType);
+			newLeave.setTotalDays((double) daysToGrant);
+			newLeave.setUsedDays(0.0);
+			newLeave.setRemainedDays((double) daysToGrant);
+			newLeave.setValidFrom(validFrom);
+			newLeave.setValidTo(validTo);
 
-            EmployeeLeave newLeave = new EmployeeLeave();
-            newLeave.setEmployee(employee);
-            newLeave.setLeaveType(paidLeaveType);
-            newLeave.setTotalDays((double) days);
-            newLeave.setUsedDays(0.0);
-            newLeave.setRemainedDays((double) days);
-            newLeave.setValidFrom(validFrom);
-            newLeave.setValidTo(validTo);
+			employeeLeaveRepository.save(newLeave);
 
-            employeeLeaveRepository.save(newLeave);
+			logger.info("Employee: {}, granted {} days of paid leave (valid period: {} ～ {})", employee.getFullName(),
+					daysToGrant, validFrom, validTo);
+		}
+	}
 
-            logger.info("社員: {}, {}日分の有給休暇を付与しました（有効期間: {} ～ {}）", 
-                        employee.getFullName(), days, validFrom, validTo);
-        }
+	private int calculatePaidLeaveDays(LocalDate joinDate, int grantIndex) {
+		long monthsWorked = ChronoUnit.MONTHS.between(joinDate, LocalDate.now());
+		int monthsRequired = 6 + grantIndex * 12;
 
-        logger.info("有給休暇の付与処理が完了しました。");
-    }
+		if (monthsWorked < monthsRequired) {
+			return 0;
+		}
+
+		switch (grantIndex) {
+		case 0:
+			return 10; // 6ヶ月
+		case 1:
+			return 11; // 1年6ヶ月
+		case 2:
+			return 12; // 2年6ヶ月
+		case 3:
+			return 14; // 3年6ヶ月
+		case 4:
+			return 16; // 4年6ヶ月
+		case 5:
+			return 18; // 5年6ヶ月
+		default:
+			return 20; // 6年6ヶ月以上
+		}
+	}
+
 }
