@@ -42,7 +42,7 @@ public class LeaveType {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "name") // Assuming name refers to the type of leave (e.g., Vacation, Sick Leave)
+	@Column(name = "name")
 	private String name;
 	
 	@Column(name = "value")
