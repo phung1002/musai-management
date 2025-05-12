@@ -112,3 +112,15 @@ a,
   gap: 10px; 
   margin-left: 20%;
 }
+.v-main{
+  background-color: #d4edff !important;
+}
+.v-table, .v-table__wrapper {
+  border-radius: 12px !important;
+}
+.v-table thead {
+  background-color: rgba(0, 86, 247, 0.2) !important;
+}
+.v-data-table-footer .v-input{
+width: 110px !important;
+}

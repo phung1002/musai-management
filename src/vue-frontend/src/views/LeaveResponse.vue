@@ -243,10 +243,7 @@ onMounted(() => {
   background-color: #ebf5f8;
 }
 
-::v-deep(thead) {
-  background-color: rgba(0, 86, 247, 0.2) !important;
-}
 ::v-deep(.data-table table) {
   min-width: 853px !important;
-}
+} 
 </style>

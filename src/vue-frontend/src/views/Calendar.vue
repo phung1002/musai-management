@@ -97,44 +97,48 @@ onMounted(fetchEvents);
 </script>
 <template>
   <VContainer>
-    <VCalendar
-      :events="events"
-      event-text-color="#fff"
-      event-overlap-mode="column"
-      color="primary"
-      hide-week-number
-      :day-class="getDayClass"
-    >
-      <template #event="{ day, event }">
-        <template v-if="shouldDisplayEvent(day, event)">
-          <template
-            v-for="(ev) in getEventsByDate(new Date((day as ICalendarDay).date)).slice(0, 3)"
-            :key="ev.title"
-          >
-            <VTooltip location="top">
-              <template #activator="{ props }">
-                <div
-                  v-bind="props"
-                  class="custom-event"
-                  :style="getEventStyle(ev.color)"
-                >
+    <VCard flat elevation="0">
+      <VCardItem>
+        <VCalendar
+          class="p-2"
+          :events="events"
+          event-text-color="#fff"
+          event-overlap-mode="column"
+          color="primary"
+          hide-week-number
+          :day-class="getDayClass"
+        >
+          <template #event="{ day, event }">
+            <template v-if="shouldDisplayEvent(day, event)">
+              <template
+                v-for="(ev) in getEventsByDate(new Date((day as ICalendarDay).date)).slice(0, 3)"
+                :key="ev.title"
+              >
+                <VTooltip location="top">
+                  <template #activator="{ props }">
+                    <div
+                      v-bind="props"
+                      class="custom-event"
+                      :style="getEventStyle(ev.color)"
+                    >
+                      {{ ev.title }}
+                    </div>
+                  </template>
                   {{ ev.title }}
-                </div>
+                </VTooltip>
               </template>
-              {{ ev.title }}
-            </VTooltip>
+              <div
+                v-if="getEventsByDate(new Date((day as ICalendarDay).date)).length > 3"
+                class="more-events"
+                @click="handleMoreClick(new Date((day as ICalendarDay).date))"
+              >
+                <VIcon size="18" icon="mdi-dots-horizontal" />
+              </div>
+            </template>
           </template>
-          <div
-            v-if="getEventsByDate(new Date((day as ICalendarDay).date)).length > 3"
-            class="more-events"
-            @click="handleMoreClick(new Date((day as ICalendarDay).date))"
-          >
-            <VIcon size="18" icon="mdi-dots-horizontal" />
-          </div>
-        </template>
-      </template>
-    </VCalendar>
-
+        </VCalendar>
+      </VCardItem>
+    </VCard>
     <VDialog v-model="dialog" width="400">
       <VCard>
         <VCardTitle>{{ t("employees_on_leave") }}</VCardTitle>
@@ -179,7 +183,7 @@ onMounted(fetchEvents);
   color: rgb(180, 0, 0) !important;
 }
 .v-calendar-weekly__head-weekday:nth-child(n + 2):nth-child(-n + 6) {
-  background-color: rgba(0, 86, 247, 0.2);
+  background-color: rgba(0, 86, 247, 0.397);
   color: rgba(0, 14, 136, 0.945) !important;
 }
 .v-calendar-month__days > .v-calendar-month__day {
@@ -198,5 +202,8 @@ onMounted(fetchEvents);
   color: #1976d2;
   margin-top: 4px;
   text-align: center;
+}
+.v-card {
+  background-color: rgb(var(--v-theme-background));
 }
 </style>

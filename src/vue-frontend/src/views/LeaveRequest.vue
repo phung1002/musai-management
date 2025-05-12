@@ -302,12 +302,9 @@ const getStatusColor = (status: string) => {
   background-color: #f5f5f5;
 }
 
-::v-deep(thead) {
-  background-color: rgba(0, 86, 247, 0.2) !important;
-}
 ::v-deep(.data-table table) {
   min-width: 808px !important;
-}
+} 
 ::v-deep(.table-leave-of-employee table *){
   padding-right: 0px !important;
 }
