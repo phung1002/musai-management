@@ -212,7 +212,7 @@ onMounted(() => {
                     class="action-btn"
                     @click="details(item)"
                   >
-                    <VIcon color="black">mdi-information-outline</VIcon>
+                    <VIcon color="grey">mdi-information</VIcon>
                   </VBtn>
                   <VBtn
                     icon

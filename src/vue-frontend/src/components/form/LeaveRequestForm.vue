@@ -195,7 +195,10 @@ const onConfirm = async () => {
       }
     }
   }
-  if (halfDayId == paidBox.value || props.application?.leaveTypeValue == ELeaveType.HALF_DAY) {
+  if (
+    halfDayId == paidBox.value ||
+    props.application?.leaveTypeValue == ELeaveType.HALF_DAY
+  ) {
     if (formModel.value.startDate != formModel.value.endDate) {
       toast.error(t("error.half_day_date_must_match"));
       return;
@@ -352,7 +355,6 @@ const handleCancel = () => {
             </VRow>
           </VCardText>
         </VTable>
-        <VDivider />
         <VTable>
           <VCardText class="px-7">
             <VRow>
@@ -365,6 +367,7 @@ const handleCancel = () => {
                   :rules="[validator.required, validator.validateNoWeekend]"
                   input
                   type="date"
+                  class="calendar-icon-right"
                 />
               </VCol>
             </VRow>
@@ -382,6 +385,7 @@ const handleCancel = () => {
                   ]"
                   input
                   type="date"
+                  class="calendar-icon-right"
                 />
               </VCol>
             </VRow>
@@ -399,7 +403,6 @@ const handleCancel = () => {
             </VRow>
           </VCardText>
         </VTable>
-        <VDivider />
       </VContainer>
     </VForm>
     <VCardActions>
@@ -428,3 +431,9 @@ const handleCancel = () => {
     </VDialog>
   </VCard>
 </template>
+<style scoped>
+.v-table,
+.v-table__wrapper {
+  border-radius: 0px !important;
+}
+</style>

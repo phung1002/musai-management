@@ -22,7 +22,7 @@ const isLoading = ref(false);
 const isError = ref(false);
 const isConfirmDialogVisible = ref(false);
 const employeeLeaves = ref([
-  { leaveTypeName: "", remainedDays: 0, validTo: "" },
+  { leaveTypeName: "", remainedDays: 0, validFrom: "", validTo: "" },
 ]);
 const keyWord = ref("");
 
@@ -47,6 +47,7 @@ const openUpdateDialog = (application: ILeaveRequest) => {
 const headersUserLeave = ref([
   { title: t("leave_type"), key: "leaveTypeName", sortable: false },
   { title: t("available_leaves"), key: "remainedDays", sortable: false },
+  { title: t("leave_start"), key: "validFrom", sortable: false },
   { title: t("leave_expired"), key: "validTo", sortable: false },
 ]);
 // テーブル　ヘッダー
@@ -63,9 +64,10 @@ const loadEmployeeLeave = async () => {
   try {
     let response = await getEmployeeLeavesForMember();
     employeeLeaves.value = response.map(
-      ({ leaveTypeName, remainedDays, validTo }) => ({
+      ({ leaveTypeName, remainedDays, validFrom, validTo }) => ({
         leaveTypeName,
         remainedDays,
+        validFrom,
         validTo,
       })
     );
@@ -144,7 +146,7 @@ const getStatusColor = (status: string) => {
   <VRow>
     <VCol cols="12">
       <VContainer class="app-container">
-        <VCardText class="d-flex justify-end">
+        <div class="d-flex justify-end pb-6">
           <VDataTable
             :headers="headersUserLeave"
             :items="employeeLeaves"
@@ -154,7 +156,7 @@ const getStatusColor = (status: string) => {
             hide-default-footer
             :no-data-text="t('no_leave_day')"
           />
-        </VCardText>
+        </div>
 
         <VCard flat elevation="0">
           <VToolbar tag="div">
@@ -309,6 +311,6 @@ const getStatusColor = (status: string) => {
   padding-right: 0px !important;
 }
 ::v-deep(.table-leave-of-employee table) {
-  min-width: 251px !important;
+  min-width: 334px !important;
 }
 </style>

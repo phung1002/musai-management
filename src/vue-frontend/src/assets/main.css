@@ -124,3 +124,12 @@ a,
 .v-data-table-footer .v-input{
 width: 110px !important;
 }
+.calendar-icon-right input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  opacity: 1;
+  filter: invert(0.5);
+}
