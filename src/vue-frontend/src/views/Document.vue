@@ -360,7 +360,7 @@ onMounted(() => {
           :items-per-page-text="t('items_per_page')"
           :headers="headersOnDay"
           :no-data-text="t('no_records_found')"
-          class="data-table"
+          class="data-table-day"
         >
           <template v-slot:item.number="{ index }">
             {{ index + 1 }}
@@ -452,6 +452,13 @@ onMounted(() => {
 
 ::v-deep(.data-table table) {
   min-width: 663px !important;
+}
+::v-deep(.data-table-day .v-table) {
+  overflow-x: auto;
+  display: block;
+}
+::v-deep(.data-table-day table) {
+  min-width: 450px !important;
 }
 ::v-deep(.v-calendar-header) {
   background-color: rgba(0, 86, 247, 0.2) !important;
