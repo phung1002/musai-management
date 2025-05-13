@@ -61,7 +61,7 @@ const fetchEmployees = async (searchQuery: string = "") => {
     // 検索キーワードが空でも呼び出せる
     const response = await getAllEmployees(searchQuery);
     loadEmployee(response);
-  } catch (error:any) {
+  } catch (error: any) {
     isError.value = true;
     toast.error(t(error.message));
   } finally {
@@ -145,7 +145,7 @@ onMounted(() => {
               </VBtn>
             </VCardActions>
           </VToolbar>
-          <VDivider/>
+          <VDivider />
           <!-- Search -->
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>

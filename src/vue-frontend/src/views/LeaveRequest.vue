@@ -83,7 +83,7 @@ const fetchLeaveRequests = async (searchQuery: string = "") => {
     leaveRequests.value = response.map((leaveRequestList: ILeaveRequest) => ({
       ...leaveRequestList,
     }));
-  } catch (error:any) {
+  } catch (error: any) {
     isError.value = true;
     toast.error(t(error.message));
   } finally {
@@ -175,7 +175,7 @@ const getStatusColor = (status: string) => {
               </VBtn>
             </VCardActions>
           </VToolbar>
-          <VDivider/>
+          <VDivider />
           <!-- 検索バー -->
           <VCardItem class="py-0">
             <VToolbar tag="div" color="transparent" flat>
@@ -306,11 +306,11 @@ const getStatusColor = (status: string) => {
 
 ::v-deep(.data-table table) {
   min-width: 808px !important;
-} 
-::v-deep(.table-leave-of-employee table *){
+}
+::v-deep(.table-leave-of-employee table *) {
   padding-right: 0px !important;
 }
 ::v-deep(.table-leave-of-employee table) {
-  min-width: 334px !important;
+  min-width: 340px !important;
 }
 </style>

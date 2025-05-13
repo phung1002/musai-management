@@ -249,7 +249,6 @@ const onConfirmed = async () => {
             </VRow>
           </VCardText>
         </VTable>
-        <VDivider />
       </VContainer>
     </VForm>
     <VCardActions>
