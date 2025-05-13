@@ -77,7 +77,8 @@
   "delete_confirm_message": "Are you sure to delete?",
   "cancel_confirm_message": "Are you sure to cancel?",
   "revoked_confirm_message": "Are you sure to revoked?",
-  "employees_on_leave": "List of employees on leave",
+  "employees_on_leave": "List employees on leave",
+  "list_documents": "List documents",
   "close": "Close",
   "yes": "Yes",
   "no": "No",
@@ -114,6 +115,7 @@
   "no_leave_day": "The leave has not yet been accrued.",
   "back_home": "Back to home",
   "back_login": "Back to login",
+  "switch_view": "Switch view",
   "message": {
     "list_failure": "Failed to fetch data. Please try again.",
     "add_success": "Addition successful!",

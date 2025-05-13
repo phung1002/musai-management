@@ -3,6 +3,7 @@
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { handleLogout } from "@/api/auth";
+import logoImg from "@/assets/images/logo.png";
 const { t } = useI18n();
 const router = useRouter();
 const backHome = () => {
@@ -16,6 +17,7 @@ const backHome = () => {
   <div class="page-notfound">
     <div class="notfound pr-4">
       <div class="notfound-emoji"></div>
+      <VImg class="logo-img pb-4" :src="logoImg" alt="logo" max-width="200px" />
       <h2>{{ t("message.unauthorized") }}</h2>
       <p>{{ t("message.unauthorized_description") }}</p>
       <VBtn @click="backHome()" class="mb-2 mr-4">{{ t("back_home") }}</VBtn>

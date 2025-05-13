@@ -130,7 +130,7 @@ onMounted(() => {
           </VCardItem>
           <VDivider />
           <!-- 休暇タイプタブ設定 -->
-          <VTable>
+          <VTable  class="card-item-tab">
             <VCardItem>
               <VTabs v-model="selectedTab" color="primary" >
                 <VTab v-for="tab in tabs" :key="tab.title" :value="tab.tab">
@@ -148,14 +148,14 @@ onMounted(() => {
                   class="data-table"
                   v-if="!isLoading && !isError"
                 >
-                  <!-- 表示　番号設定  -->
+                  <!-- 表示番号設定  -->
                   <template v-slot:item.number="{ index }">
                     {{ index + 1 }}
                   </template>
                   <template v-slot:item.employeeFullName="{ item }">
                     <td>{{ shortenFileName(item.employeeFullName) }}</td>
                   </template>
-                  <!-- アクション　設定  -->
+                  <!-- アクション設定  -->
                   <template v-slot:item.action="{ item }">
                     <div class="action-buttons">
                       <VBtn
@@ -221,10 +221,11 @@ onMounted(() => {
   background-color: #f5f5f5;
 }
 
-::v-deep(thead) {
-  background-color: rgba(0, 86, 247, 0.2) !important;
-}
 ::v-deep(.data-table table) {
   min-width: 1015px !important;
+}
+.card-item-tab, .v-table__wrapper{
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
 }
 </style>

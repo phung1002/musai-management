@@ -177,7 +177,7 @@ onMounted(() => {
                     class="action-btn"
                     @click="details(item)"
                   >
-                    <VIcon color="black">mdi-information-outline</VIcon>
+                  <VIcon color="grey">mdi-information</VIcon>
                   </VBtn>
                   <VBtn
                     icon
@@ -243,10 +243,7 @@ onMounted(() => {
   background-color: #ebf5f8;
 }
 
-::v-deep(thead) {
-  background-color: rgba(0, 86, 247, 0.2) !important;
-}
 ::v-deep(.data-table table) {
   min-width: 853px !important;
-}
+} 
 </style>

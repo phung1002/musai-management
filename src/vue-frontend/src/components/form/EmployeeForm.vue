@@ -22,6 +22,8 @@ const employeeStore = useEmployeeStore();
 const formatDate = (date: string | null) =>
   date ? new Date(date).toISOString() : null;
 
+const showPass = ref(false);
+const showConfirmPass = ref(false);
 const { t } = useI18n();
 const validator = useValidator(t);
 const isDialogVisible = ref(false);
@@ -238,7 +240,9 @@ const handleCancel = () => {
                   variant="outlined"
                   color="primary"
                   name="password"
-                  type="password"
+                  :type="showPass ? 'text' : 'password'"
+                  :append-inner-icon="showPass ? 'mdi-eye-off' : 'mdi-eye'"
+                  @click:append-inner="showPass = !showPass"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -249,7 +253,11 @@ const handleCancel = () => {
                   variant="outlined"
                   color="primary"
                   name="confirmPassword"
-                  type="password"
+                  :type="showConfirmPass ? 'text' : 'password'"
+                  :append-inner-icon="
+                    showConfirmPass ? 'mdi-eye-off' : 'mdi-eye'
+                  "
+                  @click:append-inner="showConfirmPass = !showConfirmPass"
                 />
               </VCol>
             </VRow>
@@ -286,6 +294,7 @@ const handleCancel = () => {
                   name="birthday"
                   input
                   type="date"
+                  class="calendar-icon-right"
                 />
               </VCol>
               <VCol cols="6" md="3">
@@ -320,7 +329,7 @@ const handleCancel = () => {
                   name="workPlace"
                 />
               </VCol>
-              <VCol cols="6" md="3">
+              <VCol cols="12" md="6">
                 <VLabel>{{ t("join_date") }}</VLabel>
                 <VTextField
                   v-model="formattedJoinDate"
@@ -330,6 +339,7 @@ const handleCancel = () => {
                   name="joinDate"
                   input
                   type="date"
+                  class="calendar-icon-right"
                 />
               </VCol>
             </VRow>

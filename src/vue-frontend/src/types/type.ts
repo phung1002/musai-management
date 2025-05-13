@@ -69,8 +69,12 @@ export interface IDocument {
   title: string;
   uploadBy: string;
   filePath: string;
-  submitDate: string;
+  uploadAt: string;
   employeeId: string;
+  start: Date;
+  end: Date;
+  color: string;
+  allDay: boolean;
 }
 
 export interface IEvent {

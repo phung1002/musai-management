@@ -333,6 +333,7 @@ const onConfirmed = async () => {
                   name="validFrom"
                   input
                   type="date"
+                  class="calendar-icon-right"
                 />
               </VCol>
               <VCol cols="12" md="4">
@@ -345,12 +346,12 @@ const onConfirmed = async () => {
                   name="validTo"
                   input
                   type="date"
+                  class="calendar-icon-right"
                 />
               </VCol>
             </VRow>
           </VCardText>
         </VTable>
-        <VDivider />
       </v-container>
     </VForm>
     <VCardActions>

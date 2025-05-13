@@ -69,7 +69,7 @@ onUnmounted(() => {
   <VCard class="v-card-form">
     <VToolbar tag="div">
       <VToolbarTitle>
-        <VIcon icon="mdi-file-upload-outline" /> {{ t("pdf_view") }}
+        <VIcon icon="mdi-file-upload-outline" /> {{ props.pdfTitle }}
       </VToolbarTitle>
       <VBtn @click="handleCancel" icon :disabled="false">
         <VIcon icon="mdi-close" />

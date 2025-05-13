@@ -212,7 +212,7 @@ onMounted(() => {
                     class="action-btn"
                     @click="details(item)"
                   >
-                    <VIcon color="black">mdi-information-outline</VIcon>
+                    <VIcon color="grey">mdi-information</VIcon>
                   </VBtn>
                   <VBtn
                     icon
@@ -292,9 +292,7 @@ onMounted(() => {
 .action-btn:hover {
   background-color: #f5f5f5;
 }
-::v-deep(thead) {
-  background-color: rgba(0, 86, 247, 0.2) !important;
-}
+
 .data-table .v-table {
   overflow-x: auto;
   display: block;

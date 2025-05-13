@@ -69,7 +69,7 @@ public class PaidLeaveGrantServiceImpl implements PaidLeaveGrantService {
 				continue;
 
 			LocalDate validFrom = joinDate.plusMonths(6).plusYears(i);
-			LocalDate validTo = validFrom.plusYears(2);
+			LocalDate validTo = validFrom.plusYears(2).minusDays(1);
 
 			EmployeeLeave newLeave = new EmployeeLeave();
 			newLeave.setEmployee(employee);
