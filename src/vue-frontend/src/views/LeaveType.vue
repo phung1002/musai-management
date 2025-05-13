@@ -39,7 +39,7 @@ const fetchLeaveType = async (searchQuery: string = "") => {
     // 検索キーワードが空でも呼び出せる
     const response = await getLeaves(searchQuery); // API呼び出
     loadLeave(response); // リスト更新
-  } catch (error : any) {
+  } catch (error: any) {
     isError.value = true;
     toast.error(t(error.message));
   } finally {
@@ -86,7 +86,7 @@ const onDeleted = async () => {
     toast.success(t("message.delete_success"));
     fetchLeaveType(); // リスト更新
   } catch (error: any) {
-      toast.error(t(error.message));
+    toast.error(t(error.message));
   } finally {
     isDialogVisible.value = false;
   }
@@ -232,5 +232,5 @@ onMounted(() => {
 
 ::v-deep(.data-table table) {
   min-width: 312px !important;
-} 
+}
 </style>

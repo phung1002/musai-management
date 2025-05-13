@@ -24,9 +24,9 @@ a,
   position: relative !important;
 }
 
-@media (min-width: 350px) {
+@media (min-width: 390px) {
   .v-card-form{
-    width: 350px !important;
+    width: 375px !important;
   }
   .profile-card{
     min-width: 300px;
@@ -70,7 +70,11 @@ a,
     font-size: 0.8rem;
   }
 }
-
+@media (max-width: 400px) {
+  .v-calendar-header__title {
+    font-size: 1.25rem !important;
+  }
+}
 .error-message{
   color: red !important;
   font-size: 0.875rem !important;

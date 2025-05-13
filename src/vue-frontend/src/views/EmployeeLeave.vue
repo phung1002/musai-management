@@ -39,9 +39,13 @@ const headers = reactive([
 const filteredLeaves = computed(() => {
   switch (selectedTab.value) {
     case "paid_leave":
-      return employeeLeaves.value.filter(leave => leave.leaveTypeValue === "PAID_LEAVE");
+      return employeeLeaves.value.filter(
+        (leave) => leave.leaveTypeValue === "PAID_LEAVE"
+      );
     case "public_leave":
-      return employeeLeaves.value.filter(leave => leave.leaveTypeValue === "SUMMER_DAY");
+      return employeeLeaves.value.filter(
+        (leave) => leave.leaveTypeValue === "SUMMER_DAY"
+      );
     default:
       return employeeLeaves.value;
   }
@@ -108,31 +112,12 @@ onMounted(() => {
               </VBtn>
             </VCardActions>
           </VToolbar>
-          <VDivider />
-          <!-- 検索バー -->
-          <VCardItem class="py-0">
-            <VToolbar tag="div" color="transparent" flat>
-              <VTextField
-                v-model="keyWord"
-                :prepend-icon="'mdi-filter-variant'"
-                :placeholder="t('type_something')"
-                hide-details
-                clearable
-                variant="plain"
-                class="search"
-                @click:clear="handleClear"
-                @keyup.enter="handleSearch"
-              />
-              <VBtn icon density="comfortable" @click="handleSearch">
-                <VIcon>mdi-magnify</VIcon>
-              </VBtn>
-            </VToolbar>
-          </VCardItem>
+
           <VDivider />
           <!-- 休暇タイプタブ設定 -->
-          <VTable  class="card-item-tab">
+          <VTable background-color="white">
             <VCardItem>
-              <VTabs v-model="selectedTab" color="primary" >
+              <VTabs v-model="selectedTab" color="primary">
                 <VTab v-for="tab in tabs" :key="tab.title" :value="tab.tab">
                   <v-icon>{{ tab.icon }}</v-icon>
                   {{ tab.title }}
@@ -141,6 +126,26 @@ onMounted(() => {
               <VWindow v-model="selectedTab" :touch="false">
                 <VWindowItem value="paid_leave"></VWindowItem>
                 <VWindowItem value="public_leave"></VWindowItem>
+                <VDivider />
+                <!-- 検索バー -->
+                <VCardItem class="py-0">
+                  <VToolbar tag="div" color="transparent" flat>
+                    <VTextField
+                      v-model="keyWord"
+                      :prepend-icon="'mdi-filter-variant'"
+                      :placeholder="t('type_something')"
+                      hide-details
+                      clearable
+                      variant="plain"
+                      class="search"
+                      @click:clear="handleClear"
+                      @keyup.enter="handleSearch"
+                    />
+                    <VBtn icon density="comfortable" @click="handleSearch">
+                      <VIcon>mdi-magnify</VIcon>
+                    </VBtn>
+                  </VToolbar>
+                </VCardItem>
                 <VDataTable
                   :items-per-page-text="t('items_per_page')"
                   :headers="headers"
@@ -165,11 +170,7 @@ onMounted(() => {
                         @click="handleEditItem(item)"
                       >
                         <VIcon color="blue">mdi-pencil</VIcon>
-                        <VDialog
-                          v-model="editForm"
-                          width="auto"
-                        >
-                        </VDialog>
+                        <VDialog v-model="editForm" width="auto"> </VDialog>
                       </VBtn>
                     </div>
                   </template>
@@ -224,8 +225,14 @@ onMounted(() => {
 ::v-deep(.data-table table) {
   min-width: 1015px !important;
 }
-.card-item-tab, .v-table__wrapper{
+::v-deep(.v-table__wrapper) {
+  background-color: #f8f7fa !important;
   border-top-left-radius: 0px !important;
   border-top-right-radius: 0px !important;
+}
+::v-deep(.data-table .v-table__wrapper) {
+  background-color: #fff !important;
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
 }
 </style>
