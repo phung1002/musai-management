@@ -42,4 +42,6 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	@Query("SELECT la FROM LeaveApplication la WHERE la.employee.deletedAt IS NULL "
 			+ "AND la.leaveType.deletedAt IS NULL AND la.status = 'APPROVED'")
 	public List<LeaveApplication> getApprovedLeaveApplications();
+
+	List<LeaveApplication> findByEmployeeId(Long employeeId);
 }

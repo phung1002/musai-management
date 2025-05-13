@@ -21,8 +21,12 @@ import musai.app.exception.ForbiddenException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.ERole;
 import musai.app.models.Employee;
+import musai.app.models.EmployeeLeave;
+import musai.app.models.LeaveApplication;
 import musai.app.models.Role;
+import musai.app.repositories.EmployeeLeaveRepository;
 import musai.app.repositories.EmployeeRepository;
+import musai.app.repositories.LeaveApplicationRepository;
 import musai.app.repositories.RoleRepository;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.EmployeeService;
@@ -31,6 +35,8 @@ import musai.app.services.EmployeeService;
 @AllArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 	private final EmployeeRepository employeeRepository;
+	private final EmployeeLeaveRepository employeeLeaveRepository; // Add 
+	private final LeaveApplicationRepository leaveApplicationRepository; // Add 
 	private final RoleRepository roleRepository;
 	private final PasswordEncoder encoder;
 
@@ -220,8 +226,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Employee existingUser = employeeRepository.findById(employeeId)
 				.orElseThrow(() -> new NotFoundException("employee_not_exist"));
 
+
+		// Xóa mềm EmployeeLeave, LeaveApplication 
+		List<EmployeeLeave> leaves = employeeLeaveRepository.findByEmployeeId(employeeId);;
+		leaves.forEach(leave -> leave.setDeletedAt(LocalDateTime.now()));
+		employeeLeaveRepository.saveAll(leaves);
+
+		List<LeaveApplication> applications = leaveApplicationRepository.findByEmployeeId(employeeId);
+		applications.forEach(app -> app.setDeletedAt(LocalDateTime.now()));
+		leaveApplicationRepository.saveAll(applications);
+		
+		// Xóa mềm nhân viên
 		existingUser.setDeletedAt(LocalDateTime.now());
-		employeeRepository.save(existingUser); // Update deleted_at
+		employeeRepository.save(existingUser);
+		
 		return new MessageResponse("delete_success");
 	}
 
