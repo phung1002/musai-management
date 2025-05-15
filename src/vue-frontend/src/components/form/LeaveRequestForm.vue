@@ -356,12 +356,10 @@ const handleCancel = () => {
           </VCardText>
         </VTable>
         <VTable>
-          <VCardText class="px-7">
+          <VCardText class="px-7 pt-0">
             <VRow>
-              <VCol cols="3" class="d-flex align-center">
+              <VCol cols="12" md="6">
                 <VLabel class="mr-2">{{ t("leave_duration_from") }}</VLabel>
-              </VCol>
-              <VCol cols="9">
                 <VTextField
                   v-model="formModel.startDate"
                   :rules="[validator.required, validator.validateNoWeekend]"
@@ -370,12 +368,8 @@ const handleCancel = () => {
                   class="calendar-icon-right"
                 />
               </VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="3" class="d-flex align-center">
+              <VCol cols="12" md="6">
                 <VLabel class="mr-2">{{ t("leave_duration_to") }}</VLabel>
-              </VCol>
-              <VCol cols="9">
                 <VTextField
                   v-model="formModel.endDate"
                   :rules="[
@@ -388,12 +382,8 @@ const handleCancel = () => {
                   class="calendar-icon-right"
                 />
               </VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="3" class="d-flex align-center">
+              <VCol cols="12">
                 <VLabel class="mr-2">{{ t("leave_reason") }}</VLabel>
-              </VCol>
-              <VCol cols="9">
                 <VTextField
                   v-model="formModel.reason"
                   :rules="[validator.required]"

@@ -26,7 +26,7 @@ a,
 
 @media (min-width: 390px) {
   .v-card-form{
-    width: 375px !important;
+    width: 340px !important;
   }
   .profile-card{
     min-width: 300px;

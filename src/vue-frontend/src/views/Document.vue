@@ -246,7 +246,7 @@ onMounted(() => {
           <VCardItem>
             <div class="d-flex justify-end gap-2" style="min-height: 50px">
               <VBtn
-                v-if="employeeRoles.includes(ERole.MANAGER)"
+                v-if="!employeeRoles.includes(ERole.MEMBER)"
                 color="primary"
                 variant="text"
                 class="h-100"
