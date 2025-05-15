@@ -39,7 +39,7 @@ public class LeaveTypeController {
 		return new ResponseEntity<>(addResponse, HttpStatus.CREATED);
 	}
 
-	// API update 
+	// API update
 	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{id}")
 	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody LeaveTypeRequestDTO request) {
@@ -49,7 +49,7 @@ public class LeaveTypeController {
 		return new ResponseEntity<>(updateResponse, HttpStatus.OK);
 	}
 
-	// API delete 
+	// API delete
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
