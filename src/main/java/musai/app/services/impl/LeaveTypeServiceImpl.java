@@ -89,11 +89,11 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 		}
 
 		// Soft delete EmployeeLeave, LeaveApplication inside leaveType
-		List<EmployeeLeave> leaves = employeeLeaveRepository.findByEmployeeId(id);
+		List<EmployeeLeave> leaves = employeeLeaveRepository.findByLeaveTypeId(id);
 		leaves.forEach(leave -> leave.setDeletedAt(LocalDateTime.now()));
 		employeeLeaveRepository.saveAll(leaves);
 
-		List<LeaveApplication> applications = leaveApplicationRepository.findByEmployeeId(id);
+		List<LeaveApplication> applications = leaveApplicationRepository.findByLeaveTypeId(id);
 		applications.forEach(app -> app.setDeletedAt(LocalDateTime.now()));
 		leaveApplicationRepository.saveAll(applications);
 

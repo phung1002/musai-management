@@ -44,4 +44,6 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	public List<LeaveApplication> getApprovedLeaveApplications();
 
 	List<LeaveApplication> findByEmployeeId(Long employeeId);
+
+	List<LeaveApplication> findByLeaveTypeId(Long id);
 }
