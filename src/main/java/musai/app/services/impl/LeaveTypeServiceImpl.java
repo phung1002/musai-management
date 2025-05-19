@@ -18,7 +18,11 @@ import musai.app.DTO.response.MessageResponse;
 import musai.app.exception.BadRequestException;
 import musai.app.exception.NotFoundException;
 import musai.app.models.ELeaveValue;
+import musai.app.models.EmployeeLeave;
+import musai.app.models.LeaveApplication;
 import musai.app.models.LeaveType;
+import musai.app.repositories.EmployeeLeaveRepository;
+import musai.app.repositories.LeaveApplicationRepository;
 import musai.app.repositories.LeaveTypeRepository;
 import musai.app.services.LeaveTypeService;
 
@@ -27,6 +31,8 @@ import musai.app.services.LeaveTypeService;
 public class LeaveTypeServiceImpl implements LeaveTypeService {
 
 	private final LeaveTypeRepository leaveTypeRepository;
+	private final EmployeeLeaveRepository employeeLeaveRepository; // Add
+	private final LeaveApplicationRepository leaveApplicationRepository; // Add
 
 	// add
 	@Override
@@ -82,6 +88,16 @@ public class LeaveTypeServiceImpl implements LeaveTypeService {
 			throw new BadRequestException("cannot_delete_leave_type_have_children");
 		}
 
+		// Soft delete EmployeeLeave, LeaveApplication inside leaveType
+		List<EmployeeLeave> leaves = employeeLeaveRepository.findByLeaveTypeId(id);
+		leaves.forEach(leave -> leave.setDeletedAt(LocalDateTime.now()));
+		employeeLeaveRepository.saveAll(leaves);
+
+		List<LeaveApplication> applications = leaveApplicationRepository.findByLeaveTypeId(id);
+		applications.forEach(app -> app.setDeletedAt(LocalDateTime.now()));
+		leaveApplicationRepository.saveAll(applications);
+
+		// Soft delete leaveType
 		existingLeaveType.setDeletedAt(LocalDateTime.now());
 		leaveTypeRepository.save(existingLeaveType);
 		return new MessageResponse("Paid leave with ID " + id + " was soft deleted");

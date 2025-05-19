@@ -227,7 +227,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 				.orElseThrow(() -> new NotFoundException("employee_not_exist"));
 
 
-		// soft delete EmployeeLeave, LeaveApplication 
+		// Soft delete EmployeeLeave, LeaveApplication 
 		List<EmployeeLeave> leaves = employeeLeaveRepository.findByEmployeeId(employeeId);;
 		leaves.forEach(leave -> leave.setDeletedAt(LocalDateTime.now()));
 		employeeLeaveRepository.saveAll(leaves);
@@ -236,7 +236,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		applications.forEach(app -> app.setDeletedAt(LocalDateTime.now()));
 		leaveApplicationRepository.saveAll(applications);
 		
-		// soft delete employee
+		// Soft delete employee
 		existingUser.setDeletedAt(LocalDateTime.now());
 		employeeRepository.save(existingUser);
 		
