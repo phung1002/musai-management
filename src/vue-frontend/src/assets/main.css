@@ -24,7 +24,7 @@ a,
   position: relative !important;
 }
 
-@media (min-width: 390px) {
+@media (min-width: 360px) {
   .v-card-form{
     width: 340px !important;
   }

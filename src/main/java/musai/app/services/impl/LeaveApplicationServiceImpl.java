@@ -32,6 +32,7 @@ import musai.app.repositories.LeaveTypeRepository;
 import musai.app.repositories.EmployeeRepository;
 import musai.app.security.services.UserDetailsImpl;
 import musai.app.services.LeaveApplicationService;
+import musai.app.services.EmailService;
 import musai.app.services.EmployeeLeaveService;
 
 @Service
@@ -87,12 +88,13 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		        .map(this::convertToDTO)
 		        .collect(Collectors.toList());
 	}
-
+	@Autowired
+	private final EmailService emailService;
 	/**
 	 * Service appply leave application
 	 */
 	@Override
-	public MessageResponse applyLeave(LeaveApplicationRequestDTO request, UserDetailsImpl principal) {
+	public MessageResponse applyLeave(LeaveApplicationRequestDTO request, UserDetailsImpl principal) { 
 
 		Employee employee = employeeRepository.findById(principal.getId())
 				.orElseThrow(() -> new NotFoundException("employee_not_exist"));
@@ -121,6 +123,18 @@ public class LeaveApplicationServiceImpl implements LeaveApplicationService {
 		leaveApplication.setReason(request.getReason());
 		leaveApplication.setStatus(ELeaveStatus.PENDING);
 		leaveApplicationRepository.save(leaveApplication);
+		
+		// ★ 管理者にメール通知
+	    String subject = employee.getFullName()+"_休暇申請が届きました";
+	    String body = String.format(
+	        "社員: %s\n期間: %s ~ %s\n理由: %s",
+	        employee.getFullName(),
+	        request.getStartDate(),
+	        request.getEndDate(),
+	        request.getReason()
+	    );
+	    emailService.sendAdminNotification(subject, body);
+
 		return new MessageResponse("Apply success");
 	}
 
