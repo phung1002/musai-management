@@ -22,7 +22,6 @@ public class EmailService {
     private String fromName;
 
     public void sendAdminNotification(String subject, String text) {
-    	System.out.println("gggggggggg");
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(adminEmail);
         message.setFrom(String.format("%s <%s>", fromName, fromEmail));
