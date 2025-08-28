@@ -35,8 +35,8 @@ public class WebSecurityConfig {
 	@Autowired
 	private AuthEntryPointJwt unauthorizedHandler;
 
-	@Value("${frontend.url}")
-	private String frontendUrl;
+	@Value("${frontend.urls}")
+	private String[] frontendUrls;
 
 	@Bean
 	public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -87,7 +87,9 @@ public class WebSecurityConfig {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
-		config.addAllowedOrigin(frontendUrl);
+		for (String url : frontendUrls) {
+			config.addAllowedOrigin(url);
+		} 
 		config.addAllowedHeader("*");
 		config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		source.registerCorsConfiguration("/**", config);
